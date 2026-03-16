@@ -43,8 +43,8 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 **Semana 2 (02/03 - 08/03)**
 * [x] Realização da proposta de projeto.
-* [x] Realização do ppoint para a apresentação da proposta de projeto.
-* [x] Criação do Repositório (GitHub) .
+* [x] Realização do PowerPoint para a apresentação da proposta de projeto.
+* [x] Criação do Repositório (GitHub).
 
 **Semana 3 (09/03 - 15/03)**
 
@@ -54,34 +54,52 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 ### Fase 2: Core da Aplicação e Participantes
 **Semana 4 (16/03 - 22/03)**
-* [ ]
-
-
+* [ ] Criação da navegação principal da aplicação (Navigation Compose).
+* [ ] Criação do Dashboard inicial.
+* [ ] Implementação da barra lateral de navegação (Menu principal).
+* [ ] Criação da página de Perfil do utilizador.
+* [ ] Definição do modelo Kotlin das entidades (User, Participant, Availability).
 
 **Semana 5 (23/03 - 29/03)**
-* [ ]
+* [ ] Implementação da gestão de participantes (CRUD).
+* [ ] Criação da página de listagem de participantes.
+* [ ] Criação da página de criação/edição de participante.
+* [ ] Implementação do armazenamento local inicial (ViewModels + estado).
 
 
 
 **Semana 6 (30/03 - 05/04)**
-* [ ]
+* [ ] Implementação da gestão de disponibilidades.
+* [ ] Criação da interface para inserir horários disponíveis.
+* [ ] Implementação de seleção de dias da semana.
+* [ ] Implementação de seleção de intervalos horários.
+* [ ] Persistência das disponibilidades na base de dados.
 
 
 
 ### Fase 3: Processamento e Algoritmo
 **Semana 7 (06/04 - 12/04)**
-* [ ]
+* [ ] Implementação do processamento de intervalos de disponibilidade.
+* [ ] Conversão de intervalos em blocos discretos (TimeSlots).
+* [ ] Definição da estrutura de dados para TimeSlots.
+* [ ] Implementação inicial do serviço de geração de horários.
 
 
 
 **Semana 8 (13/04 - 19/04)**
-* [ ]
+* [ ] Implementação do algoritmo de planeamento (versão inicial).
+* [ ] Implementação da ordenação de participantes por restrição.
+* [ ] Implementação da lógica de atribuição gulosa de blocos.
+* [ ] Testes iniciais do algoritmo com dados simulados.
 
 
 
 **Semana 9 (20/04 - 26/04)**
-* [ ] Preparar ppoint para a Apresentação de Progresso.
-* [ ]
+* [ ] Preparar PowerPoint para a Apresentação de Progresso.
+* [ ] Melhorias no algoritmo de planeamento.
+* [ ] Implementação da verificação de restrições (capacidade máxima, horas diárias).
+* [ ] Implementação do cálculo de métricas do horário gerado.
+* [ ] Preparação do PowerPoint para a apresentação de progresso.
 
 
 
@@ -89,34 +107,46 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 *MILESTONE: Apresentação de Progresso (27/04)*
 * [ ] Realização da Apresentação de Progresso do Projeto.
-* [ ]
+* [ ] Implementação da visualização do horário gerado.
+* [ ] Criação da página de visualização do horário semanal.
+* [ ] Implementação da confirmação ou rejeição do horário gerado.
 
 
 
 ### Fase 4: Algoritmo e Visualização
 **Semana 11 (04/05 - 10/05)**
-* [ ]
+* [ ] Melhorias na interface de visualização do horário.
+* [ ] Implementação da funcionalidade de criação de novos horários.
+* [ ] Implementação do armazenamento de horários gerados.
 
 
 
 **Semana 12 (11/05 - 17/05)**
-* [ ]
+* [ ] Integração com a API backend.
+* [ ] Implementação de endpoints para geração de horários.
+* [ ] Implementação da persistência completa no PostgreSQL.
 
 
 
 **Semana 13 (18/05 - 24/05)**
-* [ ]
+* [ ] Testes completos do fluxo de criação de horários.
+* [ ] Implementação da visualização de sessões de grupo.
+* [ ] Implementação de métricas de ocupação das sessões.
 
 
 
 **Semana 14 (25/05 - 31/05)**
-* [ ]
+* [ ] Correção de erros e melhorias na aplicação.
+* [ ] Preparação da versão beta.
+* [ ] Preparação da demonstração da aplicação.
 
 
 
 ### Fase 5: Integrações, Versão Beta e Finalização
 **Semana 15 (01/06 - 07/06)**
-* [ ]
+* [ ] Entrega do Relatório Beta e da demonstração da aplicação.
+* [ ] Implementação da integração com Google Calendar.
+* [ ] Criação automática de eventos no calendário do utilizador.
 
 
 
@@ -128,27 +158,36 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 
 **Semana 16 (08/06 - 14/06)**
-* [ ]
+* [ ] Implementação do envio de emails aos participantes.
+* [ ] Implementação da geração automática de notificações de horário.
 
 
 
 **Semana 17 (15/06 - 21/06)**
-* [ ]
+* [ ] Implementação de testes funcionais.
+* [ ] Validação do funcionamento do algoritmo com diferentes cenários.
 
 
 
 **Semana 18 (22/06 - 28/06)**
-* [ ]
+* [ ] Melhorias de usabilidade na interface da aplicação.
+* [ ] Otimização do desempenho do algoritmo de planeamento.
 
 
 
 **Semana 19 (29/06 - 05/07)**
-* [ ]
+* [ ] Escrita do relatório final do projeto.
+* [ ] Organização da documentação técnica do sistema.
+* [ ] Atualização do repositório GitHub com documentação.
 
 
 
 **Semana 20 (06/07 - 12/07)**
-* [ ]
+* [ ] Submissão final do projeto.
+* [ ] Revisão final do relatório.
+* [ ] Preparação da apresentação final.
+* [ ] Preparação da demonstração da aplicação.
+* [ ] Simulação da defesa do projeto.
 
 
 
