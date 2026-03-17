@@ -54,6 +54,7 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 ### Fase 2: Core da Aplicação e Participantes
 **Semana 4 (16/03 - 22/03)**
+* [x] Definição do modelo Kotlin das entidades
 * [ ] Criação da navegação principal da aplicação (Navigation Compose).
 * [ ] Criação do Dashboard inicial.
 * [ ] Implementação da barra lateral de navegação (Menu principal).
