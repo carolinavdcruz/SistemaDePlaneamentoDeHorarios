@@ -28,7 +28,7 @@ CREATE TYPE owner_type AS ENUM (
 
 CREATE TABLE availability (
     id UUID PRIMARY KEY,
-    owner_name STRING NOT NULL,
+    owner_id INTEGER NOT NULL,
     owner_type owner_type NOT NULL,
     day_of_week INTEGER CHECK (day_of_week BETWEEN 1 AND 7),
     start_time TIME NOT NULL,
