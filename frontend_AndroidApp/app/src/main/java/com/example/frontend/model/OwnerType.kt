@@ -1,4 +1,7 @@
 enum class OwnerType {
-    USER,
-    PARTICIPANT
+    //USER,
+
+    TEACHER,
+    STUDENT,
+    //PARTICIPANT
 }

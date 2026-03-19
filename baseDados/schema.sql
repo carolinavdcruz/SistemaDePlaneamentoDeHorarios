@@ -1,7 +1,7 @@
 
 -- USERS
 
-CREATE TABLE users (
+CREATE TABLE teacher (
     id UUID PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE users (
 
 -- PARTICIPANTS
 
-CREATE TABLE participants (
+CREATE TABLE student (
     id UUID PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
@@ -22,13 +22,13 @@ CREATE TABLE participants (
 -- AVAILABILITY
 
 CREATE TYPE owner_type AS ENUM (
-    'USER',
-    'PARTICIPANT'
+    'TEACHER',
+    'STUDENT'
 );
 
 CREATE TABLE availability (
     id UUID PRIMARY KEY,
-    owner_id UUID NOT NULL,
+    owner_name STRING NOT NULL,
     owner_type owner_type NOT NULL,
     day_of_week INTEGER CHECK (day_of_week BETWEEN 1 AND 7),
     start_time TIME NOT NULL,
@@ -73,14 +73,14 @@ CREATE TABLE sessions (
     FOREIGN KEY (timeslot_id) REFERENCES timeslots(id)
 );
 
--- SESSION PARTICIPANTS
+-- SESSION STUDENTS
 
-CREATE TABLE session_participants (
+CREATE TABLE session_students (
     session_id UUID NOT NULL,
-    participant_id UUID NOT NULL,
+    student_id UUID NOT NULL,
 
-    PRIMARY KEY (session_id, participant_id),
+    PRIMARY KEY (session_id, student_id),
 
     FOREIGN KEY (session_id) REFERENCES sessions(id),
-    FOREIGN KEY (participant_id) REFERENCES participants(id)
+    FOREIGN KEY (student_id) REFERENCES students(id)
 );

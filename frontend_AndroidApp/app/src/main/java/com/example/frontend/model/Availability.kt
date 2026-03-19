@@ -1,6 +1,6 @@
 data class Availability(
-    val id: UUID,
-    val ownerId: UUID,
+    //val id: UUID,
+    val ownerName: String,
     val ownerType: OwnerType,
     val dayOfWeek: Int,
     val startTime: LocalTime,
