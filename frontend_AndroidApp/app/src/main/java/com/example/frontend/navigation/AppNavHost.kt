@@ -53,6 +53,7 @@ fun AppNavHost(navController: NavHostController) {
 
         composable(Routes.DASHBOARD) {
             DashboardScreen(
+                navController = navController,
                 onSignOutClick = {
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(Routes.DASHBOARD) { inclusive = true }

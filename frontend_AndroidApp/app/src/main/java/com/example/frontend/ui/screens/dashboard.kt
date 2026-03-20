@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.frontend.navigation.Routes
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
@@ -35,7 +36,7 @@ data class BottomNavItem(
 )
 
 @Composable
-fun DashboardScreen(onSignOutClick: () -> Unit) {
+fun DashboardScreen(navController: NavController, onSignOutClick: () -> Unit) {
     var selectedItemIndex by remember { mutableIntStateOf(0) }
 
     val bottomNavItems = listOf(
@@ -83,7 +84,7 @@ fun DashboardScreen(onSignOutClick: () -> Unit) {
                 0 -> MainDashboardContent(onSignOutClick)
                 1 -> ParametersCardMobile()
                 2 -> IntegrationsContent()
-                //3 -> ProfileScreen()
+                3 -> ProfileScreen(navController)
             }
         }
     }
