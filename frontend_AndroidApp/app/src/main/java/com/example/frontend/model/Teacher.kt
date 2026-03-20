@@ -1,3 +1,7 @@
+package com.example.frontend.model
+
+import java.util.UUID
+
 data class Teacher(
     val id: UUID,
     val name: String,

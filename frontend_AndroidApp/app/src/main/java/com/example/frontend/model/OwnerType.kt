@@ -1,7 +1,6 @@
-enum class OwnerType {
-    //USER,
+package com.example.frontend.model
 
-    TEACHER,
-    STUDENT,
-    //PARTICIPANT
+enum class OwnerType {
+    USER,
+    PARTICIPANT
 }

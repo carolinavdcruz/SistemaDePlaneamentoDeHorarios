@@ -1,3 +1,8 @@
+package com.example.frontend.model
+
+import java.time.LocalTime
+import java.util.UUID
+
 data class Availability(
     val id: UUID,
     val ownerId: UUID,
