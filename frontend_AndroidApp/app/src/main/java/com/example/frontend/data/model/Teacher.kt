@@ -1,9 +1,10 @@
-package com.example.frontend.model
+package com.example.frontend.data.model
 
-import java.util.UUID
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Teacher(
-    val id: UUID,
+    val id: Int? = null,
     val name: String,
     val email: String,
     val maxDailyHours: Int,
