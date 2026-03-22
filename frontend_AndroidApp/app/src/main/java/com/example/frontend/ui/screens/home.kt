@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -129,7 +131,7 @@ fun HomeScreen(onStartClick: () -> Unit) {
             Surface(
                 color = Color.Black.copy(alpha = 0.5f),
                 shape = RoundedCornerShape(50.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color.Gray),
+                border = BorderStroke(1.dp, Color.Gray),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(70.dp)
@@ -179,4 +181,12 @@ fun HomeScreen(onStartClick: () -> Unit) {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    HomeScreen(
+        onStartClick = {}
+    )
 }

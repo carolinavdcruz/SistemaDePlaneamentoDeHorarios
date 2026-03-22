@@ -1,3 +1,5 @@
+import com.sun.tools.javac.resources.compiler
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -52,10 +54,12 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.text)
-    implementation("io.ktor:ktor-client-core:2.3.7")
-    implementation("io.ktor:ktor-client-cio:2.3.7")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
+
+    // ROOM
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    annotationProcessor(libs.androidx.room.compiler)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

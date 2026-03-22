@@ -4,10 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Teacher(
-    val id: Int? = null,
+    val id: Int = 0,
     val name: String,
     val email: String,
-    val maxDailyHours: Int,
-    val sessionDurationMinutes: Int,
-    val maxParticipantsPerSession: Int
+    //val restrictions: Restrictions
 )
