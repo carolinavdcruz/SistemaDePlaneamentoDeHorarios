@@ -50,7 +50,7 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 *MILESTONE: Entrega da Proposta (09/03)*
 * [x] Entrega formal da proposta de projeto.
-* [ ] Conclusão da fase de Setup do Sistema.
+* [x] Conclusão da fase de Setup do Sistema.
 
 ### Fase 2: Core da Aplicação e Participantes
 **Semana 4 (16/03 - 22/03)**
