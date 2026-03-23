@@ -14,9 +14,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.frontend.navigation.Routes
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
@@ -195,4 +197,13 @@ fun SignOutButton(onSignOutClick: () -> Unit) {
         Spacer(modifier = Modifier.width(8.dp))
         Text("Sign Out", fontSize = 14.sp, fontWeight = FontWeight.Medium)
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DashboardScreenPreview() {
+    DashboardScreen(
+        navController = rememberNavController(),
+        onSignOutClick = {},
+    )
 }

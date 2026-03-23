@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.sp
 import com.example.frontend.ui.theme.*
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -156,4 +158,13 @@ fun StatCard(label: String, value: String, modifier: Modifier = Modifier) {
             Text(label, color = TextSecondary, fontSize = 12.sp)
         }
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileScreenPreview() {
+    ProfileScreen(
+        navController = rememberNavController()
+    )
 }

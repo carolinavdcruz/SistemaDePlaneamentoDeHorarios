@@ -32,6 +32,8 @@ import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
+import androidx.compose.ui.tooling.preview.Preview
+
 
 @Composable
 fun AvailabilitySelector() {
@@ -199,4 +201,13 @@ fun TimeBox(time: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
             Icon(Icons.Default.DateRange, "", tint = AccentPurple, modifier = Modifier.size(16.dp))
         }
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun AvailabilitySelectorPreview() {
+    AvailabilitySelector(
+
+    )
 }
