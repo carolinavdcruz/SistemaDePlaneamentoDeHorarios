@@ -2,7 +2,7 @@
 -- USERS
 
 CREATE TABLE teacher (
-    id UUID PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     max_daily_hours INTEGER DEFAULT 3,
@@ -13,32 +13,35 @@ CREATE TABLE teacher (
 -- PARTICIPANTS
 
 CREATE TABLE student (
-    id UUID PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     max_daily_sessions INTEGER DEFAULT 1
 );
 
 -- AVAILABILITY
-
-CREATE TYPE owner_type AS ENUM (
-    'TEACHER',
-    'STUDENT'
-);
-
 CREATE TABLE availability (
-    id UUID PRIMARY KEY,
-    owner_id INTEGER NOT NULL,
-    owner_type owner_type NOT NULL,
+    id INTEGER PRIMARY KEY,
+    teacher_id INTEGER,
+    student_id INTEGER,
+
     day_of_week INTEGER CHECK (day_of_week BETWEEN 1 AND 7),
     start_time TIME NOT NULL,
-    end_time TIME NOT NULL
+    end_time TIME NOT NULL,
+
+    FOREIGN KEY (teacher_id) REFERENCES teacher(id),
+    FOREIGN KEY (student_id) REFERENCES student(id),
+
+    CHECK (
+        (teacher_id IS NOT NULL AND student_id IS NULL) OR
+        (teacher_id IS NULL AND student_id IS NOT NULL)
+    )
 );
 
 -- TIMESLOTS
 
 CREATE TABLE timeslots (
-    id UUID PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     day_of_week INTEGER CHECK (day_of_week BETWEEN 1 AND 7),
     start_time TIME NOT NULL,
     end_time TIME NOT NULL
@@ -53,20 +56,20 @@ CREATE TYPE schedule_status AS ENUM (
 );
 
 CREATE TABLE schedules (
-    id UUID PRIMARY KEY,
-    user_id UUID NOT NULL,
+    id INTEGER PRIMARY KEY,
+    teacher_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status schedule_status DEFAULT 'CREATED',
 
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (teacher_id) REFERENCES teacher(id)
 );
 
 -- SESSIONS
 
 CREATE TABLE sessions (
-    id UUID PRIMARY KEY,
-    schedule_id UUID NOT NULL,
-    timeslot_id UUID NOT NULL,
+    id INTEGER PRIMARY KEY,
+    schedule_id INTEGER NOT NULL,
+    timeslot_id INTEGER NOT NULL,
     max_capacity INTEGER DEFAULT 5,
 
     FOREIGN KEY (schedule_id) REFERENCES schedules(id),
@@ -75,12 +78,12 @@ CREATE TABLE sessions (
 
 -- SESSION STUDENTS
 
-CREATE TABLE session_students (
-    session_id UUID NOT NULL,
-    student_id UUID NOT NULL,
+CREATE TABLE sessions (
+    id INTEGER PRIMARY KEY,
+    schedule_id INTEGER NOT NULL,
+    timeslot_id INTEGER NOT NULL,
+    max_capacity INTEGER DEFAULT 5,
 
-    PRIMARY KEY (session_id, student_id),
-
-    FOREIGN KEY (session_id) REFERENCES sessions(id),
-    FOREIGN KEY (student_id) REFERENCES students(id)
+    FOREIGN KEY (schedule_id) REFERENCES schedules(id),
+    FOREIGN KEY (timeslot_id) REFERENCES timeslots(id)
 );
