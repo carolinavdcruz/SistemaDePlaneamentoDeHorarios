@@ -62,18 +62,21 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 * [x] Definição do modelo Kotlin das entidades (User, Participant, Availability).
 
 **Semana 5 (23/03 - 29/03)**
-* [ ] Implementação da gestão de participantes (CRUD).
-* [ ] Criação da página de listagem de participantes.
-* [ ] Criação da página de criação/edição de participante.
+* [x] Implementação da gestão de participantes (CRUD).
+* [x] Criação da página de listagem de participantes.
+* [x] Criação da página de criação/edição de participante.
 * [ ] Implementação do armazenamento local inicial (ViewModels + estado).
 
 
 
 **Semana 6 (30/03 - 05/04)**
+* [x] Trocar fake bd pela   ROOM
+* [ ] Ligar à API
+* [ ] Implementação do Login
 * [ ] Implementação da gestão de disponibilidades.
-* [ ] Criação da interface para inserir horários disponíveis.
-* [ ] Implementação de seleção de dias da semana.
-* [ ] Implementação de seleção de intervalos horários.
+* [x] Criação da interface para inserir horários disponíveis.
+* [x] Implementação de seleção de dias da semana.
+* [x] Implementação de seleção de intervalos horários.
 * [ ] Persistência das disponibilidades na base de dados.
 
 
