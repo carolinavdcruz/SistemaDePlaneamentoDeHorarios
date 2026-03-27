@@ -21,16 +21,47 @@ import androidx.compose.ui.unit.sp
 import com.example.frontend.ui.theme.*
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.example.frontend.AppModule
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController) {
+    val viewModel = remember { AppModule.provideProfileViewModel() }
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadProfile()
+    }
+
+    LaunchedEffect(uiState.isLoggedOut) {
+        if (uiState.isLoggedOut) {
+            viewModel.onLogoutNavigated()
+            navController.navigate("login_route") {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let { msg ->
+            snackbarHostState.showSnackbar(msg)
+            viewModel.onErrorDismissed()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold) },
+                title = {
+                    Text("Profile", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
@@ -39,8 +70,17 @@ fun ProfileScreen(navController: NavController) {
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Background)
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = Background
     ) { paddingValues ->
+
+        if (uiState.isLoading) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = AccentPurple)
+            }
+            return@Scaffold
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -49,7 +89,7 @@ fun ProfileScreen(navController: NavController) {
         ) {
             Spacer(modifier = Modifier.height(10.dp))
 
-            // --- 1. HEADER (FOTO E INFO) ---
+            // --- 1. HEADER ---
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -61,35 +101,42 @@ fun ProfileScreen(navController: NavController) {
                         color = CardBackground,
                         border = BorderStroke(2.dp, AccentPurple)
                     ) {
-                        Icon(Icons.Default.Person, "", tint = TextSecondary, modifier = Modifier.padding(20.dp))
+                        Icon(
+                            Icons.Default.Person, "",
+                            tint = TextSecondary,
+                            modifier = Modifier.padding(20.dp)
+                        )
                     }
                     Surface(
-                        modifier = Modifier.size(32.dp).clickable { /* Abrir galeria */ },
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clickable { },
                         shape = CircleShape,
                         color = AccentPurple,
                         border = BorderStroke(2.dp, Background)
                     ) {
-                        Icon(Icons.Default.Edit, "", tint = Color.White, modifier = Modifier.padding(8.dp))
+                        Icon(
+                            Icons.Default.Edit, "",
+                            tint = Color.White,
+                            modifier = Modifier.padding(8.dp)
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("João Silva", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                Text("Premium Instructor", color = AccentPurple, fontSize = 14.sp)
+                Text(uiState.name, color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                Text(uiState.role, color = AccentPurple, fontSize = 14.sp)
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // --- 2. STATS ---
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatCard(label = "Classes", value = "24", modifier = Modifier.weight(1f))
-                StatCard(label = "Students", value = "128", modifier = Modifier.weight(1f))
-                StatCard(label = "Rating", value = "4.9", modifier = Modifier.weight(1f))
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // --- 3. MENU ---
-            Text("Settings", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(bottom = 12.dp))
+            // --- 2. MENU ---
+            Text(
+                "Settings",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
 
             Surface(
                 color = CardBackground,
@@ -100,22 +147,35 @@ fun ProfileScreen(navController: NavController) {
                     ProfileMenuItem(
                         icon = Icons.Default.Settings,
                         title = "Account Settings",
-                        onClick = { navController.navigate("settings_route") } // Exemplo de rota
+                        onClick = { navController.navigate("settings_route") }
                     )
-                    HorizontalDivider(color = InputBorder, thickness = 0.5.dp, modifier = Modifier.padding(horizontal = 16.dp))
+                    HorizontalDivider(
+                        color = InputBorder,
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
                     ProfileMenuItem(icon = Icons.Default.Notifications, title = "Notifications")
-                    HorizontalDivider(color = InputBorder, thickness = 0.5.dp, modifier = Modifier.padding(horizontal = 16.dp))
+                    HorizontalDivider(
+                        color = InputBorder,
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
                     ProfileMenuItem(icon = Icons.Default.Lock, title = "Privacy & Security")
                 }
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // --- 4. LOGOUT ---
+            // --- 3. LOGOUT ---
             Button(
-                onClick = { /* Lógica de logout e voltar ao login */ },
-                modifier = Modifier.fillMaxWidth().height(52.dp).padding(bottom = 16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4D4D).copy(alpha = 0.1f)),
+                onClick = { viewModel.onLogoutClicked() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .padding(bottom = 16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFF4D4D).copy(alpha = 0.1f)
+                ),
                 shape = RoundedCornerShape(12.dp),
                 border = BorderStroke(1.dp, Color(0xFFFF4D4D).copy(alpha = 0.5f))
             ) {
@@ -139,9 +199,10 @@ fun ProfileMenuItem(icon: ImageVector, title: String, onClick: () -> Unit = {}) 
         Icon(icon, null, tint = AccentPurple, modifier = Modifier.size(20.dp))
         Spacer(modifier = Modifier.width(16.dp))
         Text(title, color = Color.White, fontSize = 14.sp, modifier = Modifier.weight(1f))
-        Icon(Icons.Default.AccountCircle, null, tint = TextSecondary, modifier = Modifier.size(16.dp))
+        Icon(Icons.Default.KeyboardArrowRight, null, tint = TextSecondary, modifier = Modifier.size(16.dp))
     }
 }
+
 @Composable
 fun StatCard(label: String, value: String, modifier: Modifier = Modifier) {
     Surface(
@@ -160,11 +221,8 @@ fun StatCard(label: String, value: String, modifier: Modifier = Modifier) {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen(
-        navController = rememberNavController()
-    )
+    ProfileScreen(navController = rememberNavController())
 }

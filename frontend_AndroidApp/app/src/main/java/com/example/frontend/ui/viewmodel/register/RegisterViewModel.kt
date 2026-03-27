@@ -7,6 +7,9 @@ import kotlinx.coroutines.flow.StateFlow
 
 class RegisterViewModel : ViewModel() {
 
+    private val _name = MutableStateFlow("")
+    val name: StateFlow<String> = _name
+
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email
 
@@ -21,6 +24,11 @@ class RegisterViewModel : ViewModel() {
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
+
+    fun setName(value: String) {
+        _name.value = value
+        clearError()
+    }
 
     fun setEmail(value: String) {
         _email.value = value
@@ -43,10 +51,10 @@ class RegisterViewModel : ViewModel() {
 
     fun validateRegister(): Boolean {
         _errorMessage.value = RegisterValidator.validate(
+            name = _name.value,
             email = _email.value,
             password = _password.value
         )
-
         return _errorMessage.value == null
     }
 

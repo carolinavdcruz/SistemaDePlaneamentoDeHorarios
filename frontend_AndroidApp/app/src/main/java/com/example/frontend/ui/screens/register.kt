@@ -34,6 +34,7 @@ fun RegisterScreen(
     onCreateAccountClick: (String, String, String) -> Unit
 ) {
     val viewModel = remember { AppModule.provideRegisterViewModel() }
+    val name by viewModel.name.collectAsState()
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
     val selectedRole by viewModel.selectedRole.collectAsState()
@@ -100,6 +101,17 @@ fun RegisterScreen(
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
+
+                    // --- NAME ---
+                    LoginInputField(
+                        label = "Full Name",
+                        value = name,
+                        onValueChange = viewModel::setName,
+                        placeholder = "João Silva",
+                        leadingIcon = Icons.Default.Person
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Reutilizar o componente de Input da tela anterior
                     LoginInputField(

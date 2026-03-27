@@ -22,6 +22,9 @@ interface TeacherDao {
     @Query("SELECT * FROM teacher WHERE id = :id")
     suspend fun getById(id: Int): TeacherEntity?
 
+    @Query("SELECT * FROM teacher WHERE email = :email")
+    suspend fun getByEmail(email: String): TeacherEntity?
+
     @Query("SELECT * FROM teacher")
     suspend fun getAll(): List<TeacherEntity>
 }

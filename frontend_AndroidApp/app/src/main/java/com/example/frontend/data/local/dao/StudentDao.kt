@@ -8,9 +8,7 @@ import androidx.room.Update
 import com.example.frontend.data.local.entity.StudentEntity
 
 @Dao
-interface StudentDao{
-
-    // funções suspende porque permite que as funções corram em corrotinas e não bloqueiem a UI
+interface StudentDao {
 
     @Insert
     suspend fun insert(student: StudentEntity)
@@ -23,6 +21,9 @@ interface StudentDao{
 
     @Query("SELECT * FROM student WHERE id = :id")
     suspend fun getById(id: Int): StudentEntity?
+
+    @Query("SELECT * FROM student WHERE email = :email LIMIT 1")
+    suspend fun getByEmail(email: String): StudentEntity?
 
     @Query("SELECT * FROM student")
     suspend fun getAll(): List<StudentEntity>
