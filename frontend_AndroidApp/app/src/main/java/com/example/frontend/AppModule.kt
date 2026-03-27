@@ -11,6 +11,7 @@ import com.example.frontend.data.repository.AvailabilityRepository
 import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
 import com.example.frontend.data.local.database.AppDatabase
 import com.example.frontend.data.local.database.DatabaseProvider
+import com.example.frontend.data.remote.api.AvailabilityApi
 
 object AppModule {
 
@@ -24,8 +25,12 @@ object AppModule {
         StudentRepository(database!!.studentDao())
     }
 
+    private val availabilityApi by lazy {
+        AvailabilityApi()
+    }
+
     private val availabilityRepository by lazy {
-        AvailabilityRepository(database!!.availabilityDao())
+        AvailabilityRepository(database!!.availabilityDao(), availabilityApi)
     }
 
     fun provideStudentViewModel(): StudentViewModel {
@@ -35,24 +40,6 @@ object AppModule {
     fun provideAvailabilityViewModel(): AvailabilityViewModel {
         return AvailabilityViewModel(availabilityRepository)
     }
-
-    /*
-    // Usamos DAOs falsos em memória para evitar o erro do Room
-    private val fakeStudentDao = FakeStudentDao()
-    private val fakeAvailabilityDao = FakeAvailabilityDao()
-
-    private val repoSt = StudentRepository(fakeStudentDao)
-    private val repoAv = AvailabilityRepository(fakeAvailabilityDao)
-
-    fun provideStudentViewModel(context: Context): StudentViewModel {
-        return StudentViewModel(repoSt)
-    }
-
-    fun provideAvailabilityViewModel(context: Context): AvailabilityViewModel {
-        return AvailabilityViewModel(repoAv)
-    }
-     */
-
 }
 
 // Implementação em memória (Não precisa do Room para funcionar)

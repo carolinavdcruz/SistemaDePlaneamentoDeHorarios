@@ -6,12 +6,10 @@ coreKtxVersion = "1.12.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-ktorClientCio = "3.4.1"
-ktorClientContentNegotiation = "3.4.1"
-ktorClientCore = "3.4.1"
+ktorVersion = "3.0.1"
 lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.8.0"
-kotlin = "2.2.10"
+kotlin = "2.0.21"
 composeBom = "2024.09.00"
 lifecycleViewmodelCompose = "2.10.0"
 material3 = "1.4.0"
@@ -26,6 +24,7 @@ ksp = "2.1.0-1.0.29"
 
 room = "2.8.4"
 media3Database = "1.9.3"
+firebaseCrashlyticsBuildtools = "3.0.6"
 
 [libraries]
 androidx-activity-compose-v182 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
@@ -53,18 +52,20 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 androidx-compose-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiText" }
-ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCio" }
-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientCore" }
-# androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorVersion" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
 
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-media3-database = { group = "androidx.media3", name = "media3-database", version.ref = "media3Database" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
