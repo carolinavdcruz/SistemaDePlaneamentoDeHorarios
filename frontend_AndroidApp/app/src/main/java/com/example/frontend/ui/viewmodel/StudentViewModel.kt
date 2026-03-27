@@ -3,13 +3,12 @@ package com.example.frontend.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.local.entity.StudentEntity
+import com.example.frontend.data.repository.StudentRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class StudentViewModel : ViewModel() {
-
-    private val repository = AppModule.studentRepository
+class StudentViewModel(private val repository: StudentRepository) : ViewModel() {
 
     private val _students = MutableStateFlow<List<StudentEntity>>(emptyList())
     val students: StateFlow<List<StudentEntity>> = _students

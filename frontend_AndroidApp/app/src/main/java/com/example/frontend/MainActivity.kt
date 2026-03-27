@@ -11,10 +11,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.frontend.navigation.AppNavHost
 import com.example.frontend.ui.theme.Frontend_AndroidAppTheme
 
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Atribuição manual do contexto
+        //AppContext.context = applicationContext
+
         enableEdgeToEdge()
 
         setContent {

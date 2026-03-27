@@ -7,5 +7,5 @@ object Routes {
     const val DASHBOARD = "dashboard"
     const val PROFILE = "profile"
     const val PARAMETERS = "parameters"
-    const val INTEGRATIONS = "integrations"
+    const val LIST = "list"
 }

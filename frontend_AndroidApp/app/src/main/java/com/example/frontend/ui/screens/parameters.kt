@@ -89,7 +89,10 @@ fun ParametersCardMobile() {
             Spacer(modifier = Modifier.height(24.dp))
 
             // --- AQUI ENTRA A DISPONIBILIDADE ---
-            AvailabilitySelector()
+            AvailabilitySelector(
+                ownerId = 1,
+                ownerType = "TEACHER"
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 

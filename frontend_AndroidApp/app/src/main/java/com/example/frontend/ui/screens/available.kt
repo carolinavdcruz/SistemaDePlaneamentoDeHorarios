@@ -3,47 +3,54 @@ package com.example.frontend.ui.screens
 import android.app.TimePickerDialog
 import android.content.Context
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.frontend.AppModule
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.InputBorder
-import com.example.frontend.ui.theme.TextSecondary
-import androidx.compose.ui.tooling.preview.Preview
 
 
 @Composable
-fun AvailabilitySelector() {
+fun AvailabilitySelector(
+    ownerId: Int,
+    ownerType: String
+) {
     val context = LocalContext.current
+
+    // ViewModel (com AppModule)
+    val viewModel = remember {
+        AppModule.provideAvailabilityViewModel(context)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.load(ownerId, ownerType)
+    }
+
+    val availabilityList by viewModel.availabilityList.collectAsState()
+
     val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
     // ESTADOS GLOBAIS (O Assistente de IA vai atualizar estes valores)
-    var selectedDays by remember { mutableStateOf(setOf("Mon", "Tue", "Wed")) }
-    var startTime by remember { mutableStateOf("09:00") }
-    var endTime by remember { mutableStateOf("17:00") }
+    val selectedDays by viewModel.selectedDays.collectAsState()
+    val startTime by viewModel.startTime.collectAsState()
+    val endTime by viewModel.endTime.collectAsState()
 
     // Estados do Assistente de IA
     var selectedTab by remember { mutableStateOf("Text") }
@@ -51,21 +58,22 @@ fun AvailabilitySelector() {
 
     Column(modifier = Modifier.fillMaxWidth()) {
         // --- 1. SELETOR MANUAL ---
-        Text("Manual Adjustment", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 12.dp))
+        Text("Manual Adjustment", color = Color.White, fontSize = 16.sp)
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             days.forEach { day ->
                 val isSelected = selectedDays.contains(day)
+
                 Surface(
-                    modifier = Modifier.size(40.dp).clickable {
-                        selectedDays = if (isSelected) selectedDays - day else selectedDays + day
-                    },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable { viewModel.toggleDay(day) },
                     color = if (isSelected) AccentPurple else Background,
                     shape = CircleShape,
                     border = BorderStroke(1.dp, InputBorder)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text(day.first().toString(), color = if (isSelected) Color.White else TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text(day.first().toString(), color = Color.White)
                     }
                 }
             }
@@ -73,17 +81,33 @@ fun AvailabilitySelector() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            TimeBox(time = startTime, modifier = Modifier.weight(1f), onClick = { showTimePicker(context, startTime) { startTime = it } })
-            Text("to", color = TextSecondary, modifier = Modifier.padding(horizontal = 8.dp))
-            TimeBox(time = endTime, modifier = Modifier.weight(1f), onClick = { showTimePicker(context, endTime) { endTime = it } })
+        Row {
+            TimeBox(
+                time = startTime,
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    showTimePicker(context, startTime) {
+                        viewModel.setStartTime(it)
+                    }
+                }
+            )
+
+            Text(" to ")
+
+            TimeBox(
+                time = endTime,
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    showTimePicker(context, endTime) {
+                        viewModel.setEndTime(it)
+                    }
+                }
+            )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
-        HorizontalDivider(color = InputBorder, thickness = 0.5.dp)
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // --- 2. ASSISTENTE DE IA (A PARTE DA IMAGEM) ---
+        Spacer(modifier = Modifier.height(16.dp))
+/*
+// --- 2. ASSISTENTE DE IA (A PARTE DA IMAGEM) ---
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -147,26 +171,26 @@ fun AvailabilitySelector() {
                     )
                 }
             }
+ */
 
-            Spacer(modifier = Modifier.height(12.dp))
+        // BOTÃO (GUARDA NA BD)
+        Button(
+            onClick = {
+                viewModel.saveAvailability(ownerId, ownerType)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Guardar Disponibilidade")
+        }
 
-            Button(
-                onClick = {
-                    /* AQUI: Chamas o teu Backend.
-                       O Backend responde com JSON.
-                       Ex: Se a IA devolver {"days": ["Mon"], "start": "10:00", "end": "14:00"}
-                       Tu fazes:
-                       selectedDays = setOf("Mon")
-                       startTime = "10:00"
-                       endTime = "14:00"
-                    */
-                },
-                modifier = Modifier.fillMaxWidth().height(44.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = AccentPurple.copy(0.15f), contentColor = AccentPurple),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text("Process with AI", fontWeight = FontWeight.Bold, fontSize = 13.sp)
-            }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        availabilityList.forEach {
+            Text(
+                text = "Dia: ${it.dayOfWeek} | ${it.startTime} - ${it.endTime}",
+                color = Color.White,
+                fontSize = 12.sp
+            )
         }
     }
 }
@@ -203,11 +227,11 @@ fun TimeBox(time: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun AvailabilitySelectorPreview() {
     AvailabilitySelector(
-
+        ownerId = 1,
+        ownerType = "TEACHER"
     )
 }

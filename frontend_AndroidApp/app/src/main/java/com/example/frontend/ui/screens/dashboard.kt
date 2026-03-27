@@ -44,7 +44,7 @@ fun DashboardScreen(navController: NavController, onSignOutClick: () -> Unit) {
     val bottomNavItems = listOf(
         BottomNavItem("Dashboard", Icons.Filled.DateRange, Icons.Outlined.DateRange, Routes.DASHBOARD),
         BottomNavItem("Parameters", Icons.Filled.Settings, Icons.Outlined.Settings, Routes.PARAMETERS),
-        BottomNavItem("Integrations", Icons.Filled.Add, Icons.Outlined.Add, Routes.INTEGRATIONS),
+        BottomNavItem("Integrations", Icons.Filled.Add, Icons.Outlined.Add, Routes.LIST),
         BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person, Routes.PROFILE)
     )
 
@@ -85,7 +85,7 @@ fun DashboardScreen(navController: NavController, onSignOutClick: () -> Unit) {
             when (selectedItemIndex) {
                 0 -> MainDashboardContent(onSignOutClick)
                 1 -> ParametersCardMobile()
-                2 -> IntegrationsContent()
+                2 -> ListScreen()
                 3 -> ProfileScreen(navController)
             }
         }

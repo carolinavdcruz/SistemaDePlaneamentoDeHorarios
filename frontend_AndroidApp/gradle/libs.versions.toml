@@ -22,6 +22,7 @@ runtime = "1.10.5"
 foundation = "1.10.5"
 uiText = "1.10.5"
 roomCompiler = "2.8.4"
+ksp = "2.1.0-1.0.29"
 
 room = "2.8.4"
 
@@ -64,4 +65,4 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
