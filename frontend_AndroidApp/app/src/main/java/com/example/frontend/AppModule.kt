@@ -11,6 +11,8 @@ import com.example.frontend.data.repository.AvailabilityRepository
 import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
 import com.example.frontend.data.local.database.AppDatabase
 import com.example.frontend.data.local.database.DatabaseProvider
+import com.example.frontend.ui.viewmodel.login.LoginViewModel
+import com.example.frontend.ui.viewmodel.register.RegisterViewModel
 
 object AppModule {
 
@@ -34,6 +36,14 @@ object AppModule {
 
     fun provideAvailabilityViewModel(): AvailabilityViewModel {
         return AvailabilityViewModel(availabilityRepository)
+    }
+
+    fun provideLoginViewModel(): LoginViewModel {
+        return LoginViewModel()
+    }
+
+    fun provideRegisterViewModel(): RegisterViewModel {
+        return RegisterViewModel()
     }
 
     /*

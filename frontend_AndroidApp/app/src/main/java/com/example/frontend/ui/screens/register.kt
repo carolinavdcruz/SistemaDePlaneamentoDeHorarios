@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screens
 
+import com.example.frontend.AppModule
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,9 +33,12 @@ fun RegisterScreen(
     onLoginClick: () -> Unit,
     onCreateAccountClick: (String, String, String) -> Unit
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var selectedRole by remember { mutableStateOf("Student") } // Estado do seletor
+    val viewModel = remember { AppModule.provideRegisterViewModel() }
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val selectedRole by viewModel.selectedRole.collectAsState()
+    val isPasswordVisible by viewModel.isPasswordVisible.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     Box(
         modifier = Modifier
@@ -84,14 +88,14 @@ fun RegisterScreen(
                             icon = Icons.Default.Person,
                             isSelected = selectedRole == "Student",
                             modifier = Modifier.weight(1f),
-                            onClick = { selectedRole = "Student" }
+                            onClick = { viewModel.setSelectedRole("Student") }
                         )
                         RoleCard(
                             label = "Teacher",
                             icon = Icons.Default.AccountCircle,
                             isSelected = selectedRole == "Teacher",
                             modifier = Modifier.weight(1f),
-                            onClick = { selectedRole = "Teacher" }
+                            onClick = { viewModel.setSelectedRole("Teacher") }
                         )
                     }
 
@@ -101,7 +105,7 @@ fun RegisterScreen(
                     LoginInputField(
                         label = "Email",
                         value = email,
-                        onValueChange = { email = it },
+                        onValueChange = viewModel::setEmail,
                         placeholder = "m@example.com",
                         leadingIcon = Icons.Default.Email
                     )
@@ -111,16 +115,31 @@ fun RegisterScreen(
                     LoginInputField(
                         label = "Password",
                         value = password,
-                        onValueChange = { password = it },
+                        onValueChange = viewModel::setPassword,
                         placeholder = "••••••••",
                         leadingIcon = Icons.Default.Lock,
-                        isPassword = true
+                        isPassword = true,
+                        isPasswordVisible = isPasswordVisible,
+                        onPasswordVisibleChange = viewModel::togglePasswordVisibility
                     )
+
+                    if (errorMessage != null) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = errorMessage.orEmpty(),
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 13.sp
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(30.dp))
 
                     Button(
-                        onClick = { onCreateAccountClick(email, password, selectedRole) },
+                        onClick = {
+                            if (viewModel.validateRegister()) {
+                                onCreateAccountClick(email, password, selectedRole)
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
                         shape = RoundedCornerShape(12.dp)
