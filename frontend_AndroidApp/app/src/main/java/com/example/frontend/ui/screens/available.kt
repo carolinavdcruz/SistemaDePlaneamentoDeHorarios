@@ -36,7 +36,7 @@ fun AvailabilitySelector(
 
     // ViewModel (com AppModule)
     val viewModel = remember {
-        AppModule.provideAvailabilityViewModel(context)
+        AppModule.provideAvailabilityViewModel()
     }
 
     LaunchedEffect(Unit) {

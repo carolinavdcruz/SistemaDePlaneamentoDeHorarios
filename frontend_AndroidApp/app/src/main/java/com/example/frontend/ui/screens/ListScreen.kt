@@ -30,7 +30,7 @@ import com.example.frontend.ui.theme.TextSecondary
 @Composable
 fun ListScreen() {
     val context = LocalContext.current
-    val viewModel = remember { AppModule.provideStudentViewModel(context) }
+    val viewModel = remember { AppModule.provideStudentViewModel() }
     val students by viewModel.students.collectAsState()
 
     var name by remember { mutableStateOf("") }

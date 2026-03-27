@@ -1,11 +1,13 @@
 package com.example.frontend.data.repository
 
+import android.util.Log
 import com.example.frontend.data.local.dao.AvailabilityDao
 import com.example.frontend.data.local.entity.AvailabilityEntity
 
 class AvailabilityRepository(private val dao: AvailabilityDao) {
 
     suspend fun insert(availability: AvailabilityEntity) {
+        print("ROOM INSERT: $availability")
         dao.insert(availability)
     }
 

@@ -1,6 +1,7 @@
 package com.example.frontend.data.local.database
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 
 object DatabaseProvider {
