@@ -1,0 +1,221 @@
+{
+  "main": {
+    "id": "46ef0b2bcc9dbdbc",
+    "type": "split",
+    "children": [
+      {
+        "id": "ec49bae44900aedb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "317471034e16f872",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/notas/Funcionamento + Arquitetura.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Funcionamento + Arquitetura"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "f117c654de4e8492",
+    "type": "split",
+    "children": [
+      {
+        "id": "d078b890f918b457",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4e0a3b0ad3586448",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "45297e84c471490f",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "tag:#links/videos",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "c98b5d724c776970",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "c79e881778d424b6",
+    "type": "split",
+    "children": [
+      {
+        "id": "5802cd2441fb7743",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8dad0a7ed9c13244",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "docs/notas/LLM Multimodal.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for LLM Multimodal"
+            }
+          },
+          {
+            "id": "68858a1e58ed4cee",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "docs/notas/LLM Multimodal.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from LLM Multimodal"
+            }
+          },
+          {
+            "id": "0324ae4a8318bade",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "2aa837572e28ae14",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "be40796f9f2d86bd",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "docs/notas/LLM Multimodal.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of LLM Multimodal"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "317471034e16f872",
+  "lastOpenFiles": [
+    "docs/notas/DiarioDeProjeto.md",
+    "docs/notas/Funcionamento + Arquitetura.md",
+    "docs/notas/Diario_OqueFoiFeitoPorDia.md",
+    "docs/notas/LLM Multimodal.md",
+    "docs/notas/ROOM.md",
+    "docs/notas/Use Cases.md",
+    "docs/notas/Algoritmos.md",
+    "baseDados/diarioBaseDeDados.md",
+    "baseDados/diagrama_entidade_relacao_horarios.png",
+    "frontend_AndroidApp/app/build/intermediates/java_res/debug/processDebugJavaRes/out/com/example 2",
+    "frontend_AndroidApp/app/build/intermediates/java_res/debug/processDebugJavaRes/out/com/example/frontend/ui/viewmodel",
+    "frontend_AndroidApp/app/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/com/example 2",
+    "frontend_AndroidApp/app/build/intermediates/project_dex_archive/debug/dexBuilderDebug/out/com/example 2",
+    "frontend_AndroidApp/app/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm 2",
+    "frontend_AndroidApp/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/otherProjects/dirs_bucket_3/graph 2.bin",
+    "frontend_AndroidApp/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/externalLibs/dirs_bucket_1/graph 2.bin",
+    "frontend_AndroidApp/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/mixedScopes/dirs_bucket_2/graph 2.bin",
+    "frontend_AndroidApp/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/externalLibs/dirs_bucket_4/graph 2.bin",
+    "frontend_AndroidApp/app/build/intermediates/merged_res_blame_folder/debug/mergeDebugResources/out/multi-v2/values-sw 2.json",
+    "docs/notas/diarioFrontend.md",
+    "frontend_AndroidApp/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-xxxhdpi-v4/ic_launcher_round.webp",
+    "frontend_AndroidApp/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-xxxhdpi-v4/ic_launcher.webp",
+    "frontend_AndroidApp/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-xxhdpi-v4/ic_launcher_round.webp",
+    "frontend_AndroidApp/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-xxhdpi-v4/ic_launcher.webp",
+    "frontend_AndroidApp/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-xhdpi-v4/ic_launcher_round.webp",
+    "frontend_AndroidApp/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-xhdpi-v4/ic_launcher.webp",
+    "frontend_AndroidApp/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-mdpi-v4/ic_launcher_round.webp",
+    "frontend_AndroidApp/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-mdpi-v4/ic_launcher.webp",
+    "frontend_AndroidApp/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-hdpi-v4/ic_launcher_round.webp",
+    "README.md",
+    "frontend_AndroidApp/diarioFrontend.md",
+    "backend/diarioBackend.md"
+  ]
+}
