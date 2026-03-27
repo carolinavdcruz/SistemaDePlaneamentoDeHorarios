@@ -88,7 +88,7 @@ fun ParametersCardMobile() {
             HorizontalDivider(color = InputBorder, thickness = 0.5.dp)
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- AQUI ENTRA A DISPONIBILIDADE ---
+            // --- DISPONIBILIDADE ---
             AvailabilitySelector(
                 ownerId = 1,
                 ownerType = "TEACHER"

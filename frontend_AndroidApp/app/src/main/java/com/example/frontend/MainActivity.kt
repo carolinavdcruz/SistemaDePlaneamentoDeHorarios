@@ -16,9 +16,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Atribuição manual do contexto
-        //AppContext.context = applicationContext
+
+        AppContext.context = applicationContext
+
+        // INICIALIZAR DATABASE
+        AppModule.init(applicationContext)
 
         enableEdgeToEdge()
 

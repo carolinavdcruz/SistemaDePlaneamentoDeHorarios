@@ -3,7 +3,7 @@ package com.example.frontend
 import android.app.Application
 import android.content.Context
 
-/* class AppContext : Application() {
+class AppContext : Application() {
     companion object {
         lateinit var context: Context
     }
@@ -13,5 +13,3 @@ import android.content.Context
         context = applicationContext
     }
 }
-
- */

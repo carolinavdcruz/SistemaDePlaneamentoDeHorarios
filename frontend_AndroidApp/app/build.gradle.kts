@@ -58,6 +58,7 @@ dependencies {
     // ROOM
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.media3.database)
     annotationProcessor(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
