@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.frontend.data.model.Restrictions
 
-@Entity(tableName = "teacher", primaryKeys = ["id"])
+@Entity(tableName = "teacher")
 data class TeacherEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,

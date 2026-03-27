@@ -7,7 +7,7 @@ import com.example.frontend.data.local.entity.AvailabilityEntity
 class AvailabilityRepository(private val dao: AvailabilityDao) {
 
     suspend fun insert(availability: AvailabilityEntity) {
-        print("ROOM INSERT: $availability")
+        println("ROOM INSERT: $availability")
         dao.insert(availability)
     }
 

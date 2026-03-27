@@ -3,7 +3,7 @@ package com.example.frontend.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "availability", primaryKeys = ["id"])
+@Entity(tableName = "availability")
 data class AvailabilityEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val ownerId: Int,
