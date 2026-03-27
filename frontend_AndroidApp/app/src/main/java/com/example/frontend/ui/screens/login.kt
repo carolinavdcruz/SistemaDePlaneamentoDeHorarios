@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screens
 
+import com.example.frontend.AppModule
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,10 +47,11 @@ fun LoginScreen(
     onLoginClick: (String, String) -> Unit, // Callback para ação de login
     onRegisterClick: () -> Unit // Callback para ação de registro
 ) {
-    // Estados para os campos de entrada
-    var email by remember { mutableStateOf("m@example.com") }
-    var password by remember { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false) }
+    val viewModel = remember { AppModule.provideLoginViewModel() }
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val isPasswordVisible by viewModel.isPasswordVisible.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     Box(
         modifier = Modifier
@@ -131,7 +133,7 @@ fun LoginScreen(
                     LoginInputField(
                         label = "Email",
                         value = email,
-                        onValueChange = { email = it },
+                        onValueChange = viewModel::setEmail,
                         placeholder = "m@example.com",
                         leadingIcon = Icons.Default.Email,
                         keyboardType = KeyboardType.Email
@@ -143,21 +145,34 @@ fun LoginScreen(
                     LoginInputField(
                         label = "Password",
                         value = password,
-                        onValueChange = { password = it },
+                        onValueChange = viewModel::setPassword,
                         placeholder = "••••••••",
                         leadingIcon = Icons.Default.Lock,
                         keyboardType = KeyboardType.Password,
                         isPassword = true,
                         isPasswordVisible = isPasswordVisible,
-                        onPasswordVisibleChange = { isPasswordVisible = !isPasswordVisible },
+                        onPasswordVisibleChange = viewModel::togglePasswordVisibility,
                         imeAction = ImeAction.Done
                     )
+
+                    if (errorMessage != null) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = errorMessage.orEmpty(),
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 13.sp
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(32.dp))
 
                     // --- BOTÃO LOGIN ---
                     Button(
-                        onClick = { onLoginClick(email, password) },
+                        onClick = {
+                            if (viewModel.validateLogin()) {
+                                onLoginClick(email, password)
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
