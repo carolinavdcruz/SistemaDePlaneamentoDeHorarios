@@ -3,12 +3,12 @@ package com.example.frontend
 import android.content.Context
 import com.example.frontend.data.local.entity.StudentEntity
 import com.example.frontend.data.repository.StudentRepository
-import com.example.frontend.ui.viewmodel.StudentViewModel
+import com.example.frontend.ui.viewmodel.student.StudentViewModel
 import com.example.frontend.data.local.dao.StudentDao
 import com.example.frontend.data.local.entity.AvailabilityEntity
 import com.example.frontend.data.local.dao.AvailabilityDao
 import com.example.frontend.data.repository.AvailabilityRepository
-import com.example.frontend.ui.viewmodel.AvailabilityViewModel
+import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
 import com.example.frontend.data.local.database.AppDatabase
 import com.example.frontend.data.local.database.DatabaseProvider
 
