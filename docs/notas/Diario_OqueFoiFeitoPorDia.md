@@ -22,4 +22,14 @@
 -> Foi realizada a configuração da base de dados Room (AppDatabase) e o mecanismo de acesso centralizado através do DatabaseProvider. 
 
 
+## LOGIN
 
+### GMAIL
+    
+    t@gmail.com
+    p@gmail.com
+
+### Pass
+
+    Teacher2026
+    Professor26

@@ -70,7 +70,7 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 
 **Semana 6 (30/03 - 05/04)**
-* [x] Trocar fake bd pela   ROOM
+* [x] Trocar fake bd pela ROOM
 * [ ] Ligar à API
 * [ ] Implementação do Login
 * [ ] Implementação da gestão de disponibilidades.
