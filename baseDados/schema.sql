@@ -76,14 +76,10 @@ CREATE TABLE sessions (
     FOREIGN KEY (timeslot_id) REFERENCES timeslots(id)
 );
 
--- SESSION STUDENTS
-
-CREATE TABLE sessions (
-    id INTEGER PRIMARY KEY,
-    schedule_id INTEGER NOT NULL,
-    timeslot_id INTEGER NOT NULL,
-    max_capacity INTEGER DEFAULT 5,
-
-    FOREIGN KEY (schedule_id) REFERENCES schedules(id),
-    FOREIGN KEY (timeslot_id) REFERENCES timeslots(id)
+CREATE TABLE session_enrollments (
+    id SERIAL PRIMARY KEY,
+    session_id INTEGER REFERENCES sessions(id),
+    student_id INTEGER REFERENCES student(id),
+    enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(session_id, student_id) -- Impede aluno duplicado na mesma aula
 );

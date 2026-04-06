@@ -65,19 +65,19 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 * [x] Implementação da gestão de participantes (CRUD).
 * [x] Criação da página de listagem de participantes.
 * [x] Criação da página de criação/edição de participante.
-* [ ] Implementação do armazenamento local inicial (ViewModels + estado).
+* [x] Implementação do armazenamento local inicial (ViewModels + estado).
 
 
 
 **Semana 6 (30/03 - 05/04)**
 * [x] Trocar fake bd pela ROOM
 * [ ] Ligar à API
-* [ ] Implementação do Login
-* [ ] Implementação da gestão de disponibilidades.
+* [x] Implementação do Login
+* [x] Implementação da gestão de disponibilidades.
 * [x] Criação da interface para inserir horários disponíveis.
 * [x] Implementação de seleção de dias da semana.
 * [x] Implementação de seleção de intervalos horários.
-* [ ] Persistência das disponibilidades na base de dados.
+* [x] Persistência das disponibilidades na base de dados.
 
 
 
@@ -85,8 +85,8 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 **Semana 7 (06/04 - 12/04)**
 * [ ] Implementação do processamento de intervalos de disponibilidade.
 * [ ] Conversão de intervalos em blocos discretos (TimeSlots).
-* [ ] Definição da estrutura de dados para TimeSlots.
-* [ ] Implementação inicial do serviço de geração de horários.
+* [x] Definição da estrutura de dados para TimeSlots.
+* [x] Implementação inicial do serviço de geração de horários.
 
 
 

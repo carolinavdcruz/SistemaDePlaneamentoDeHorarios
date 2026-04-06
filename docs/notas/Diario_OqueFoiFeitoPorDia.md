@@ -26,10 +26,10 @@
 
 ### GMAIL
     
-    t@gmail.com
-    p@gmail.com
+    c@gmail.com
+    tf@gmail.com
 
 ### Pass
 
     Teacher2026
-    Professor26
+    TestFirst26

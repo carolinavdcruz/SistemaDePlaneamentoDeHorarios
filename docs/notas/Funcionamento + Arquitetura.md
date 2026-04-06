@@ -88,3 +88,25 @@ A app nunca toca diretamente nesta BD.
 3. API grava no PostgreSQL
 4. API devolve o ID real
 5. Repository atualiza o Room com o ID correto
+
+backend/
+├── build.gradle.kts
+├── src/main/kotlin/
+│   ├── Application.kt          ← entry point
+│   ├── plugins/
+│   │   ├── Routing.kt          ← define todas as rotas
+│   │   └── Serialization.kt    ← configura JSON
+│   ├── database/
+│   │   ├── DatabaseFactory.kt  ← liga ao PostgreSQL
+│   │   └── tables/
+│   │       ├── TeacherTable.kt
+│   │       ├── StudentTable.kt
+│   │       ├── AvailabilityTable.kt
+│   │       ├── TimeSlotTable.kt
+│   │       └── ScheduleTable.kt
+│   ├── model/
+│   │   ├── Availability.kt
+│   │   └── TimeSlot.kt
+│   └── service/
+│       ├── AvailabilityService.kt   ← fatiagem dos slots
+│       └── ScheduleService.kt       ← algoritmo greedy
