@@ -125,7 +125,7 @@ fun DashboardHeader() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            Text("Teacher Workspace", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text("Workspace", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
             Text("Overview of your schedule", color = TextSecondary, fontSize = 12.sp)
         }
         Surface(

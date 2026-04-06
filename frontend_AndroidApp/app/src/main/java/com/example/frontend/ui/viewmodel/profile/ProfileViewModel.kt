@@ -48,7 +48,10 @@ class ProfileViewModel(
             val role   = sessionManager.getUserRole()
 
             if (userId == -1) {
-                _uiState.update { it.copy(isLoading = false, isLoggedOut = true) }
+                // Não faz logout automático — apenas mostra erro
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessage = "Sessão não encontrada. Por favor volta a fazer login.")
+                }
                 return@launch
             }
 

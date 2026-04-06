@@ -8,6 +8,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 
 class AvailabilityApi {
 
@@ -20,6 +21,12 @@ class AvailabilityApi {
 
     suspend fun createAvailability(request: AvailabilityRequest) {
         client.post("http://10.0.2.2:8080/availability") {
+            setBody(request)
+        }
+    }
+
+    suspend fun setupAvailability(request: AvailabilityRequest): HttpResponse {
+        return client.post("http://10.0.2.2:8080/availability/setup") {
             setBody(request)
         }
     }

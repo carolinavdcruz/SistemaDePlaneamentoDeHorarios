@@ -41,13 +41,14 @@ import com.example.frontend.ui.theme.InputBackground
 import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextMain
 import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.viewmodel.login.LoginViewModel
 
 @Composable
 fun LoginScreen(
-    onLoginClick: (String, String) -> Unit, // Callback para ação de login
-    onRegisterClick: () -> Unit // Callback para ação de registro
+    viewModel: LoginViewModel,
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit
 ) {
-    val viewModel = remember { AppModule.provideLoginViewModel() }
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
     val isPasswordVisible by viewModel.isPasswordVisible.collectAsState()
@@ -170,7 +171,7 @@ fun LoginScreen(
                     Button(
                         onClick = {
                             if (viewModel.validateLogin()) {
-                                onLoginClick(email, password)
+                                onLoginClick()
                             }
                         },
                         modifier = Modifier
@@ -303,7 +304,8 @@ fun LoginInputField(
 @Composable
 fun LoginScreenPreview() {
     LoginScreen(
-        onLoginClick = { email, password -> } ,
+        onLoginClick = {},
         onRegisterClick = {},
+        viewModel = remember { AppModule.provideLoginViewModel() }
     )
 }

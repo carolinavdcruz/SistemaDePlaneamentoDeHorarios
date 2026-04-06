@@ -8,7 +8,7 @@ import com.example.frontend.data.remote.dto.AvailabilityRequest
 
 class AvailabilityRepository(private val dao: AvailabilityDao, private val api: AvailabilityApi) {
 
-    private val TAG = "AvailabilityRepository"
+    private val tag = "AvailabilityRepository"
 
     suspend fun insert(availability: AvailabilityEntity) {
         println("ROOM INSERT: $availability")
@@ -25,7 +25,7 @@ class AvailabilityRepository(private val dao: AvailabilityDao, private val api: 
                 )
             )
         } catch (e: Exception) {
-            Log.e(TAG, "Error sending availability to API: ${e.message}")
+            Log.e(tag, "Error sending availability to API: ${e.message}")
         }
 
         // guarda local sempre, mesmo que a API falhe para permitir modo offline
@@ -65,7 +65,7 @@ class AvailabilityRepository(private val dao: AvailabilityDao, private val api: 
             
             return entities
         } catch (e: Exception) {
-            Log.e(TAG, "Error fetching availability from API: ${e.message}")
+            Log.e(tag, "Error fetching availability from API: ${e.message}")
             // Fallback para o banco de dados local em caso de erro de rede
             return dao.getByOwner(ownerId, ownerType)
         }
@@ -78,5 +78,29 @@ class AvailabilityRepository(private val dao: AvailabilityDao, private val api: 
 
     suspend fun deleteByOwner(ownerId: Int, ownerType: String) {
         dao.deleteByOwner(ownerId, ownerType)
+    }
+
+    suspend fun saveAndSync(ownerId: Int, ownerType: String, entities: List<AvailabilityEntity>) {
+        // Guarda localmente primeiro
+        entities.forEach { dao.insert(it) }
+
+        // Se for um Professor, envia para a API para gerar os TimeSlots de 1h
+        if (ownerType == "TEACHER") {
+            entities.forEach { entity ->
+                try {
+                    api.setupAvailability(
+                        AvailabilityRequest(
+                            ownerId = ownerId,
+                            ownerType = "TEACHER",
+                            dayOfWeek = entity.dayOfWeek,
+                            startTime = entity.startTime,
+                            endTime = entity.endTime
+                        )
+                    )
+                } catch (e: Exception) {
+                    Log.e(tag, "Error in setupAvailability: ${e.message}")
+                }
+            }
+        }
     }
 }

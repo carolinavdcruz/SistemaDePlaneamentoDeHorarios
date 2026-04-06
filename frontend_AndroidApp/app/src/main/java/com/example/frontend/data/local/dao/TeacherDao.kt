@@ -19,10 +19,13 @@ interface TeacherDao {
     @Delete
     suspend fun delete(teacher: TeacherEntity)
 
+    @Delete
+    suspend fun deleteAll()
+
     @Query("SELECT * FROM teacher WHERE id = :id")
     suspend fun getById(id: Int): TeacherEntity?
 
-    @Query("SELECT * FROM teacher WHERE email = :email")
+    @Query("SELECT * FROM teacher WHERE email = :email LIMIT 1")
     suspend fun getByEmail(email: String): TeacherEntity?
 
     @Query("SELECT * FROM teacher")

@@ -1,12 +1,8 @@
 package com.example.frontend
 
 import android.content.Context
-import com.example.frontend.data.local.entity.StudentEntity
 import com.example.frontend.data.repository.StudentRepository
 import com.example.frontend.ui.viewmodel.student.StudentViewModel
-import com.example.frontend.data.local.dao.StudentDao
-import com.example.frontend.data.local.entity.AvailabilityEntity
-import com.example.frontend.data.local.dao.AvailabilityDao
 import com.example.frontend.data.repository.AvailabilityRepository
 import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
 import com.example.frontend.data.local.database.AppDatabase
@@ -41,8 +37,16 @@ object AppModule {
         AvailabilityRepository(database!!.availabilityDao(), availabilityApi)
     }
 
+    private val teacherApi by lazy {
+        TeacherApi()
+    }
+
     private val teacherRepository by lazy {
-        TeacherRepository(database!!.teacherDao())
+        TeacherRepository(
+            database!!.teacherDao(),
+            database!!.timeSlotDao(),
+            teacherApi
+        )
     }
 
     fun provideStudentViewModel(): StudentViewModel {
@@ -62,7 +66,11 @@ object AppModule {
     }
 
     fun provideRegisterViewModel(): RegisterViewModel {
-        return RegisterViewModel()
+        return RegisterViewModel(
+            studentDao     = database!!.studentDao(),
+            teacherDao     = database!!.teacherDao(),
+            sessionManager = sessionManager!!
+        )
     }
 
     fun provideTeacherViewModel(): TeacherViewModel {
@@ -75,5 +83,9 @@ object AppModule {
             teacherDao     = database!!.teacherDao(),
             sessionManager = sessionManager!!
         )
+    }
+
+    fun provideSessionManager(): SessionManager {
+        return sessionManager!!
     }
 }

@@ -27,19 +27,25 @@ import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.viewmodel.register.RegisterViewModel
 
 @Composable
 fun RegisterScreen(
+    viewModel: RegisterViewModel,
     onLoginClick: () -> Unit,
-    onCreateAccountClick: (String, String, String) -> Unit
+    onCreateAccountClick: () -> Unit
 ) {
-    val viewModel = remember { AppModule.provideRegisterViewModel() }
     val name by viewModel.name.collectAsState()
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
     val selectedRole by viewModel.selectedRole.collectAsState()
     val isPasswordVisible by viewModel.isPasswordVisible.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val registerSuccess by viewModel.registerSuccess.collectAsState()
+
+    LaunchedEffect(registerSuccess) {
+        if (registerSuccess) onCreateAccountClick()
+    }
 
     Box(
         modifier = Modifier
@@ -147,11 +153,7 @@ fun RegisterScreen(
                     Spacer(modifier = Modifier.height(30.dp))
 
                     Button(
-                        onClick = {
-                            if (viewModel.validateRegister()) {
-                                onCreateAccountClick(email, password, selectedRole)
-                            }
-                        },
+                        onClick = { viewModel.register() },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
                         shape = RoundedCornerShape(12.dp)
@@ -217,6 +219,7 @@ fun RoleCard(
 fun RegisterScreenPreview() {
     RegisterScreen(
         onLoginClick = {},
-        onCreateAccountClick = { nome, email, password -> }
+        onCreateAccountClick = {},
+        viewModel = remember { AppModule.provideRegisterViewModel() }
     )
 }

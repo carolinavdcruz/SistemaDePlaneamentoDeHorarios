@@ -67,19 +67,22 @@ class AvailabilityViewModel(private val repository: AvailabilityRepository) : Vi
 
     fun saveAvailability(ownerId: Int, ownerType: String) {
         viewModelScope.launch {
-
-            _selectedDays.value.forEach { day ->
-                val entity = AvailabilityEntity(
+            // 1. Criamos a lista de entidades para o Room local (cache rápida)
+            val entities = _selectedDays.value.map { day ->
+                AvailabilityEntity(
                     ownerId = ownerId,
                     ownerType = ownerType,
                     dayOfWeek = daysMap[day] ?: 1,
                     startTime = _startTime.value,
                     endTime = _endTime.value
                 )
-
-                repository.insert(entity)
             }
 
+            // 2. Enviamos para o Repository tratar a sincronização com a API
+            // O Repository deve chamar a API que fatiará os slots de 1h no PostgreSQL
+            repository.saveAndSync(ownerId, ownerType, entities)
+
+            // 3. Recarregamos os dados (agora possivelmente com os slots já fatiados vindo do servidor)
             load(ownerId, ownerType)
         }
     }

@@ -6,17 +6,20 @@ import com.example.frontend.data.local.dao.AvailabilityDao
 import com.example.frontend.data.local.dao.RestrictionsDao
 import com.example.frontend.data.local.dao.StudentDao
 import com.example.frontend.data.local.dao.TeacherDao
+import com.example.frontend.data.local.dao.TimeSlotDao
 import com.example.frontend.data.local.entity.AvailabilityEntity
 import com.example.frontend.data.local.entity.RestrictionsEntity
 import com.example.frontend.data.local.entity.StudentEntity
 import com.example.frontend.data.local.entity.TeacherEntity
+import com.example.frontend.data.local.entity.TimeSlotEntity
 
 @Database(
     entities = [
         TeacherEntity::class,
         StudentEntity::class,
         RestrictionsEntity::class,
-        AvailabilityEntity::class
+        AvailabilityEntity::class,
+        TimeSlotEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -27,4 +30,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun studentDao(): StudentDao
     abstract fun restrictionsDao(): RestrictionsDao
     abstract fun availabilityDao(): AvailabilityDao
+    abstract fun timeSlotDao(): TimeSlotDao
 }

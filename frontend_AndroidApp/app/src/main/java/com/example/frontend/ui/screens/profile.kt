@@ -1,33 +1,29 @@
 package com.example.frontend.ui.screens
 
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.frontend.ui.theme.*
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.frontend.AppModule
+import com.example.frontend.navigation.Routes
+import com.example.frontend.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +38,7 @@ fun ProfileScreen(navController: NavController) {
     LaunchedEffect(uiState.isLoggedOut) {
         if (uiState.isLoggedOut) {
             viewModel.onLogoutNavigated()
-            navController.navigate("login_route") {
+            navController.navigate(Routes.LOGIN) {
                 popUpTo(0) { inclusive = true }
             }
         }
@@ -64,7 +60,7 @@ fun ProfileScreen(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Voltar", tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Background)
@@ -72,7 +68,7 @@ fun ProfileScreen(navController: NavController) {
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = Background
-    ) { paddingValues ->
+    ) { padding ->
 
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -84,61 +80,88 @@ fun ProfileScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 20.dp)
+                .padding(padding)
+                .padding(horizontal = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // --- 1. HEADER ---
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(contentAlignment = Alignment.BottomEnd) {
-                    Surface(
-                        modifier = Modifier.size(100.dp),
-                        shape = CircleShape,
-                        color = CardBackground,
-                        border = BorderStroke(2.dp, AccentPurple)
-                    ) {
-                        Icon(
-                            Icons.Default.Person, "",
-                            tint = TextSecondary,
-                            modifier = Modifier.padding(20.dp)
-                        )
-                    }
-                    Surface(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clickable { },
-                        shape = CircleShape,
-                        color = AccentPurple,
-                        border = BorderStroke(2.dp, Background)
-                    ) {
-                        Icon(
-                            Icons.Default.Edit, "",
-                            tint = Color.White,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
+            // --- AVATAR ---
+            Box(contentAlignment = Alignment.BottomEnd) {
+                Surface(
+                    modifier = Modifier.size(100.dp),
+                    shape = CircleShape,
+                    color = CardBackground,
+                    border = BorderStroke(2.dp, AccentPurple)
+                ) {
+                    Icon(
+                        Icons.Default.Person, "",
+                        tint = TextSecondary,
+                        modifier = Modifier.padding(20.dp)
+                    )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(uiState.name, color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                Text(uiState.role, color = AccentPurple, fontSize = 14.sp)
+                Surface(
+                    modifier = Modifier.size(32.dp).clickable { },
+                    shape = CircleShape,
+                    color = AccentPurple,
+                    border = BorderStroke(2.dp, Background)
+                ) {
+                    Icon(
+                        Icons.Default.Edit, "",
+                        tint = Color.White,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(uiState.name, color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text(uiState.role, color = AccentPurple, fontSize = 14.sp)
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // --- 2. MENU ---
+            // --- INFO CARDS ---
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = CardBackground,
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, InputBorder)
+            ) {
+                Column {
+                    ProfileInfoItem(
+                        icon = Icons.Default.Email,
+                        label = "Email",
+                        value = uiState.email
+                    )
+                    HorizontalDivider(
+                        color = InputBorder,
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    ProfileInfoItem(
+                        icon = Icons.Default.Person,
+                        label = "Cargo",
+                        value = uiState.role
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // --- SETTINGS ---
             Text(
                 "Settings",
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
             )
 
             Surface(
+                modifier = Modifier.fillMaxWidth(),
                 color = CardBackground,
                 shape = RoundedCornerShape(16.dp),
                 border = BorderStroke(1.dp, InputBorder)
@@ -164,9 +187,8 @@ fun ProfileScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            // --- 3. LOGOUT ---
+            Spacer(modifier = Modifier.height(24.dp))
+            // --- LOGOUT ---
             Button(
                 onClick = { viewModel.onLogoutClicked() },
                 modifier = Modifier
@@ -179,10 +201,27 @@ fun ProfileScreen(navController: NavController) {
                 shape = RoundedCornerShape(12.dp),
                 border = BorderStroke(1.dp, Color(0xFFFF4D4D).copy(alpha = 0.5f))
             ) {
-                Icon(Icons.Default.ExitToApp, "", tint = Color(0xFFFF4D4D))
+                Icon(Icons.AutoMirrored.Filled.ExitToApp, "", tint = Color(0xFFFF4D4D))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Logout", color = Color(0xFFFF4D4D), fontWeight = FontWeight.Bold)
             }
+        }
+    }
+}
+
+@Composable
+fun ProfileInfoItem(icon: ImageVector, label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon, null, tint = AccentPurple, modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text(label, color = TextSecondary, fontSize = 12.sp)
+            Text(value, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
         }
     }
 }
@@ -203,26 +242,8 @@ fun ProfileMenuItem(icon: ImageVector, title: String, onClick: () -> Unit = {}) 
     }
 }
 
-@Composable
-fun StatCard(label: String, value: String, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier,
-        color = CardBackground,
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, InputBorder)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(value, color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Text(label, color = TextSecondary, fontSize = 12.sp)
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen(navController = rememberNavController())
+    ProfileScreen(rememberNavController())
 }
