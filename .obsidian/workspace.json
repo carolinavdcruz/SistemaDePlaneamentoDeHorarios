@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/notas/Funcionamento + Arquitetura.md",
+                "file": "docs/notas/Diario_OqueFoiFeitoPorDia.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Funcionamento + Arquitetura"
+              "title": "Diario_OqueFoiFeitoPorDia"
             }
           }
         ]
@@ -183,27 +183,28 @@
       "bases:Create new base": false
     }
   },
-  "active": "317471034e16f872",
+  "active": "4e0a3b0ad3586448",
   "lastOpenFiles": [
-    "docs/notas/DiarioDeProjeto.md",
-    "docs/notas/Funcionamento + Arquitetura.md",
+    "Untitled",
     "docs/notas/Diario_OqueFoiFeitoPorDia.md",
+    "docs/notas/Funcionamento + Arquitetura.md",
+    "frontend_AndroidApp/app/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/META-INF/app.kotlin_module",
+    "frontend_AndroidApp/app/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/com/example/frontend/ui/viewmodel/register/RegisterViewModel.class",
+    "frontend_AndroidApp/app/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/com/example/frontend/data/model/RegisterValidator.class",
+    "frontend_AndroidApp/app/src/main/java/com/example/frontend/data/model/RegisterValidator.kt",
+    "frontend_AndroidApp/app/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.values",
+    "frontend_AndroidApp/app/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.values.s",
+    "frontend_AndroidApp/app/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/com/example/frontend/ui/viewmodel/register",
+    "frontend_AndroidApp/app/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/com/example/frontend/ui/screens/RegisterKt$RegisterScreen$1$1$2$1$4$1.class",
+    "frontend_AndroidApp/app/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/com/example/frontend/ui/screens/RegisterKt$RegisterScreen$1$1$2$1$3$1.class",
+    "frontend_AndroidApp/app/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/com/example/frontend/ui/screens/RegisterKt$RegisterScreen$1$1$2$1$2$1.class",
+    "docs/notas/DiarioDeProjeto.md",
     "docs/notas/LLM Multimodal.md",
     "docs/notas/ROOM.md",
     "docs/notas/Use Cases.md",
     "docs/notas/Algoritmos.md",
     "baseDados/diarioBaseDeDados.md",
     "baseDados/diagrama_entidade_relacao_horarios.png",
-    "frontend_AndroidApp/app/build/intermediates/java_res/debug/processDebugJavaRes/out/com/example 2",
-    "frontend_AndroidApp/app/build/intermediates/java_res/debug/processDebugJavaRes/out/com/example/frontend/ui/viewmodel",
-    "frontend_AndroidApp/app/build/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes/com/example 2",
-    "frontend_AndroidApp/app/build/intermediates/project_dex_archive/debug/dexBuilderDebug/out/com/example 2",
-    "frontend_AndroidApp/app/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm 2",
-    "frontend_AndroidApp/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/otherProjects/dirs_bucket_3/graph 2.bin",
-    "frontend_AndroidApp/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/externalLibs/dirs_bucket_1/graph 2.bin",
-    "frontend_AndroidApp/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/mixedScopes/dirs_bucket_2/graph 2.bin",
-    "frontend_AndroidApp/app/build/intermediates/desugar_graph/debug/dexBuilderDebug/out/externalLibs/dirs_bucket_4/graph 2.bin",
-    "frontend_AndroidApp/app/build/intermediates/merged_res_blame_folder/debug/mergeDebugResources/out/multi-v2/values-sw 2.json",
     "docs/notas/diarioFrontend.md",
     "frontend_AndroidApp/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-xxxhdpi-v4/ic_launcher_round.webp",
     "frontend_AndroidApp/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-xxxhdpi-v4/ic_launcher.webp",
