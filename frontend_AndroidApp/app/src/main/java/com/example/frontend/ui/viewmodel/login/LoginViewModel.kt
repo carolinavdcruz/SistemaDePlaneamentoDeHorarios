@@ -2,16 +2,16 @@ package com.example.frontend.ui.viewmodel.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.data.local.dao.StudentDao
-import com.example.frontend.data.local.dao.TeacherDao
+import com.example.frontend.data.repository.StudentRepository
+import com.example.frontend.data.repository.TeacherRepository
 import com.example.frontend.data.session.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val studentDao: StudentDao,
-    private val teacherDao: TeacherDao,
+    private val studentRepository: StudentRepository,
+    private val teacherRepository: TeacherRepository,
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
@@ -55,29 +55,42 @@ class LoginViewModel(
     }
 
     fun login() {
+
         if (!validateLogin()) return
+
         viewModelScope.launch {
             _isLoading.value = true
             val email = _email.value.trim()
 
             // Procura primeiro em Student, depois em Teacher
-            val student = studentDao.getByEmail(email)
-            if (student != null) {
-                sessionManager.saveSession(userId = student.id, role = "Student")
-                _loginSuccess.value = true
-                _isLoading.value    = false
-                return@launch
-            }
-            val teacher = teacherDao.getByEmail(email)
-            if (teacher != null) {
-                sessionManager.saveSession(userId = teacher.id, role = "Teacher")
-                _loginSuccess.value = true
-                _isLoading.value    = false
-                return@launch
-            }
+            try {
+                val student = studentRepository.getByEmail(email)
+                if (student != null) {
+                    sessionManager.saveSession(student.id, "STUDENT")
+                    _loginSuccess.value = true
+                    return@launch
+                }
+
+                val teacher = teacherRepository.getByEmail(email)
+                if (teacher != null) {
+                    sessionManager.saveSession(teacher.id, "TEACHER")
+                    _loginSuccess.value = true
+                    return@launch
+                }
+
+                _errorMessage.value = "Email ou password incorretos."
+
             // Nenhum utilizador encontrado
-            _errorMessage.value = "Email ou password incorretos."
-            _isLoading.value    = false
+            } catch (e: Exception) {
+
+                _errorMessage.value = "Erro ao fazer login."
+
+            } finally {
+
+                _isLoading.value = false
+
+            }
+
         }
     }
 

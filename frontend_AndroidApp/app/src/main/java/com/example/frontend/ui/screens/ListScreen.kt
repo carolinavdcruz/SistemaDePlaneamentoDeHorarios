@@ -16,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,12 +29,15 @@ import com.example.frontend.ui.theme.TextSecondary
 
 @Composable
 fun ListScreen() {
-    val context = LocalContext.current
+
     val viewModel = remember { AppModule.provideStudentViewModel() }
+
     val students by viewModel.students.collectAsState()
 
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
+    val name by viewModel.name.collectAsState()
+    val email by viewModel.email.collectAsState()
+
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadStudents()
@@ -101,7 +103,7 @@ fun ListScreen() {
                         LoginInputField(
                             label = "Student Name",
                             value = name,
-                            onValueChange = { name = it },
+                            onValueChange = viewModel::setName,
                             placeholder = "John Doe",
                             leadingIcon = Icons.Default.Person
                         )
@@ -111,21 +113,24 @@ fun ListScreen() {
                         LoginInputField(
                             label = "Student Email",
                             value = email,
-                            onValueChange = { email = it },
+                            onValueChange = viewModel::setEmail,
                             placeholder = "john@example.com",
                             leadingIcon = Icons.Default.Email
                         )
 
                         Spacer(modifier = Modifier.height(24.dp))
 
+                        if (errorMessage != null) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = errorMessage.orEmpty(),
+                                color = MaterialTheme.colorScheme.error,
+                                fontSize = 13.sp
+                            )
+                        }
+
                         Button(
-                            onClick = {
-                                if (name.isNotBlank() && email.isNotBlank()) {
-                                    viewModel.addStudent(name, email)
-                                    name = ""
-                                    email = ""
-                                }
-                            },
+                            onClick = { viewModel.addStudent() },
                             modifier = Modifier.fillMaxWidth().height(50.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
                             shape = RoundedCornerShape(12.dp)

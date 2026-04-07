@@ -2,8 +2,8 @@ package com.example.frontend.ui.viewmodel.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.data.local.dao.StudentDao
-import com.example.frontend.data.local.dao.TeacherDao
+import com.example.frontend.data.repository.StudentRepository
+import com.example.frontend.data.repository.TeacherRepository
 import com.example.frontend.data.session.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,29 +11,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class ProfileUiState(
-    val name: String = "",
-    val email: String = "",
-    val role: String = "",
-
-    // Teacher only
-    val classesCount: Int = 0,
-    val studentsCount: Int = 0,
-    val rating: Float = 0f,
-
-    // Student only
-    val maxDailySessions: Int = 0,
-    val subjectsCount: Int = 0,
-    val studentClassesCount: Int = 0,
-
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-    val isLoggedOut: Boolean = false
-)
-
 class ProfileViewModel(
-    private val studentDao: StudentDao,
-    private val teacherDao: TeacherDao,
+    private val studentRepository: StudentRepository,
+    private val teacherRepository: TeacherRepository,
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
@@ -45,49 +25,80 @@ class ProfileViewModel(
             _uiState.update { it.copy(isLoading = true) }
 
             val userId = sessionManager.getUserId()
-            val role   = sessionManager.getUserRole()
+            val role = sessionManager.getUserRole()
 
             if (userId == -1) {
-                // Não faz logout automático — apenas mostra erro
                 _uiState.update {
-                    it.copy(isLoading = false, errorMessage = "Sessão não encontrada. Por favor volta a fazer login.")
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "Sessao nao encontrada. Por favor volta a fazer login."
+                    )
                 }
                 return@launch
             }
 
             try {
                 when (role) {
-                    "Student" -> {
-                        val student = studentDao.getById(userId)
+                    "STUDENT" -> {
+                        val student = studentRepository.getById(userId)
+
                         if (student != null) {
                             _uiState.update {
                                 it.copy(
-                                    name             = student.name,
-                                    email            = student.email,
-                                    role             = "Student",
+                                    name = student.name,
+                                    email = student.email,
+                                    role = "STUDENT",
                                     maxDailySessions = student.maxDailySessions,
-                                    isLoading        = false
+                                    isLoading = false
+                                )
+                            }
+                        } else {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    errorMessage = "Aluno nao encontrado."
                                 )
                             }
                         }
                     }
-                    "Teacher" -> {
-                        val teacher = teacherDao.getById(userId)
+
+                    "TEACHER" -> {
+                        val teacher = teacherRepository.getById(userId)
+
                         if (teacher != null) {
                             _uiState.update {
                                 it.copy(
-                                    name      = teacher.name,
-                                    email     = teacher.email,
-                                    role      = "Teacher",
+                                    name = teacher.name,
+                                    email = teacher.email,
+                                    role = "TEACHER",
                                     isLoading = false
                                 )
                             }
+                        } else {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    errorMessage = "Professor nao encontrado."
+                                )
+                            }
+                        }
+                    }
+
+                    else -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = "Tipo de utilizador invalido."
+                            )
                         }
                     }
                 }
             } catch (e: Exception) {
                 _uiState.update {
-                    it.copy(isLoading = false, errorMessage = e.localizedMessage)
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.localizedMessage ?: "Erro ao carregar perfil."
+                    )
                 }
             }
         }
@@ -100,6 +111,11 @@ class ProfileViewModel(
         }
     }
 
-    fun onErrorDismissed() { _uiState.update { it.copy(errorMessage = null) } }
-    fun onLogoutNavigated() { _uiState.update { it.copy(isLoggedOut = false) } }
+    fun onErrorDismissed() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun onLogoutNavigated() {
+        _uiState.update { it.copy(isLoggedOut = false) }
+    }
 }

@@ -24,4 +24,9 @@ class StudentRepository(private val dao: StudentDao) {
     suspend fun getById(id: Int): StudentEntity? {
         return dao.getById(id)
     }
+
+    suspend fun getByEmail(email: String): StudentEntity? {
+        return dao.getByEmail(email)
+    }
+
 }

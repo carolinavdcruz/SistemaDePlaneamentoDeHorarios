@@ -18,8 +18,8 @@ import java.time.LocalTime
 
 class TeacherRepository(
     private val dao: TeacherDao,
-    private val timeSlotDao: TimeSlotDao,
-    private val api: AvailabilityApi
+    //private val timeSlotDao: TimeSlotDao,
+    //private val api: AvailabilityApi
 ) {
 
     suspend fun insert(teacher: TeacherEntity) {
@@ -34,6 +34,10 @@ class TeacherRepository(
         dao.delete(teacher)
     }
 
+    suspend fun deleteAll() {
+        dao.deleteAll()
+    }
+
     suspend fun getAll(): List<TeacherEntity> {
         return dao.getAll()
     }
@@ -41,6 +45,12 @@ class TeacherRepository(
     suspend fun getById(id: Int): TeacherEntity? {
         return dao.getById(id)
     }
+
+    suspend fun getByEmail(email: String): TeacherEntity? {
+        return dao.getByEmail(email)
+    }
+
+    /*
 
     // Converte de Entity (DB) para Model (UI)
     @RequiresApi(Build.VERSION_CODES.O)
@@ -112,4 +122,7 @@ class TeacherRepository(
             false
         }
     }
+
+     */
+
 }

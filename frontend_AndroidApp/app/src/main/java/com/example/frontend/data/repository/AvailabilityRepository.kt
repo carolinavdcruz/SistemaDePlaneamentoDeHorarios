@@ -6,10 +6,14 @@ import com.example.frontend.data.local.entity.AvailabilityEntity
 import com.example.frontend.data.remote.api.AvailabilityApi
 import com.example.frontend.data.remote.dto.AvailabilityRequest
 
-class AvailabilityRepository(private val dao: AvailabilityDao, private val api: AvailabilityApi) {
+class AvailabilityRepository(
+    private val dao: AvailabilityDao,
+    //private val api: AvailabilityApi
+) {
 
-    private val tag = "AvailabilityRepository"
+    //private val tag = "AvailabilityRepository"
 
+    /*
     suspend fun insert(availability: AvailabilityEntity) {
         println("ROOM INSERT: $availability")
         
@@ -31,6 +35,11 @@ class AvailabilityRepository(private val dao: AvailabilityDao, private val api: 
         // guarda local sempre, mesmo que a API falhe para permitir modo offline
         dao.insert(availability)
     }
+     */
+
+    suspend fun insert(availability: AvailabilityEntity){
+        dao.insert(availability)
+    }
 
     suspend fun update(availability: AvailabilityEntity) {
         dao.update(availability)
@@ -44,6 +53,7 @@ class AvailabilityRepository(private val dao: AvailabilityDao, private val api: 
         return dao.getById(id)
     }
 
+    /*
     suspend fun getByOwner(ownerId: Int, ownerType: String): List<AvailabilityEntity> {
         try {
             // Tenta API
@@ -70,6 +80,11 @@ class AvailabilityRepository(private val dao: AvailabilityDao, private val api: 
             return dao.getByOwner(ownerId, ownerType)
         }
     }
+     */
+
+    suspend fun getByOwner(ownerId: Int, ownerType: String): List<AvailabilityEntity> {
+        return dao.getByOwner(ownerId, ownerType)
+    }
 
 
     suspend fun getByDay(dayOfWeek: Int): List<AvailabilityEntity> {
@@ -80,6 +95,7 @@ class AvailabilityRepository(private val dao: AvailabilityDao, private val api: 
         dao.deleteByOwner(ownerId, ownerType)
     }
 
+    /*
     suspend fun saveAndSync(ownerId: Int, ownerType: String, entities: List<AvailabilityEntity>) {
         // Guarda localmente primeiro
         entities.forEach { dao.insert(it) }
@@ -103,4 +119,7 @@ class AvailabilityRepository(private val dao: AvailabilityDao, private val api: 
             }
         }
     }
+     */
+
+
 }

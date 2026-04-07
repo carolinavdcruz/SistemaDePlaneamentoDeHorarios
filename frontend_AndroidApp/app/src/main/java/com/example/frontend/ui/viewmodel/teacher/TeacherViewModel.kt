@@ -1,59 +1,64 @@
 package com.example.frontend.ui.viewmodel.teacher
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.runtime.mutableStateListOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.data.local.dao.TimeSlotDao
 import com.example.frontend.data.local.entity.TeacherEntity
-import com.example.frontend.data.model.TimeSlot
 import com.example.frontend.data.repository.TeacherRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalTime
 
-class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() {
+
+class TeacherViewModel(
+    private val teacherRepository: TeacherRepository
+) : ViewModel() {
 
     private val _teachers = MutableStateFlow<List< TeacherEntity>>(emptyList())
     val teachers: StateFlow<List<TeacherEntity>> = _teachers
 
     fun loadTeachers() {
         viewModelScope.launch {
-            _teachers.value = repository.getAll()
+            _teachers.value = teacherRepository.getAll()
         }
     }
 
     fun addTeacher(name: String, email: String) {
         viewModelScope.launch {
-            val student = TeacherEntity(
+            val teacher = TeacherEntity(
                 name = name,
                 email = email,
             )
-            repository.insert(student)
+            teacherRepository.insert(teacher)
             loadTeachers()
         }
     }
 
-    fun updateTeacher(student: TeacherEntity) {
+    fun updateTeacher(teacher: TeacherEntity) {
         viewModelScope.launch {
-            repository.update(student)
+            teacherRepository.update(teacher)
             loadTeachers()
         }
     }
 
-    fun deleteTeacher(student: TeacherEntity) {
+    fun deleteTeacher(teacher: TeacherEntity) {
         viewModelScope.launch {
-            repository.delete(student)
+            teacherRepository.delete(teacher)
             loadTeachers()
         }
     }
+
+    fun deleteAllTeachers() {
+        viewModelScope.launch {
+            teacherRepository.deleteAll()
+            loadTeachers()
+        }
+    }
+}
+
+
+
+    /*
 
     private val _selectedDay = MutableLiveData(1) // 1 = Segunda
 
@@ -72,4 +77,5 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
     fun changeDay(day: Int) {
         _selectedDay.value = day
     }
-}
+
+     */

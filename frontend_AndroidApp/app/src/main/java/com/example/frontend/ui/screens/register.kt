@@ -91,18 +91,18 @@ fun RegisterScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         RoleCard(
-                            label = "Student",
+                            label = "STUDENT",
                             icon = Icons.Default.Person,
-                            isSelected = selectedRole == "Student",
+                            isSelected = selectedRole == "STUDENT",
                             modifier = Modifier.weight(1f),
-                            onClick = { viewModel.setSelectedRole("Student") }
+                            onClick = { viewModel.setSelectedRole("STUDENT") }
                         )
                         RoleCard(
-                            label = "Teacher",
+                            label = "TEACHER",
                             icon = Icons.Default.AccountCircle,
-                            isSelected = selectedRole == "Teacher",
+                            isSelected = selectedRole == "TEACHER",
                             modifier = Modifier.weight(1f),
-                            onClick = { viewModel.setSelectedRole("Teacher") }
+                            onClick = { viewModel.setSelectedRole("TEACHER") }
                         )
                     }
 

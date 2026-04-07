@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AvailabilityViewModel(private val repository: AvailabilityRepository) : ViewModel() {
+class AvailabilityViewModel(
+    private val availabilityRepository: AvailabilityRepository
+) : ViewModel() {
 
     // UI STATE
     private val _selectedDays = MutableStateFlow<Set<String>>(emptySet())
@@ -26,8 +28,13 @@ class AvailabilityViewModel(private val repository: AvailabilityRepository) : Vi
 
     // MAPA PARA CONVERTER DIAS
     private val daysMap = mapOf(
-        "Mon" to 1, "Tue" to 2, "Wed" to 3,
-        "Thu" to 4, "Fri" to 5, "Sat" to 6, "Sun" to 7
+        "Mon" to 1,
+        "Tue" to 2,
+        "Wed" to 3,
+        "Thu" to 4,
+        "Fri" to 5,
+        "Sat" to 6,
+        "Sun" to 7
     )
 
     private val reverseDaysMap = daysMap.entries.associate { (k, v) -> v to k }
@@ -50,47 +57,55 @@ class AvailabilityViewModel(private val repository: AvailabilityRepository) : Vi
 
     fun load(ownerId: Int, ownerType: String) {
         viewModelScope.launch {
-            val data = repository.getByOwner(ownerId, ownerType)
+            val data = availabilityRepository.getByOwner(ownerId, ownerType)
             _availabilityList.value = data
 
             // Preenche a UI com dados guardados
             if (data.isNotEmpty()) {
-                _selectedDays.value = data.mapNotNull {
-                    reverseDaysMap[it.dayOfWeek]
+
+                _selectedDays.value = data.mapNotNull { availability ->
+                    reverseDaysMap[availability.dayOfWeek]
                 }.toSet()
 
                 _startTime.value = data.first().startTime
                 _endTime.value = data.first().endTime
+
+            } else {
+
+                _selectedDays.value = emptySet()
+                _startTime.value = "09:00"
+                _endTime.value = "17:00"
             }
         }
     }
 
     fun saveAvailability(ownerId: Int, ownerType: String) {
+
         viewModelScope.launch {
-            // 1. Criamos a lista de entidades para o Room local (cache rápida)
-            val entities = _selectedDays.value.map { day ->
-                AvailabilityEntity(
+
+            availabilityRepository.deleteByOwner(ownerId,ownerType)
+
+            _selectedDays.value.forEach { day ->
+                val availability = AvailabilityEntity(
                     ownerId = ownerId,
                     ownerType = ownerType,
-                    dayOfWeek = daysMap[day] ?: 1,
+                    dayOfWeek = daysMap[day] ?: 1, // TODO: rever este se for null
                     startTime = _startTime.value,
                     endTime = _endTime.value
                 )
+                availabilityRepository.insert(availability)
             }
-
-            // 2. Enviamos para o Repository tratar a sincronização com a API
-            // O Repository deve chamar a API que fatiará os slots de 1h no PostgreSQL
-            repository.saveAndSync(ownerId, ownerType, entities)
-
-            // 3. Recarregamos os dados (agora possivelmente com os slots já fatiados vindo do servidor)
             load(ownerId, ownerType)
         }
     }
 
     fun clear(ownerId: Int, ownerType: String) {
         viewModelScope.launch {
-            repository.deleteByOwner(ownerId, ownerType)
+            availabilityRepository.deleteByOwner(ownerId, ownerType)
             _availabilityList.value = emptyList()
+            _selectedDays.value = emptySet()
+            _startTime.value = "09:00"
+            _endTime.value = "17:00"
         }
     }
 }

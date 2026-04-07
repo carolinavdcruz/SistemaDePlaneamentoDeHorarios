@@ -2,19 +2,19 @@ package com.example.frontend.ui.viewmodel.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.data.local.dao.StudentDao
-import com.example.frontend.data.local.dao.TeacherDao
 import com.example.frontend.data.local.entity.StudentEntity
 import com.example.frontend.data.local.entity.TeacherEntity
 import com.example.frontend.data.model.RegisterValidator
+import com.example.frontend.data.repository.StudentRepository
+import com.example.frontend.data.repository.TeacherRepository
 import com.example.frontend.data.session.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class RegisterViewModel (
-    private val studentDao: StudentDao,
-    private val teacherDao: TeacherDao,
+    private val studentRepository: StudentRepository,
+    private val teacherRepository: TeacherRepository,
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
@@ -76,33 +76,63 @@ class RegisterViewModel (
     }
 
     fun register() {
+
         if (!validateRegister()) return
+
         viewModelScope.launch {
+
             _isLoading.value = true
-            val name  = _name.value.trim()
-            val email = _email.value.trim()
-            val role  = _selectedRole.value
+
+            val currentName  = _name.value.trim()
+            val currentEmail = _email.value.trim()
+            val currentRole  = _selectedRole.value
 
             try {
-                when (role) {
-                    "Student" -> {
-                        val entity = StudentEntity(name = name, email = email, maxDailySessions = 0)
-                        studentDao.insert(entity)
-                        val saved = studentDao.getByEmail(email)!!
-                        sessionManager.saveSession(userId = saved.id, role = "Student")
+
+                when (currentRole) {
+
+                    "STUDENT" -> {
+                        studentRepository.insert(
+                            StudentEntity(
+                                name = currentName,
+                                email = currentEmail,
+                                maxDailySessions = 0
+                            )
+                        )
+                        val savedStudent = studentRepository.getByEmail(currentEmail)
+                        if (savedStudent != null){
+                            sessionManager.saveSession(userId = savedStudent.id, role = "STUDENT")
+                            _registerSuccess.value = true
+                        } else {
+                            _errorMessage.value = "Não foi possível criar conta."
+                        }
                     }
-                    "Teacher" -> {
-                        val entity = TeacherEntity(name = name, email = email)
-                        teacherDao.insert(entity)
-                        val saved = teacherDao.getByEmail(email)!!
-                        sessionManager.saveSession(userId = saved.id, role = "Teacher")
+
+                    "TEACHER" -> {
+                        teacherRepository.insert(
+                            TeacherEntity(
+                                name = currentName,
+                                email = currentEmail
+                            )
+                        )
+                        val savedTeacher = teacherRepository.getByEmail(currentEmail)
+                        if (savedTeacher != null){
+                            sessionManager.saveSession(userId = savedTeacher.id, role = "TEACHER")
+                            _registerSuccess.value = true
+                        } else {
+                            _errorMessage.value = "Não foi possível criar conta."
+                        }
                     }
                 }
-                _registerSuccess.value = true
+
             } catch (e: Exception) {
+
                 _errorMessage.value = "Erro ao criar conta: ${e.localizedMessage}"
+
             } finally {
+
                 _isLoading.value = false
+
             }
         }
     }
