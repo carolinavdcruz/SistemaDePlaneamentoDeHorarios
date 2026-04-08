@@ -2,6 +2,7 @@ package com.example.frontend.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.frontend.data.local.dao.AvailabilityDao
 import com.example.frontend.data.local.dao.RestrictionsDao
 import com.example.frontend.data.local.dao.StudentDao
@@ -21,14 +22,17 @@ import com.example.frontend.data.local.entity.TimeSlotEntity
         AvailabilityEntity::class,
         TimeSlotEntity::class
     ],
-    version = 1,
+    version = 2, // subimos versao da db porque a estrutura das tabelas mudou
     exportSchema = false
 )
+
+@TypeConverters(OwnerTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun teacherDao(): TeacherDao
     abstract fun studentDao(): StudentDao
     abstract fun restrictionsDao(): RestrictionsDao
     abstract fun availabilityDao(): AvailabilityDao
+
     abstract fun timeSlotDao(): TimeSlotDao
 }

@@ -105,6 +105,36 @@
 -> Foi revista a estrutura do Dashboard para permitir, no futuro imediato, apresentar conteúdos diferentes para professores e alunos.
 -> a app vai ser dif se formos um prof ou um aluno
 
+-> Foi revista a navegação principal da aplicação, passando o Dashboard a apresentar conteúdos diferentes consoante o utilizador autenticado.
+Para o professor, foi organizada uma experiência centrada em:
+- definição de disponibilidade
+- definição de restrições
+- visualização dos seus alunos
+- consulta de perfil
+Para o aluno, foi organizada uma experiência centrada em:
+- definição de disponibilidade
+- escolha de professor
+- consulta de perfil
+
+-> Foram criados e integrados novos ecrãs específicos para suportar esta separação funcional:
+- TeacherAvailabilityAndRestrictionsScreen
+- StudentAvailabilityScreen
+- ChooseTeacherScreen
+- MyStudentsScreen
+
+-> Foi ajustado o fluxo de associação entre aluno e professor, adotando a regra inicial do projeto:
+- cada aluno escolhe apenas um professor
+- cada professor visualiza apenas os alunos que o escolheram
+
+-> Foi atualizada a gestão de alunos no sistema, permitindo associar e desassociar alunos de professores sem remover os alunos da base de dados.
+
+-> Foi criado e integrado um RestrictionsViewModel responsável por:
+- carregar restrições do professor
+- expor o estado dos campos à interface
+- validar os dados introduzidos
+- guardar restrições no Room
+
+
 
 ## LOGIN
 

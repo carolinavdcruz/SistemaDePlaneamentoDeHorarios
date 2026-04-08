@@ -7,10 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -94,7 +91,7 @@ fun MyStudentsScreen(
                     StudentCard(
                         name = student.name,
                         email = student.email,
-                        onDelete = { viewModel.deleteStudent(student) }
+                        onUnassign = { viewModel.unassignTeacherFromStudent(student.id, teacherId) }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -104,7 +101,7 @@ fun MyStudentsScreen(
 }
 
 @Composable
-fun StudentCard(name: String, email: String, onDelete: () -> Unit) {
+fun StudentCard(name: String, email: String, onUnassign: () -> Unit) {
     Surface(
         color = CardBackground,
         shape = RoundedCornerShape(12.dp),
@@ -142,10 +139,10 @@ fun StudentCard(name: String, email: String, onDelete: () -> Unit) {
                 }
             }
 
-            IconButton(onClick = onDelete) {
+            IconButton(onClick = onUnassign) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
+                    contentDescription = "Remove My Student",
                     tint = Color(0xFFEF5350) // Vermelho suave para deletar
                 )
             }

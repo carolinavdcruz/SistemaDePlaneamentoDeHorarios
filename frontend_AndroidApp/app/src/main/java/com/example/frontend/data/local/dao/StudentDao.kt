@@ -33,4 +33,8 @@ interface StudentDao {
 
     @Query("UPDATE student SET teacherId = :teacherId WHERE id = :studentId")
     suspend fun assignTeacherToStudent(studentId: Int, teacherId: Int)
+
+    @Query("UPDATE student SET teacherId = NULL WHERE id = :studentId")
+    suspend fun unassignTeacherFromStudent(studentId: Int)
+
 }

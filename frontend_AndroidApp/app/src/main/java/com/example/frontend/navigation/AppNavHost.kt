@@ -90,8 +90,9 @@ fun AppNavHost(navController: NavHostController) {
                     userRole = userRole,
                     userId = userId,
                     onSignOutClick = {
+                        sessionManager.clearSession()
                         navController.navigate(Routes.LOGIN) {
-                            popUpTo(Routes.DASHBOARD) { inclusive = true }
+                            popUpTo(0) { inclusive = true }
                         }
                     }
                 )

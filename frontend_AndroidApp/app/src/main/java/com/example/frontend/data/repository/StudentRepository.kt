@@ -38,5 +38,8 @@ class StudentRepository(private val dao: StudentDao) {
 
     }
 
+    suspend fun unassignTeacherFromStudent(studentId: Int){
+        dao.unassignTeacherFromStudent(studentId)
+    }
 
 }

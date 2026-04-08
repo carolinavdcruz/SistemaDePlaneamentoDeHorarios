@@ -1,7 +1,6 @@
 package com.example.frontend.data.local.database
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Room
 
 object DatabaseProvider {
@@ -15,10 +14,12 @@ object DatabaseProvider {
         return INSTANCE ?:
         synchronized(this) { // se ainda não existe bloqueira secçao para garantir que apenas 1 thread cria a db
             val instance = Room.databaseBuilder( // criação da db por parte do ROOM
-                context.applicationContext,
+                context.applicationContext, // evita guardar contexto de Activity, é a forma mais segura para singletons como a base de dados
                 AppDatabase::class.java,
                 "sph.db"
-            ).build()
+            )
+                .fallbackToDestructiveMigration(true) // se o schema mudar a BD é recriada
+                .build()
             INSTANCE = instance
             instance
         }

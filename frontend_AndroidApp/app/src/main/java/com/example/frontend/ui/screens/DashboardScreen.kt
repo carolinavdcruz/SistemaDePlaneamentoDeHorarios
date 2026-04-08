@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.frontend.data.model.OwnerType
-import com.example.frontend.navigation.Routes
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
@@ -35,7 +34,7 @@ data class BottomNavItem(
     val title: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
-    val route: String
+    //val route: String
 )
 
 @Composable
@@ -49,17 +48,17 @@ fun DashboardScreen(
 
     val bottomNavItems = when (userRole) {
         OwnerType.TEACHER -> listOf(
-            BottomNavItem("Dashboard", Icons.Filled.DateRange, Icons.Outlined.DateRange, "dashboard"),
-            BottomNavItem("Parameters", Icons.Filled.Settings, Icons.Outlined.Settings, "parameters"),
-            BottomNavItem("Students", Icons.Filled.Face, Icons.Outlined.Face, "students"),
-            BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person, "profile")
+            BottomNavItem("Dashboard", Icons.Filled.DateRange, Icons.Outlined.DateRange),
+            BottomNavItem("Availability&Restrictions", Icons.Filled.Settings, Icons.Outlined.Settings),
+            BottomNavItem("Students", Icons.Filled.Face, Icons.Outlined.Face),
+            BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person)
         )
 
         OwnerType.STUDENT -> listOf(
-            BottomNavItem("Dashboard", Icons.Filled.DateRange, Icons.Outlined.DateRange, "dashboard"),
-            BottomNavItem("Availability", Icons.Filled.DateRange, Icons.Outlined.DateRange, "availability"),
-            BottomNavItem("Teacher", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle, "teacher"),
-            BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person, "profile")
+            BottomNavItem("Dashboard", Icons.Filled.DateRange, Icons.Outlined.DateRange),
+            BottomNavItem("Availability", Icons.Filled.DateRange, Icons.Outlined.DateRange),
+            BottomNavItem("Teacher", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle),
+            BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person)
         )
     }
 
@@ -101,7 +100,7 @@ fun DashboardScreen(
                 OwnerType.TEACHER -> {
                     when (selectedItemIndex) {
                         0 -> MainDashboardContent(onSignOutClick)
-                        1 -> ParametersCardMobile()
+                        1 -> TeacherAvailabilityAndRestrictionsScreen(teacherId = userId)
                         2 -> MyStudentsScreen(teacherId = userId)
                         3 -> ProfileScreen(navController)
                     }
@@ -110,10 +109,7 @@ fun DashboardScreen(
                 OwnerType.STUDENT -> {
                     when (selectedItemIndex) {
                         0 -> MainDashboardContent(onSignOutClick)
-                        1 -> AvailabilitySelector(
-                            ownerId = userId,
-                            ownerType = OwnerType.STUDENT
-                        )
+                        1 -> StudentAvailabilityScreen(studentId = userId)
                         2 -> ChooseTeacherScreen(
                             onTeacherAssigned = { selectedItemIndex = 0 }
                         )

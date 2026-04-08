@@ -12,6 +12,7 @@ import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
 import com.example.frontend.data.local.database.AppDatabase
 import com.example.frontend.data.local.database.DatabaseProvider
 import com.example.frontend.data.remote.api.AvailabilityApi
+import com.example.frontend.data.repository.RestrictionsRepository
 import com.example.frontend.data.session.SessionManager
 import com.example.frontend.ui.viewmodel.login.LoginViewModel
 import com.example.frontend.ui.viewmodel.profile.ProfileViewModel
@@ -19,6 +20,7 @@ import com.example.frontend.ui.viewmodel.teacher.TeacherViewModel
 import com.example.frontend.data.repository.TeacherRepository
 import com.example.frontend.ui.viewmodel.register.RegisterViewModel
 import com.example.frontend.ui.viewmodel.student.ChooseTeacherViewModel
+import com.example.frontend.ui.viewmodel.teacher.RestrictionsViewModel
 
 
 object AppModule {
@@ -50,6 +52,11 @@ object AppModule {
     private val availabilityRepository by lazy {
         AvailabilityRepository(db().availabilityDao())
     }
+
+    private val restrictionsRepository by lazy {
+        RestrictionsRepository(db().restrictionsDao())
+    }
+
 
     /*
     private val availabilityApi by lazy {
@@ -83,6 +90,10 @@ object AppModule {
 
     fun provideChooseTeacherViewModel(): ChooseTeacherViewModel {
         return ChooseTeacherViewModel(teacherRepository, studentRepository, sessionManager)
+    }
+
+    fun provideRestrictionsViewModel(): RestrictionsViewModel {
+        return RestrictionsViewModel(restrictionsRepository)
     }
 }
 

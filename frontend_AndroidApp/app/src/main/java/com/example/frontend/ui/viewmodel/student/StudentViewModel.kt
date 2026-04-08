@@ -82,6 +82,13 @@ class StudentViewModel(
         }
     }
 
+    fun unassignTeacherFromStudent(studentId: Int, teacherId: Int) {
+        viewModelScope.launch {
+            repository.unassignTeacherFromStudent(studentId)
+            loadStudentsByTeacherId(teacherId)
+        }
+    }
+
     fun loadStudentsByTeacherId(teacherId: Int) {
         viewModelScope.launch {
             _students.value = repository.getByTeacherId(teacherId)

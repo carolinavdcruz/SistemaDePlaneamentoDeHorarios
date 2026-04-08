@@ -44,6 +44,7 @@ import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
 
+/*
 @Composable
 fun ParametersCardMobile() {
     var maxStudents by remember { mutableStateOf("3") }
@@ -111,6 +112,7 @@ fun ParametersCardMobile() {
         }
     }
 }
+ */
 
 @Composable
 fun MobileParameterInput(
@@ -142,10 +144,4 @@ fun MobileParameterInput(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ParametersCardMobilePreview() {
-    ParametersCardMobile()
 }
