@@ -3,6 +3,7 @@ package com.example.frontend.data.repository
 import android.util.Log
 import com.example.frontend.data.local.dao.AvailabilityDao
 import com.example.frontend.data.local.entity.AvailabilityEntity
+import com.example.frontend.data.model.OwnerType
 import com.example.frontend.data.remote.api.AvailabilityApi
 import com.example.frontend.data.remote.dto.AvailabilityRequest
 
@@ -82,7 +83,7 @@ class AvailabilityRepository(
     }
      */
 
-    suspend fun getByOwner(ownerId: Int, ownerType: String): List<AvailabilityEntity> {
+    suspend fun getByOwner(ownerId: Int, ownerType: OwnerType): List<AvailabilityEntity> {
         return dao.getByOwner(ownerId, ownerType)
     }
 
@@ -91,7 +92,7 @@ class AvailabilityRepository(
         return dao.getByDay(dayOfWeek)
     }
 
-    suspend fun deleteByOwner(ownerId: Int, ownerType: String) {
+    suspend fun deleteByOwner(ownerId: Int, ownerType: OwnerType) {
         dao.deleteByOwner(ownerId, ownerType)
     }
 

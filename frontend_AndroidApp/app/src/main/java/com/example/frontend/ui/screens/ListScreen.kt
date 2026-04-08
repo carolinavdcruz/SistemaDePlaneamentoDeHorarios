@@ -28,19 +28,15 @@ import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
 
 @Composable
-fun ListScreen() {
+fun MyStudentsScreen(
+    teacherId: Int
+) {
 
     val viewModel = remember { AppModule.provideStudentViewModel() }
-
     val students by viewModel.students.collectAsState()
 
-    val name by viewModel.name.collectAsState()
-    val email by viewModel.email.collectAsState()
-
-    val errorMessage by viewModel.errorMessage.collectAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.loadStudents()
+    LaunchedEffect(teacherId) {
+        viewModel.loadStudentsByTeacherId(teacherId)
     }
 
     Box(
@@ -52,7 +48,7 @@ fun ListScreen() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 20.dp),
-            contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp) // Espaço para não cobrir o form
+            contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp)
         ) {
             item {
                 Text(
@@ -63,81 +59,44 @@ fun ListScreen() {
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
-                    text = "Manage your student database and contact info",
+                    text = "Students assigned to you",
                     color = TextSecondary,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
             }
 
-            // LISTA DE ALUNOS
-            items(students) { student ->
-                StudentCard(
-                    name = student.name,
-                    email = student.email,
-                    onDelete = { viewModel.deleteStudent(student) }
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-
-            item { Spacer(modifier = Modifier.height(24.dp)) }
-
-            // FORMULÁRIO DE ADIÇÃO (Dentro do Scroll ou fixo, aqui está no scroll)
-            item {
-                Surface(
-                    color = CardBackground,
-                    shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(1.dp, InputBorder),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Add, "", tint = AccentPurple)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Add New Student", color = Color.White, fontWeight = FontWeight.Bold)
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Reutilizando seu padrão de input estilizado
-                        LoginInputField(
-                            label = "Student Name",
-                            value = name,
-                            onValueChange = viewModel::setName,
-                            placeholder = "John Doe",
-                            leadingIcon = Icons.Default.Person
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        LoginInputField(
-                            label = "Student Email",
-                            value = email,
-                            onValueChange = viewModel::setEmail,
-                            placeholder = "john@example.com",
-                            leadingIcon = Icons.Default.Email
-                        )
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        if (errorMessage != null) {
-                            Spacer(modifier = Modifier.height(12.dp))
+            if (students.isEmpty()) {
+                item {
+                    Surface(
+                        color = CardBackground,
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(1.dp, InputBorder),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(20.dp)) {
                             Text(
-                                text = errorMessage.orEmpty(),
-                                color = MaterialTheme.colorScheme.error,
-                                fontSize = 13.sp
+                                text = "No students yet",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "When students choose you as their teacher, they will appear here.",
+                                color = TextSecondary,
+                                fontSize = 14.sp
                             )
                         }
-
-                        Button(
-                            onClick = { viewModel.addStudent() },
-                            modifier = Modifier.fillMaxWidth().height(50.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Text("Register Student", fontWeight = FontWeight.Bold)
-                        }
                     }
+                }
+            } else {
+                items(students) { student ->
+                    StudentCard(
+                        name = student.name,
+                        email = student.email,
+                        onDelete = { viewModel.deleteStudent(student) }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
         }
@@ -196,6 +155,6 @@ fun StudentCard(name: String, email: String, onDelete: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun ListScreenPreview() {
-    ListScreen()
+fun MyStudentsScreenPreview() {
+    MyStudentsScreen(teacherId = 1)
 }

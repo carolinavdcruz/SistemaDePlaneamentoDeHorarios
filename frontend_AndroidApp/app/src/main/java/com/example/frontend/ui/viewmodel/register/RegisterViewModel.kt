@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.local.entity.StudentEntity
 import com.example.frontend.data.local.entity.TeacherEntity
+import com.example.frontend.data.model.OwnerType
 import com.example.frontend.data.model.RegisterValidator
 import com.example.frontend.data.repository.StudentRepository
 import com.example.frontend.data.repository.TeacherRepository
@@ -27,8 +28,8 @@ class RegisterViewModel (
     private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password
 
-    private val _selectedRole = MutableStateFlow("Student")
-    val selectedRole: StateFlow<String> = _selectedRole
+    private val _selectedRole = MutableStateFlow(OwnerType.STUDENT)
+    val selectedRole: StateFlow<OwnerType> = _selectedRole
 
     private val _isPasswordVisible = MutableStateFlow(false)
     val isPasswordVisible: StateFlow<Boolean> = _isPasswordVisible
@@ -57,7 +58,7 @@ class RegisterViewModel (
         clearError()
     }
 
-    fun setSelectedRole(role: String) {
+    fun setSelectedRole(role: OwnerType) {
         _selectedRole.value = role
         clearError()
     }
@@ -91,7 +92,7 @@ class RegisterViewModel (
 
                 when (currentRole) {
 
-                    "STUDENT" -> {
+                    OwnerType.STUDENT -> {
                         studentRepository.insert(
                             StudentEntity(
                                 name = currentName,
@@ -101,14 +102,14 @@ class RegisterViewModel (
                         )
                         val savedStudent = studentRepository.getByEmail(currentEmail)
                         if (savedStudent != null){
-                            sessionManager.saveSession(userId = savedStudent.id, role = "STUDENT")
+                            sessionManager.saveSession(userId = savedStudent.id, role = OwnerType.STUDENT)
                             _registerSuccess.value = true
                         } else {
                             _errorMessage.value = "Não foi possível criar conta."
                         }
                     }
 
-                    "TEACHER" -> {
+                    OwnerType.TEACHER -> {
                         teacherRepository.insert(
                             TeacherEntity(
                                 name = currentName,
@@ -117,7 +118,7 @@ class RegisterViewModel (
                         )
                         val savedTeacher = teacherRepository.getByEmail(currentEmail)
                         if (savedTeacher != null){
-                            sessionManager.saveSession(userId = savedTeacher.id, role = "TEACHER")
+                            sessionManager.saveSession(userId = savedTeacher.id, role = OwnerType.TEACHER)
                             _registerSuccess.value = true
                         } else {
                             _errorMessage.value = "Não foi possível criar conta."

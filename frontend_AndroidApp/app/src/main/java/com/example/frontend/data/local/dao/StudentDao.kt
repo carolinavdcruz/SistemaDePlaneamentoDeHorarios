@@ -27,4 +27,10 @@ interface StudentDao {
 
     @Query("SELECT * FROM student")
     suspend fun getAll(): List<StudentEntity>
+
+    @Query("SELECT * FROM student WHERE teacherId = :teacherId")
+    suspend fun getByTeacherId(teacherId: Int): List<StudentEntity>
+
+    @Query("UPDATE student SET teacherId = :teacherId WHERE id = :studentId")
+    suspend fun assignTeacherToStudent(studentId: Int, teacherId: Int)
 }

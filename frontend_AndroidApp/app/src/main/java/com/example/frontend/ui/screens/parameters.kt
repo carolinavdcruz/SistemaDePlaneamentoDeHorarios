@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.frontend.data.model.OwnerType
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
@@ -91,7 +92,7 @@ fun ParametersCardMobile() {
             // --- DISPONIBILIDADE ---
             AvailabilitySelector(
                 ownerId = 1,
-                ownerType = "TEACHER"
+                ownerType = OwnerType.TEACHER
             )
 
             Spacer(modifier = Modifier.height(24.dp))

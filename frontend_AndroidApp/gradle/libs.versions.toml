@@ -25,6 +25,7 @@ ksp = "2.1.0-1.0.29"
 room = "2.8.4"
 media3Database = "1.9.3"
 firebaseCrashlyticsBuildtools = "3.0.6"
+uiVersion = "1.10.6"
 
 [libraries]
 androidx-activity-compose-v182 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
@@ -62,6 +63,7 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-media3-database = { group = "androidx.media3", name = "media3-database", version.ref = "media3Database" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
+ui = { group = "androidx.compose.ui", name = "ui", version.ref = "uiVersion" }
 
 
 [plugins]

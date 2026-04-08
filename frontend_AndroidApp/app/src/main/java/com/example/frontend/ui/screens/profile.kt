@@ -117,7 +117,7 @@ fun ProfileScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(uiState.name, color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-            Text(uiState.role, color = AccentPurple, fontSize = 14.sp)
+            Text(uiState.role?.name ?: "", color = AccentPurple, fontSize = 14.sp)
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -142,7 +142,7 @@ fun ProfileScreen(navController: NavController) {
                     ProfileInfoItem(
                         icon = Icons.Default.Person,
                         label = "Cargo",
-                        value = uiState.role
+                        value = uiState.role?.name ?: ""
                     )
                 }
             }

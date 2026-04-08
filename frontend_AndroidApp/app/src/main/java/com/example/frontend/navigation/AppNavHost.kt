@@ -5,10 +5,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.frontend.AppModule
+import com.example.frontend.data.session.SessionManager
 import com.example.frontend.ui.screens.DashboardScreen
 import com.example.frontend.ui.screens.HomeScreen
 import com.example.frontend.ui.screens.LoginScreen
@@ -17,6 +19,9 @@ import com.example.frontend.ui.screens.RegisterScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
+
+    val context = LocalContext.current
+    val sessionManager = remember { SessionManager(context) }
 
     NavHost(
         navController = navController,
@@ -71,19 +76,32 @@ fun AppNavHost(navController: NavHostController) {
                         popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 },
-                onCreateAccountClick = { viewModel.register() }
             )
         }
 
         composable(Routes.DASHBOARD) {
-            DashboardScreen(
-                navController = navController,
-                onSignOutClick = {
+
+            val userRole = sessionManager.getUserRole()
+            val userId = sessionManager.getUserId()
+
+            if (userRole != null && userId != -1) {
+                DashboardScreen(
+                    navController = navController,
+                    userRole = userRole,
+                    userId = userId,
+                    onSignOutClick = {
+                        navController.navigate(Routes.LOGIN) {
+                            popUpTo(Routes.DASHBOARD) { inclusive = true }
+                        }
+                    }
+                )
+            } else {
+                LaunchedEffect(Unit) {
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(Routes.DASHBOARD) { inclusive = true }
                     }
                 }
-            )
+            }
         }
 
         composable(Routes.PROFILE) {

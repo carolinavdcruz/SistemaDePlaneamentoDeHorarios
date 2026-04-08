@@ -1,5 +1,6 @@
 package com.example.frontend.data.local.dao.fake
 
+/*
 import com.example.frontend.data.local.dao.StudentDao
 import com.example.frontend.data.local.entity.StudentEntity
 
@@ -25,3 +26,5 @@ class FakeStudentDao : StudentDao {
     override suspend fun getById(id: Int): StudentEntity? = students.find { it.id == id }
     override suspend fun getByEmail(email: String): StudentEntity? = students.find { it.email == email }
 }
+
+ */

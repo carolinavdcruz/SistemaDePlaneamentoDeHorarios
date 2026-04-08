@@ -82,6 +82,12 @@ class StudentViewModel(
         }
     }
 
+    fun loadStudentsByTeacherId(teacherId: Int) {
+        viewModelScope.launch {
+            _students.value = repository.getByTeacherId(teacherId)
+        }
+    }
+
     private fun clearForm() {
         _name.value = ""
         _email.value = ""

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.frontend.data.model.OwnerType
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
@@ -33,7 +34,7 @@ import com.example.frontend.ui.viewmodel.register.RegisterViewModel
 fun RegisterScreen(
     viewModel: RegisterViewModel,
     onLoginClick: () -> Unit,
-    onCreateAccountClick: () -> Unit
+    //onCreateAccountClick: () -> Unit
 ) {
     val name by viewModel.name.collectAsState()
     val email by viewModel.email.collectAsState()
@@ -41,11 +42,13 @@ fun RegisterScreen(
     val selectedRole by viewModel.selectedRole.collectAsState()
     val isPasswordVisible by viewModel.isPasswordVisible.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
-    val registerSuccess by viewModel.registerSuccess.collectAsState()
+    //val registerSuccess by viewModel.registerSuccess.collectAsState()
 
+    /*
     LaunchedEffect(registerSuccess) {
         if (registerSuccess) onCreateAccountClick()
     }
+     */
 
     Box(
         modifier = Modifier
@@ -93,16 +96,16 @@ fun RegisterScreen(
                         RoleCard(
                             label = "STUDENT",
                             icon = Icons.Default.Person,
-                            isSelected = selectedRole == "STUDENT",
+                            isSelected = selectedRole == OwnerType.STUDENT,
                             modifier = Modifier.weight(1f),
-                            onClick = { viewModel.setSelectedRole("STUDENT") }
+                            onClick = { viewModel.setSelectedRole(OwnerType.STUDENT) }
                         )
                         RoleCard(
                             label = "TEACHER",
                             icon = Icons.Default.AccountCircle,
-                            isSelected = selectedRole == "TEACHER",
+                            isSelected = selectedRole == OwnerType.TEACHER,
                             modifier = Modifier.weight(1f),
-                            onClick = { viewModel.setSelectedRole("TEACHER") }
+                            onClick = { viewModel.setSelectedRole(OwnerType.TEACHER) }
                         )
                     }
 
@@ -219,7 +222,7 @@ fun RoleCard(
 fun RegisterScreenPreview() {
     RegisterScreen(
         onLoginClick = {},
-        onCreateAccountClick = {},
+        //onCreateAccountClick = {},
         viewModel = remember { AppModule.provideRegisterViewModel() }
     )
 }

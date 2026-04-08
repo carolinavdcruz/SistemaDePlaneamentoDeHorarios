@@ -2,12 +2,13 @@ package com.example.frontend.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.frontend.data.model.OwnerType
 
 @Entity(tableName = "availability")
 data class AvailabilityEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val ownerId: Int,
-    val ownerType: String,
+    val ownerType: OwnerType,
     val dayOfWeek: Int,
     val startTime: String,
     val endTime: String

@@ -2,6 +2,7 @@ package com.example.frontend.ui.viewmodel.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.frontend.data.model.OwnerType
 import com.example.frontend.data.repository.StudentRepository
 import com.example.frontend.data.repository.TeacherRepository
 import com.example.frontend.data.session.SessionManager
@@ -66,14 +67,14 @@ class LoginViewModel(
             try {
                 val student = studentRepository.getByEmail(email)
                 if (student != null) {
-                    sessionManager.saveSession(student.id, "STUDENT")
+                    sessionManager.saveSession(student.id, OwnerType.STUDENT)
                     _loginSuccess.value = true
                     return@launch
                 }
 
                 val teacher = teacherRepository.getByEmail(email)
                 if (teacher != null) {
-                    sessionManager.saveSession(teacher.id, "TEACHER")
+                    sessionManager.saveSession(teacher.id, OwnerType.TEACHER)
                     _loginSuccess.value = true
                     return@launch
                 }

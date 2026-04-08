@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.frontend.data.model.OwnerType
 import com.example.frontend.navigation.Routes
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
@@ -38,15 +39,29 @@ data class BottomNavItem(
 )
 
 @Composable
-fun DashboardScreen(navController: NavController, onSignOutClick: () -> Unit) {
+fun DashboardScreen(
+    navController: NavController,
+    userRole: OwnerType,
+    userId: Int,
+    onSignOutClick: () -> Unit
+) {
     var selectedItemIndex by remember { mutableIntStateOf(0) }
 
-    val bottomNavItems = listOf(
-        BottomNavItem("Dashboard", Icons.Filled.DateRange, Icons.Outlined.DateRange, Routes.DASHBOARD),
-        BottomNavItem("Parameters", Icons.Filled.Settings, Icons.Outlined.Settings, Routes.PARAMETERS),
-        BottomNavItem("Integrations", Icons.Filled.Add, Icons.Outlined.Add, Routes.LIST),
-        BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person, Routes.PROFILE)
-    )
+    val bottomNavItems = when (userRole) {
+        OwnerType.TEACHER -> listOf(
+            BottomNavItem("Dashboard", Icons.Filled.DateRange, Icons.Outlined.DateRange, "dashboard"),
+            BottomNavItem("Parameters", Icons.Filled.Settings, Icons.Outlined.Settings, "parameters"),
+            BottomNavItem("Students", Icons.Filled.Face, Icons.Outlined.Face, "students"),
+            BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person, "profile")
+        )
+
+        OwnerType.STUDENT -> listOf(
+            BottomNavItem("Dashboard", Icons.Filled.DateRange, Icons.Outlined.DateRange, "dashboard"),
+            BottomNavItem("Availability", Icons.Filled.DateRange, Icons.Outlined.DateRange, "availability"),
+            BottomNavItem("Teacher", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle, "teacher"),
+            BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person, "profile")
+        )
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -82,12 +97,31 @@ fun DashboardScreen(navController: NavController, onSignOutClick: () -> Unit) {
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            when (selectedItemIndex) {
-                0 -> MainDashboardContent(onSignOutClick)
-                1 -> ParametersCardMobile()
-                2 -> ListScreen()
-                3 -> ProfileScreen(navController)
+            when (userRole) {
+                OwnerType.TEACHER -> {
+                    when (selectedItemIndex) {
+                        0 -> MainDashboardContent(onSignOutClick)
+                        1 -> ParametersCardMobile()
+                        2 -> MyStudentsScreen(teacherId = userId)
+                        3 -> ProfileScreen(navController)
+                    }
+                }
+
+                OwnerType.STUDENT -> {
+                    when (selectedItemIndex) {
+                        0 -> MainDashboardContent(onSignOutClick)
+                        1 -> AvailabilitySelector(
+                            ownerId = userId,
+                            ownerType = OwnerType.STUDENT
+                        )
+                        2 -> ChooseTeacherScreen(
+                            onTeacherAssigned = { selectedItemIndex = 0 }
+                        )
+                        3 -> ProfileScreen(navController)
+                    }
+                }
             }
+
         }
     }
 }
@@ -204,6 +238,8 @@ fun SignOutButton(onSignOutClick: () -> Unit) {
 fun DashboardScreenPreview() {
     DashboardScreen(
         navController = rememberNavController(),
+        userRole = OwnerType.TEACHER,
+        userId = 1,
         onSignOutClick = {},
     )
 }

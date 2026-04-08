@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.AppModule
+import com.example.frontend.data.model.OwnerType
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.InputBorder
@@ -30,7 +31,7 @@ import com.example.frontend.ui.theme.InputBorder
 @Composable
 fun AvailabilitySelector(
     ownerId: Int,
-    ownerType: String
+    ownerType: OwnerType
 ) {
     val context = LocalContext.current
 
@@ -232,6 +233,6 @@ fun TimeBox(time: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
 fun AvailabilitySelectorPreview() {
     AvailabilitySelector(
         ownerId = 1,
-        ownerType = "TEACHER"
+        ownerType = OwnerType.TEACHER
     )
 }

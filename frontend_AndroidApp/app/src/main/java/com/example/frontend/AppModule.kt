@@ -18,6 +18,7 @@ import com.example.frontend.ui.viewmodel.profile.ProfileViewModel
 import com.example.frontend.ui.viewmodel.teacher.TeacherViewModel
 import com.example.frontend.data.repository.TeacherRepository
 import com.example.frontend.ui.viewmodel.register.RegisterViewModel
+import com.example.frontend.ui.viewmodel.student.ChooseTeacherViewModel
 
 
 object AppModule {
@@ -78,6 +79,10 @@ object AppModule {
 
     fun provideProfileViewModel(): ProfileViewModel {
         return ProfileViewModel(studentRepository, teacherRepository, sessionManager)
+    }
+
+    fun provideChooseTeacherViewModel(): ChooseTeacherViewModel {
+        return ChooseTeacherViewModel(teacherRepository, studentRepository, sessionManager)
     }
 }
 

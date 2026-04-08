@@ -3,6 +3,7 @@ package com.example.frontend.ui.viewmodel.availability
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.local.entity.AvailabilityEntity
+import com.example.frontend.data.model.OwnerType
 import com.example.frontend.data.repository.AvailabilityRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -55,7 +56,7 @@ class AvailabilityViewModel(
         _endTime.value = time
     }
 
-    fun load(ownerId: Int, ownerType: String) {
+    fun load(ownerId: Int, ownerType: OwnerType) {
         viewModelScope.launch {
             val data = availabilityRepository.getByOwner(ownerId, ownerType)
             _availabilityList.value = data
@@ -79,7 +80,7 @@ class AvailabilityViewModel(
         }
     }
 
-    fun saveAvailability(ownerId: Int, ownerType: String) {
+    fun saveAvailability(ownerId: Int, ownerType: OwnerType) {
 
         viewModelScope.launch {
 
@@ -99,7 +100,7 @@ class AvailabilityViewModel(
         }
     }
 
-    fun clear(ownerId: Int, ownerType: String) {
+    fun clear(ownerId: Int, ownerType: OwnerType) {
         viewModelScope.launch {
             availabilityRepository.deleteByOwner(ownerId, ownerType)
             _availabilityList.value = emptyList()

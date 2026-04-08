@@ -29,4 +29,14 @@ class StudentRepository(private val dao: StudentDao) {
         return dao.getByEmail(email)
     }
 
+    suspend fun getByTeacherId(teacherId: Int): List<StudentEntity>{
+       return dao.getByTeacherId(teacherId)
+    }
+
+    suspend fun assignTeacherToStudent(studentId: Int, teacherId: Int){
+        dao.assignTeacherToStudent(studentId, teacherId)
+
+    }
+
+
 }

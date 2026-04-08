@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.frontend.data.local.entity.AvailabilityEntity
+import com.example.frontend.data.model.OwnerType
 
 @Dao
 interface AvailabilityDao {
@@ -23,11 +24,11 @@ interface AvailabilityDao {
     suspend fun getById(id: Int): AvailabilityEntity?
 
     @Query("SELECT * FROM availability WHERE ownerId = :ownerId AND ownerType = :ownerType")
-    suspend fun getByOwner(ownerId: Int, ownerType: String): List<AvailabilityEntity>
+    suspend fun getByOwner(ownerId: Int, ownerType: OwnerType): List<AvailabilityEntity>
 
     @Query("SELECT * FROM availability WHERE dayOfWeek = :dayOfWeek")
     suspend fun getByDay(dayOfWeek: Int): List<AvailabilityEntity>
 
     @Query("DELETE FROM availability WHERE ownerId = :ownerId AND ownerType = :ownerType")
-    suspend fun deleteByOwner(ownerId: Int, ownerType: String)
+    suspend fun deleteByOwner(ownerId: Int, ownerType: OwnerType)
 }

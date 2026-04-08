@@ -2,6 +2,7 @@ package com.example.frontend.ui.viewmodel.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.frontend.data.model.OwnerType
 import com.example.frontend.data.repository.StudentRepository
 import com.example.frontend.data.repository.TeacherRepository
 import com.example.frontend.data.session.SessionManager
@@ -39,7 +40,7 @@ class ProfileViewModel(
 
             try {
                 when (role) {
-                    "STUDENT" -> {
+                    OwnerType.STUDENT -> {
                         val student = studentRepository.getById(userId)
 
                         if (student != null) {
@@ -47,7 +48,7 @@ class ProfileViewModel(
                                 it.copy(
                                     name = student.name,
                                     email = student.email,
-                                    role = "STUDENT",
+                                    role = OwnerType.STUDENT,
                                     maxDailySessions = student.maxDailySessions,
                                     isLoading = false
                                 )
@@ -62,7 +63,7 @@ class ProfileViewModel(
                         }
                     }
 
-                    "TEACHER" -> {
+                    OwnerType.TEACHER -> {
                         val teacher = teacherRepository.getById(userId)
 
                         if (teacher != null) {
@@ -70,7 +71,7 @@ class ProfileViewModel(
                                 it.copy(
                                     name = teacher.name,
                                     email = teacher.email,
-                                    role = "TEACHER",
+                                    role = OwnerType.TEACHER,
                                     isLoading = false
                                 )
                             }

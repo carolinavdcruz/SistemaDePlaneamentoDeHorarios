@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "student")
 data class StudentEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val teacherId: Int? = null,
     val name: String,
     val email: String,
     val maxDailySessions: Int
