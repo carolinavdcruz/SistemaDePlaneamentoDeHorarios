@@ -80,6 +80,31 @@
 - TeacherViewModel
 - AvailabilityViewModel
 
+### 08 abril 2026 ###
+
+-> Foi reorganizada a gestão de papéis de utilizador através da introdução consistente do tipo OwnerType, passando a distinguir explicitamente:
+-> Deixámos de utilizar as strings "TEACHER" e "STUDENT"
+- STUDENT
+- TEACHER
+
+-> Foi adaptado o modelo de dados dos alunos para permitir associar cada aluno a 1 só professor, através da introdução do campo teacherId.
+
+-> Foram acrescentadas operações de acesso a dados para suportar esta associação, incluindo:
+- obtenção dos alunos de um professor
+- atribuição de um professor a um aluno
+
+-> Foi definida a estratégia funcional inicial do sistema:
+- cada aluno escolhe apenas um professor
+- cada professor vê apenas os alunos que o escolheram
+- os horários são criados por professor
+
+-> Foi criada a base para o ecrã de escolha de professor por parte do aluno.
+
+-> Foi adaptado o ecrã de listagem de alunos para evoluir para uma vista específica do professor, mostrando apenas os seus próprios alunos.
+
+-> Foi revista a estrutura do Dashboard para permitir, no futuro imediato, apresentar conteúdos diferentes para professores e alunos.
+-> a app vai ser dif se formos um prof ou um aluno
+
 
 ## LOGIN
 
