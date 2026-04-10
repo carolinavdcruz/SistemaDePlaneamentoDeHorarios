@@ -83,18 +83,18 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 ### Fase 3: Processamento e Algoritmo
 **Semana 7 (06/04 - 12/04)**
-* [ ] Implementação do processamento de intervalos de disponibilidade.
-* [ ] Conversão de intervalos em blocos discretos (TimeSlots).
+* [x] Implementação do processamento de intervalos de disponibilidade.
+* [x] Conversão de intervalos em blocos discretos (TimeSlots).
 * [x] Definição da estrutura de dados para TimeSlots.
 * [x] Implementação inicial do serviço de geração de horários.
 
 
 
 **Semana 8 (13/04 - 19/04)**
-* [ ] Implementação do algoritmo de planeamento (versão inicial).
-* [ ] Implementação da ordenação de participantes por restrição.
-* [ ] Implementação da lógica de atribuição gulosa de blocos.
-* [ ] Testes iniciais do algoritmo com dados simulados.
+* [x] Implementação do algoritmo de planeamento (versão inicial).
+* [x] Implementação da ordenação de participantes por restrição.
+* [x] Implementação da lógica de atribuição gulosa de blocos.
+* [x] Testes iniciais do algoritmo com dados simulados.
 
 
 
