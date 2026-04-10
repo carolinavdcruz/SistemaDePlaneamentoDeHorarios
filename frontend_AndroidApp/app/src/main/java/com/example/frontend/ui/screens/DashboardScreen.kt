@@ -33,8 +33,7 @@ import com.example.frontend.ui.theme.TextSecondary
 data class BottomNavItem(
     val title: String,
     val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-    //val route: String
+    val unselectedIcon: ImageVector
 )
 
 @Composable
@@ -61,7 +60,6 @@ fun DashboardScreen(
             BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person)
         )
     }
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Background,
@@ -139,13 +137,6 @@ fun MainDashboardContent(onSignOutClick: () -> Unit) {
     }
 }
 
-@Composable
-fun IntegrationsContent() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Integrations Screen", color = Color.White)
-    }
-}
-
 // --- COMPONENTES AUXILIARES (Header, etc) ---
 @Composable
 fun DashboardHeader() {
@@ -191,25 +182,6 @@ fun ProposedScheduleCardMobile() {
             Spacer(modifier = Modifier.height(16.dp))
             Text("No active proposal", color = TextMain, fontSize = 16.sp, fontWeight = FontWeight.Medium)
             Text("Generate to see blocks", color = TextSecondary, fontSize = 12.sp)
-        }
-    }
-}
-
-@Composable
-fun MobileParameterInput(label: String, value: String, placeholder: String) {
-    Column {
-        Text(label, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 6.dp))
-        // BasicTextField customizado como no login
-        Surface(
-            modifier = Modifier.fillMaxWidth().height(48.dp),
-            color = Background,
-            shape = RoundedCornerShape(6.dp),
-            border = BorderStroke(1.dp, InputBorder)
-        ) {
-            Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.padding(horizontal = 12.dp)) {
-                if (value.isEmpty()) Text(placeholder, color = TextSecondary.copy(alpha = 0.5f), fontSize = 14.sp)
-                Text(value, color = Color.White, fontSize = 14.sp)
-            }
         }
     }
 }

@@ -1,16 +1,21 @@
 package com.example.frontend.ui.viewmodel.availability
 
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.local.entity.AvailabilityEntity
+import com.example.frontend.data.local.entity.TimeSlotEntity
 import com.example.frontend.data.model.OwnerType
+import com.example.frontend.data.model.scheduling.TimeSlotProcessor
 import com.example.frontend.data.repository.AvailabilityRepository
+import com.example.frontend.data.repository.TimeSlotRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AvailabilityViewModel(
-    private val availabilityRepository: AvailabilityRepository
+    private val availabilityRepository: AvailabilityRepository,
+    private val timeSlotRepository: TimeSlotRepository
 ) : ViewModel() {
 
     // UI STATE
@@ -81,20 +86,39 @@ class AvailabilityViewModel(
     }
 
     fun saveAvailability(ownerId: Int, ownerType: OwnerType) {
-
         viewModelScope.launch {
 
             availabilityRepository.deleteByOwner(ownerId,ownerType)
 
-            _selectedDays.value.forEach { day ->
-                val availability = AvailabilityEntity(
-                    ownerId = ownerId,
+            val newEntities = _selectedDays.value.map { day ->
+                AvailabilityEntity(
+                    ownerId   = ownerId,
                     ownerType = ownerType,
                     dayOfWeek = daysMap[day] ?: 1, // TODO: rever este se for null
                     startTime = _startTime.value,
-                    endTime = _endTime.value
+                    endTime   = _endTime.value
                 )
-                availabilityRepository.insert(availability)
+            }
+
+            newEntities.forEach { availabilityRepository.insert(it) }
+
+            // criar TimeSlots de 1h
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                val triples = newEntities.map { Triple(it.dayOfWeek, it.startTime, it.endTime) }
+
+                val slots = TimeSlotProcessor.processAll(triples, slotDurationMinutes = 60L)
+
+                val slotEntities = slots.mapIndexed { index, slot ->
+                    TimeSlotEntity(
+                        id = index,           // IDs sequenciais; clearAll() apaga os antigos
+                        dayOfWeek = slot.dayOfWeek,
+                        startTime = slot.startTime.toString(),
+                        endTime = slot.endTime.toString()
+                    )
+                }
+
+                timeSlotRepository.replaceAll(slotEntities)
             }
             load(ownerId, ownerType)
         }

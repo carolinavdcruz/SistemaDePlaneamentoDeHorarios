@@ -58,11 +58,6 @@ fun ProfileScreen(navController: NavController) {
                 title = {
                     Text("Profile", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Voltar", tint = Color.White)
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Background)
             )
         },
