@@ -1,5 +1,7 @@
 package com.example.frontend.ui.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +29,7 @@ import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.StatusActive
 import com.example.frontend.ui.theme.TextMain
 import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.viewmodel.schedule.ScheduleUiState
 
 
 // --- CLASSE DE DADOS ---
@@ -36,6 +39,7 @@ data class BottomNavItem(
     val unselectedIcon: ImageVector
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DashboardScreen(
     navController: NavController,
@@ -95,33 +99,29 @@ fun DashboardScreen(
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when (userRole) {
-                OwnerType.TEACHER -> {
+                OwnerType.TEACHER ->
                     when (selectedItemIndex) {
-                        0 -> MainDashboardContent(onSignOutClick)
+                        0 -> MainDashboardContent(teacherId = userId, onSignOutClick = onSignOutClick)
                         1 -> TeacherAvailabilityAndRestrictionsScreen(teacherId = userId)
                         2 -> MyStudentsScreen(teacherId = userId)
                         3 -> ProfileScreen(navController)
                     }
-                }
-
-                OwnerType.STUDENT -> {
+                OwnerType.STUDENT ->
                     when (selectedItemIndex) {
-                        0 -> MainDashboardContent(onSignOutClick)
+                        0 -> MainDashboardContent(teacherId = null, onSignOutClick = onSignOutClick)
                         1 -> StudentAvailabilityScreen(studentId = userId)
-                        2 -> ChooseTeacherScreen(
-                            onTeacherAssigned = { selectedItemIndex = 0 }
-                        )
+                        2 -> ChooseTeacherScreen(onTeacherAssigned = { selectedItemIndex = 0 })
                         3 -> ProfileScreen(navController)
                     }
-                }
             }
-
         }
     }
 }
 
+
+// DASHBOARD PRINCIPAL
 @Composable
-fun MainDashboardContent(onSignOutClick: () -> Unit) {
+fun MainDashboardContent( teacherId: Int?, onSignOutClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -131,13 +131,18 @@ fun MainDashboardContent(onSignOutClick: () -> Unit) {
     ) {
         DashboardHeader()
         Spacer(modifier = Modifier.height(24.dp))
-        ProposedScheduleCardMobile()
+        // Card + botão Gerar — lógica em ScheduleComponents.kt
+        if (teacherId != null) {
+            GenerateScheduleButton(teacherId = teacherId)
+        } else {
+            ProposedScheduleCard(uiState = ScheduleUiState.Idle)
+        }
         Spacer(modifier = Modifier.height(30.dp))
         SignOutButton(onSignOutClick)
     }
 }
 
-// --- COMPONENTES AUXILIARES (Header, etc) ---
+// COMPONENTES AUXILIARES (Header, etc)
 @Composable
 fun DashboardHeader() {
     Row(
@@ -201,6 +206,7 @@ fun SignOutButton(onSignOutClick: () -> Unit) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun DashboardScreenPreview() {

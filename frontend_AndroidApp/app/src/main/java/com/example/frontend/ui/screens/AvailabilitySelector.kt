@@ -54,8 +54,8 @@ fun AvailabilitySelector(
     val endTime by viewModel.endTime.collectAsState()
 
     // Estados do Assistente de IA
-    var selectedTab by remember { mutableStateOf("Text") }
-    var aiPrompt by remember { mutableStateOf("") }
+    //var selectedTab by remember { mutableStateOf("Text") }
+    //var aiPrompt by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         // --- 1. SELETOR MANUAL ---
@@ -79,9 +79,7 @@ fun AvailabilitySelector(
                 }
             }
         }
-
         Spacer(modifier = Modifier.height(20.dp))
-
         Row {
             TimeBox(
                 time = startTime,
@@ -92,9 +90,7 @@ fun AvailabilitySelector(
                     }
                 }
             )
-
             Text(" to ")
-
             TimeBox(
                 time = endTime,
                 modifier = Modifier.weight(1f),
@@ -105,7 +101,6 @@ fun AvailabilitySelector(
                 }
             )
         }
-
         Spacer(modifier = Modifier.height(16.dp))
 /*
 // --- 2. ASSISTENTE DE IA (A PARTE DA IMAGEM) ---
@@ -173,7 +168,6 @@ fun AvailabilitySelector(
                 }
             }
  */
-
         // BOTÃO (GUARDA NA BD)
         Button(
             onClick = {
