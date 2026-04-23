@@ -34,7 +34,7 @@ object AppModule {
     }
 
     private fun db(): AppDatabase {
-        return requireNotNull(database){
+        return requireNotNull(database) {
             "Database has not been initialized"
         }
     }
@@ -59,7 +59,7 @@ object AppModule {
         RestrictionsRepository(db().restrictionsDao())
     }
 
-    private val timeSlotRepository by lazy{
+    private val timeSlotRepository by lazy {
         TimeSlotRepository(db().timeSlotDao())
     }
 
@@ -77,8 +77,13 @@ object AppModule {
     fun provideTeacherViewModel(): TeacherViewModel {
         return TeacherViewModel(teacherRepository)
     }
+
     fun provideAvailabilityViewModel(): AvailabilityViewModel {
-        return AvailabilityViewModel(availabilityRepository, timeSlotRepository)
+        return AvailabilityViewModel(
+            availabilityRepository,
+            //timeSlotRepository
+        )
+
     }
 
     fun provideLoginViewModel(): LoginViewModel {
@@ -103,9 +108,9 @@ object AppModule {
 
     fun provideScheduleViewModel(): ScheduleViewModel {
         return ScheduleViewModel(
-            availabilityRepository  = availabilityRepository,
-            restrictionsRepository  = restrictionsRepository,
-            studentRepository       = studentRepository
+            availabilityRepository = availabilityRepository,
+            restrictionsRepository = restrictionsRepository,
+            studentRepository = studentRepository
         )
     }
 }

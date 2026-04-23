@@ -100,10 +100,10 @@ fun ProposedScheduleCard(uiState: ScheduleUiState) {
                         fontSize = 12.sp,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    uiState.sessions.forEach { session ->
-                        SessionCardSmall(session)
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
+                    WeeklyScheduleView(
+                        sessions = uiState.sessions,
+                        studentNames = uiState.studentName
+                    )
                 }
             }
         }
@@ -157,3 +157,125 @@ fun SessionCardSmall(session: ScheduledSession) {
         }
     }
 }
+
+@Composable
+fun WeeklyScheduleView(
+    sessions: List<ScheduledSession>,
+    studentNames: Map<Int, String>
+) {
+    val grouped = sessions.groupBy { it.dayOfWeek }
+    val orderedDays = (1..7).toList()
+
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        orderedDays.forEach { day ->
+            DayScheduleCard(
+                dayOfWeek = day,
+                sessions = grouped[day].orEmpty().sortedBy { it.startTime },
+                studentNames = studentNames
+            )
+        }
+    }
+}
+
+@Composable
+fun DayScheduleCard(
+    dayOfWeek: Int,
+    sessions: List<ScheduledSession>,
+    studentNames: Map<Int, String>
+) {
+    Surface(
+        color = CardBackground,
+        shape = RoundedCornerShape(14.dp),
+        border = BorderStroke(1.dp, InputBorder),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = DAY_NAMES[dayOfWeek] ?: "Day $dayOfWeek",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            if (sessions.isEmpty()) {
+                Text(
+                    text = "No sessions scheduled",
+                    color = TextSecondary,
+                    fontSize = 13.sp
+                )
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    sessions.forEach { session ->
+                        SessionDetailCard(
+                            session = session,
+                            studentNames = studentNames
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SessionDetailCard(
+    session: ScheduledSession,
+    studentNames: Map<Int, String>
+) {
+    Surface(
+        color = Background,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, InputBorder),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = "${session.startTime} - ${session.endTime}",
+                color = AccentPurple,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (session.studentIds.isEmpty()) {
+                Text(
+                    text = "No students assigned",
+                    color = TextSecondary,
+                    fontSize = 12.sp
+                )
+            } else {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    session.studentIds.forEach { studentId ->
+                        StudentChip(
+                            name = studentNames[studentId] ?: "Student $studentId"
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun StudentChip(name: String) {
+    Surface(
+        color = AccentPurple.copy(alpha = 0.15f),
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Text(
+            text = name,
+            color = AccentPurple,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+        )
+    }
+}
+
+

@@ -46,63 +46,67 @@ fun AvailabilitySelector(
 
     val availabilityList by viewModel.availabilityList.collectAsState()
 
-    val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-
     // ESTADOS GLOBAIS (O Assistente de IA vai atualizar estes valores)
-    val selectedDays by viewModel.selectedDays.collectAsState()
-    val startTime by viewModel.startTime.collectAsState()
-    val endTime by viewModel.endTime.collectAsState()
+    val dayAvailabilities by viewModel.dayAvailabilities.collectAsState()
 
     // Estados do Assistente de IA
     //var selectedTab by remember { mutableStateOf("Text") }
     //var aiPrompt by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxWidth()) {
+
         // --- 1. SELETOR MANUAL ---
-        Text("Manual Adjustment", color = Color.White, fontSize = 16.sp)
+        Text(
+            "Manual Adjustment",
+            color = Color.White,
+            fontSize = 16.sp
+        )
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            days.forEach { day ->
-                val isSelected = selectedDays.contains(day)
+        Spacer(modifier = Modifier.height(16.dp))
 
-                Surface(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable { viewModel.toggleDay(day) },
-                    color = if (isSelected) AccentPurple else Background,
-                    shape = CircleShape,
-                    border = BorderStroke(1.dp, InputBorder)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(day.first().toString(), color = Color.White)
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            dayAvailabilities.forEach { dayAvailability ->
+                DayAvailabilityRow(
+                    day = dayAvailability.day,
+                    isSelected = dayAvailability.isSelected,
+                    startTime = dayAvailability.startTime,
+                    endTime = dayAvailability.endTime,
+                    onToggleDay = { viewModel.toggleDay(dayAvailability.day) },
+                    onStartTimeClick = {
+                        showTimePicker(context, dayAvailability.startTime) {
+                            viewModel.setStartTime(dayAvailability.day, it)
+                        }
+                    },
+                    onEndTimeClick = {
+                        showTimePicker(context, dayAvailability.endTime) {
+                            viewModel.setEndTime(dayAvailability.day, it)
+                        }
                     }
-                }
+                )
             }
         }
+
         Spacer(modifier = Modifier.height(20.dp))
-        Row {
-            TimeBox(
-                time = startTime,
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    showTimePicker(context, startTime) {
-                        viewModel.setStartTime(it)
-                    }
-                }
-            )
-            Text(" to ")
-            TimeBox(
-                time = endTime,
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    showTimePicker(context, endTime) {
-                        viewModel.setEndTime(it)
-                    }
-                }
+
+        // BOTÃO (GUARDA NA BD)
+        Button(
+            onClick = { viewModel.saveAvailability(ownerId, ownerType) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Guardar Disponibilidade")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        availabilityList.forEach {
+            Text(
+                text = "Dia: ${it.dayOfWeek} | ${it.startTime} - ${it.endTime}",
+                color = Color.White,
+                fontSize = 12.sp
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-/*
+
+        /*
 // --- 2. ASSISTENTE DE IA (A PARTE DA IMAGEM) ---
         Column(
             modifier = Modifier
@@ -168,24 +172,85 @@ fun AvailabilitySelector(
                 }
             }
  */
-        // BOTÃO (GUARDA NA BD)
-        Button(
-            onClick = {
-                viewModel.saveAvailability(ownerId, ownerType)
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Guardar Disponibilidade")
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
 
-        availabilityList.forEach {
-            Text(
-                text = "Dia: ${it.dayOfWeek} | ${it.startTime} - ${it.endTime}",
-                color = Color.White,
-                fontSize = 12.sp
-            )
+@Composable
+fun DayAvailabilityRow(
+    day: String,
+    isSelected: Boolean,
+    startTime: String,
+    endTime: String,
+    onToggleDay: () -> Unit,
+    onStartTimeClick: () -> Unit,
+    onEndTimeClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = if (isSelected) Background.copy(alpha = 0.6f) else Background,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            width = 1.dp,
+            color = if (isSelected) AccentPurple else InputBorder
+        )
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable { onToggleDay() },
+                    color = if (isSelected) AccentPurple else Background,
+                    shape = CircleShape,
+                    border = BorderStroke(1.dp, InputBorder)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = day.first().toString(),
+                            color = Color.White
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.padding(6.dp))
+
+                Text(
+                    text = day,
+                    color = Color.White,
+                    fontSize = 15.sp
+                )
+            }
+
+            if (isSelected) {
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TimeBox(
+                        time = startTime,
+                        modifier = Modifier.weight(1f),
+                        onClick = onStartTimeClick
+                    )
+
+                    Spacer(modifier = Modifier.padding(4.dp))
+
+                    Text(
+                        text = "to",
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+
+                    Spacer(modifier = Modifier.padding(4.dp))
+
+                    TimeBox(
+                        time = endTime,
+                        modifier = Modifier.weight(1f),
+                        onClick = onEndTimeClick
+                    )
+                }
+            }
         }
     }
 }

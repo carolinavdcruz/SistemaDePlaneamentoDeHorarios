@@ -26,15 +26,28 @@ class ScheduleGenerator {
     ): List<ScheduledSession> {
 
         val sessions = mutableListOf<ScheduledSession>()
+
+        val studentSessionsPerDay = mutableMapOf<Int, MutableMap<Int, Int>>()
+        val teacherMinutesPerDay = mutableMapOf<Int, Int>()
+
+        /*
         // studentId - (dayOfWeek - count of sessions in that day)
         val dailyCount = mutableMapOf<Int, MutableMap<Int, Int>>()
+         */
 
         // student with less availability is assigned first
-        val sortedStudents = students.sortedBy { s ->
-            studentAvailabilities[s.id]?.size ?: 0
+        val sortedStudents = students.sortedBy { student ->
+            studentAvailabilities[student.id]?.size ?: 0
         }
 
         for (slot in teacherSlots) {
+
+            val minutesUsedToday = teacherMinutesPerDay.getOrDefault(slot.dayOfWeek, 0)
+
+            if (minutesUsedToday + restrictions.sessionDurationMinutes > restrictions.maxDailyHours * 60) {
+                continue
+            }
+
             val enrolled = mutableListOf<Int>()
 
             for (student in sortedStudents) {
@@ -44,30 +57,37 @@ class ScheduleGenerator {
 
                 // Student available in that slot ?
                 val available = studentSlots.any {
-                    it.dayOfWeek == slot.dayOfWeek && it.startTime == slot.startTime
+                            it.dayOfWeek == slot.dayOfWeek &&
+                            it.startTime == slot.startTime &&
+                            it.endTime == slot.endTime
                 }
+
                 if (!available) continue
 
                 // have more than maxDailySessions in the same day
-                val mapStudent = dailyCount.getOrPut(student.id) { mutableMapOf() }
-                val countToday = mapStudent.getOrDefault(slot.dayOfWeek, 0)
-                if (countToday >= student.maxDailySessions) continue
+                val studentDayMap = studentSessionsPerDay.getOrPut(student.id) { mutableMapOf() }
+                val countSessionsToday = studentDayMap.getOrDefault(slot.dayOfWeek, 0)
+
+                if(countSessionsToday >= restrictions.maxSessionsPerStudentPerDay) {
+                    continue
+                }
 
                 // assign to session
                 enrolled.add(student.id)
-                mapStudent[slot.dayOfWeek] = countToday + 1
+                studentDayMap[slot.dayOfWeek] = countSessionsToday + 1
             }
 
             if (enrolled.isNotEmpty()) {
                 sessions.add(
                     ScheduledSession(
-                        teacherId  = teacherId,
+                        teacherId = teacherId,
                         studentIds = enrolled,
-                        dayOfWeek  = slot.dayOfWeek,
-                        startTime  = slot.startTime.toString(),
-                        endTime    = slot.endTime.toString()
+                        dayOfWeek = slot.dayOfWeek,
+                        startTime = slot.startTime.toString(),
+                        endTime = slot.endTime.toString()
                     )
                 )
+                teacherMinutesPerDay[slot.dayOfWeek] = minutesUsedToday + restrictions.sessionDurationMinutes
             }
         }
         return sessions

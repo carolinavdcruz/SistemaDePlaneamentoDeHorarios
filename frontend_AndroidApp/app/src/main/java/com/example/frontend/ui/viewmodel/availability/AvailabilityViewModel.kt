@@ -13,20 +13,31 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+data class DayAvailabilityInput(
+    val day: String,
+    val isSelected: Boolean = false,
+    val startTime: String = "09:00",
+    val endTime: String = "17:00"
+)
+
 class AvailabilityViewModel(
     private val availabilityRepository: AvailabilityRepository,
-    private val timeSlotRepository: TimeSlotRepository
+    //private val timeSlotRepository: TimeSlotRepository
 ) : ViewModel() {
 
     // UI STATE
-    private val _selectedDays = MutableStateFlow<Set<String>>(emptySet())
-    val selectedDays: StateFlow<Set<String>> = _selectedDays
-
-    private val _startTime = MutableStateFlow("09:00")
-    val startTime: StateFlow<String> = _startTime
-
-    private val _endTime = MutableStateFlow("17:00")
-    val endTime: StateFlow<String> = _endTime
+    private val _dayAvailabilities = MutableStateFlow(
+        listOf(
+            DayAvailabilityInput("Mon"),
+            DayAvailabilityInput("Tue"),
+            DayAvailabilityInput("Wed"),
+            DayAvailabilityInput("Thu"),
+            DayAvailabilityInput("Fri"),
+            DayAvailabilityInput("Sat"),
+            DayAvailabilityInput("Sun")
+        )
+    )
+    val dayAvailabilities: StateFlow<List<DayAvailabilityInput>> = _dayAvailabilities
 
     // DB STATE
     private val _availabilityList = MutableStateFlow<List<AvailabilityEntity>>(emptyList())
@@ -46,41 +57,59 @@ class AvailabilityViewModel(
     private val reverseDaysMap = daysMap.entries.associate { (k, v) -> v to k }
 
     fun toggleDay(day: String) {
-        _selectedDays.value =
-            if (_selectedDays.value.contains(day))
-                _selectedDays.value - day
-            else
-                _selectedDays.value + day
+        _dayAvailabilities.value =
+            _dayAvailabilities.value.map {
+                if (it.day == day) {
+                    it.copy(isSelected = !it.isSelected)
+                } else {
+                    it
+                }
+            }
     }
 
-    fun setStartTime(time: String) {
-        _startTime.value = time
+    fun setStartTime(day: String, time: String) {
+        _dayAvailabilities.value = _dayAvailabilities.value.map {
+            if (it.day == day) {
+                it.copy(startTime = time)
+            } else {
+                it
+            }
+        }
     }
 
-    fun setEndTime(time: String) {
-        _endTime.value = time
+    fun setEndTime(day: String, time: String) {
+        _dayAvailabilities.value = _dayAvailabilities.value.map {
+            if (it.day == day) {
+                it.copy(endTime = time)
+            } else {
+                it
+            }
+        }
     }
 
     fun load(ownerId: Int, ownerType: OwnerType) {
+
         viewModelScope.launch {
             val data = availabilityRepository.getByOwner(ownerId, ownerType)
             _availabilityList.value = data
 
+            val defaultDays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+
             // Preenche a UI com dados guardados
-            if (data.isNotEmpty()) {
+            _dayAvailabilities.value = defaultDays.map { day ->
+                val dayNumber = daysMap[day]
+                val savedAvailability = data.find { it.dayOfWeek == dayNumber }
 
-                _selectedDays.value = data.mapNotNull { availability ->
-                    reverseDaysMap[availability.dayOfWeek]
-                }.toSet()
-
-                _startTime.value = data.first().startTime
-                _endTime.value = data.first().endTime
-
-            } else {
-
-                _selectedDays.value = emptySet()
-                _startTime.value = "09:00"
-                _endTime.value = "17:00"
+                if (savedAvailability != null) {
+                    DayAvailabilityInput(
+                        day = day,
+                        isSelected = true,
+                        startTime = savedAvailability.startTime,
+                        endTime = savedAvailability.endTime
+                    )
+                } else {
+                    DayAvailabilityInput(day = day)
+                }
             }
         }
     }
@@ -90,36 +119,22 @@ class AvailabilityViewModel(
 
             availabilityRepository.deleteByOwner(ownerId,ownerType)
 
-            val newEntities = _selectedDays.value.map { day ->
-                AvailabilityEntity(
-                    ownerId   = ownerId,
-                    ownerType = ownerType,
-                    dayOfWeek = daysMap[day] ?: 1, // TODO: rever este se for null
-                    startTime = _startTime.value,
-                    endTime   = _endTime.value
-                )
-            }
-
-            newEntities.forEach { availabilityRepository.insert(it) }
-
-            // criar TimeSlots de 1h
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                val triples = newEntities.map { Triple(it.dayOfWeek, it.startTime, it.endTime) }
-
-                val slots = TimeSlotProcessor.processAll(triples, slotDurationMinutes = 60L)
-
-                val slotEntities = slots.mapIndexed { index, slot ->
-                    TimeSlotEntity(
-                        id = index,           // IDs sequenciais; clearAll() apaga os antigos
-                        dayOfWeek = slot.dayOfWeek,
-                        startTime = slot.startTime.toString(),
-                        endTime = slot.endTime.toString()
+            val selectedAvailabilities = _dayAvailabilities.value
+                .filter { it.isSelected }
+                .map { dayInput ->
+                    AvailabilityEntity(
+                        ownerId = ownerId,
+                        ownerType = ownerType,
+                        dayOfWeek = daysMap[dayInput.day] ?: 1,
+                        startTime = dayInput.startTime,
+                        endTime = dayInput.endTime
                     )
                 }
 
-                timeSlotRepository.replaceAll(slotEntities)
+            selectedAvailabilities.forEach {
+                availabilityRepository.insert(it)
             }
+
             load(ownerId, ownerType)
         }
     }
@@ -128,9 +143,16 @@ class AvailabilityViewModel(
         viewModelScope.launch {
             availabilityRepository.deleteByOwner(ownerId, ownerType)
             _availabilityList.value = emptyList()
-            _selectedDays.value = emptySet()
-            _startTime.value = "09:00"
-            _endTime.value = "17:00"
+
+            _dayAvailabilities.value = listOf(
+                DayAvailabilityInput("Mon"),
+                DayAvailabilityInput("Tue"),
+                DayAvailabilityInput("Wed"),
+                DayAvailabilityInput("Thu"),
+                DayAvailabilityInput("Fri"),
+                DayAvailabilityInput("Sat"),
+                DayAvailabilityInput("Sun")
+            )
         }
     }
 }

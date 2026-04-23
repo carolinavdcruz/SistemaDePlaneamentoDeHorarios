@@ -21,7 +21,10 @@ import kotlinx.coroutines.launch
 sealed class ScheduleUiState {
     object Idle : ScheduleUiState()
     object Loading : ScheduleUiState()
-    data class Success(val sessions: List<ScheduledSession>) : ScheduleUiState()
+    data class Success(
+        val sessions: List<ScheduledSession>,
+        val studentName: Map<Int, String>
+    ) : ScheduleUiState()
     data class Empty(val reason: String) : ScheduleUiState()
     data class Error(val message: String) : ScheduleUiState()
 }
@@ -37,6 +40,7 @@ class ScheduleViewModel(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun generateSchedule(teacherId: Int) {
+
         viewModelScope.launch {
             _uiState.value = ScheduleUiState.Loading
 
@@ -72,8 +76,9 @@ class ScheduleViewModel(
 
                 // 3. Buscar alunos associados ao professor
                 val students: List<StudentEntity> = studentRepository.getByTeacherId(teacherId)
+                val studentNames = students.associate { it.id to it.name }
                 if (students.isEmpty()) {
-                    _uiState.value = ScheduleUiState.Empty(
+                     ScheduleUiState.Empty(
                         "Sem alunos associados. Adiciona alunos primeiro."
                     )
                     return@launch
@@ -101,7 +106,7 @@ class ScheduleViewModel(
                 _uiState.value = if (sessions.isEmpty()) {
                     ScheduleUiState.Empty("Sem sobreposições de disponibilidade encontradas.")
                 } else {
-                    ScheduleUiState.Success(sessions)
+                    ScheduleUiState.Success(sessions,studentNames)
                 }
 
             } catch (e: Exception) {
