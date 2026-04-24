@@ -6,7 +6,7 @@ import com.example.frontend.data.model.TimeSlot
 import java.time.LocalTime
 
 /**
- * Converte um intervalo de disponibilidade em blocos discretos de [slotDurationMinutes] minutos.
+ * Converte um intervalo de disponibilidade em blocos de slotDurationMinutes em minutos.
  * Exemplo: 09:00–11:00 com 60 min → [09:00–10:00, 10:00–11:00]
  */
 object TimeSlotProcessor {

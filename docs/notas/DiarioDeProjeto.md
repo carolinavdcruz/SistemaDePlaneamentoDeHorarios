@@ -1,6 +1,6 @@
 # Diário de Projeto: Sistema de Planeamento de Horários
 
-**Faculdade** Instituto Superior de Engenhatia de Lisboa - ISEL
+**Faculdade** Instituto Superior de Engenharia de Lisboa - ISEL
 
 **Curso** Engenharia Informática e de Computadores
 
@@ -28,9 +28,9 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 ---
 
 ## Datas (Milestones)
-* **09 de Março de 2026:** Entrega da Proposta do Projeto.
+* **9 de Março de 2026:** Entrega da Proposta do Projeto.
 * **27 de Abril de 2026:** Apresentação de Progresso (e indicação do arguente).
-* **01 de Junho de 2026:** Entrega da Versão Beta.
+* **1 de Junho de 2026:** Entrega da Versão Beta.
 * **11 de Julho de 2026:** Entrega da Versão Final (Época Normal/Recurso).
 
 ---
@@ -71,7 +71,6 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 **Semana 6 (30/03 - 05/04)**
 * [x] Trocar fake bd pela ROOM
-* [ ] Ligar à API
 * [x] Implementação do Login
 * [x] Implementação da gestão de disponibilidades.
 * [x] Criação da interface para inserir horários disponíveis.
@@ -102,8 +101,8 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 * [ ] Preparar PowerPoint para a Apresentação de Progresso.
 * [ ] Melhorias no algoritmo de planeamento.
 * [ ] Implementação da verificação de restrições (capacidade máxima, horas diárias).
-* [ ] Implementação do cálculo de métricas do horário gerado.
-* [ ] Preparação do PowerPoint para a apresentação de progresso.
+* [x] Implementação da visualização do horário criado.
+
 
 
 
@@ -111,8 +110,7 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 *MILESTONE: Apresentação de Progresso (27/04)*
 * [ ] Realização da Apresentação de Progresso do Projeto.
-* [ ] Implementação da visualização do horário gerado.
-* [ ] Criação da página de visualização do horário semanal.
+* [ ] Ligar à API.
 * [ ] Implementação da confirmação ou rejeição do horário gerado.
 
 
