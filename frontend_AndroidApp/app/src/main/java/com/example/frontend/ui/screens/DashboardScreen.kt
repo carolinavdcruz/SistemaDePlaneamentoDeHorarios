@@ -120,6 +120,7 @@ fun DashboardScreen(
 
 
 // DASHBOARD PRINCIPAL
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainDashboardContent( teacherId: Int?, onSignOutClick: () -> Unit) {
     Column(

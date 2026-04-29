@@ -28,7 +28,6 @@ private val DAY_NAMES = mapOf(
 )
 
 // Button Create Schedule
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun GenerateScheduleButton(teacherId: Int) {
@@ -277,5 +276,4 @@ fun StudentChip(name: String) {
         )
     }
 }
-
 
