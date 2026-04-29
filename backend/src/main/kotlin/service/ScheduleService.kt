@@ -1,6 +1,10 @@
 package service
 
-/* object ScheduleService {
+import model.Session
+import model.Student
+import model.TimeSlot
+
+object ScheduleService {
 
     /**
      * Algoritmo greedy — Use Case 5 e 6.
@@ -58,9 +62,6 @@ package service
                 sessions.add(Session(slot = slot, studentIds = enrolled))
             }
         }
-
         return sessions
     }
 }
-
- */

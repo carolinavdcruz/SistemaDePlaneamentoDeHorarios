@@ -1,8 +1,8 @@
 package service
 
+import model.TimeSlotEntity
+import java.time.LocalTime
 
-
-/* import java.time.LocalTime
 object AvailabilityService {
 
     /**
@@ -10,8 +10,6 @@ object AvailabilityService {
      * Esta é a lógica do Use Case 4.
      */
     fun splitIntoSlots(
-        ownerId: Int,
-        ownerType: String,
         dayOfWeek: Int,
         startTime: LocalTime,
         endTime: LocalTime,
@@ -34,5 +32,3 @@ object AvailabilityService {
         return slots
     }
 }
-
- */

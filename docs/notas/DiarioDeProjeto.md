@@ -98,9 +98,7 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 
 **Semana 9 (20/04 - 26/04)**
-* [ ] Preparar PowerPoint para a Apresentação de Progresso.
-* [ ] Melhorias no algoritmo de planeamento.
-* [ ] Implementação da verificação de restrições (capacidade máxima, horas diárias).
+* [x] Preparar PowerPoint para a Apresentação de Progresso.
 * [x] Implementação da visualização do horário criado.
 
 
@@ -109,8 +107,8 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 **Semana 10 (27/04 - 03/05)**
 
 *MILESTONE: Apresentação de Progresso (27/04)*
-* [ ] Realização da Apresentação de Progresso do Projeto.
 * [ ] Ligar à API.
+* [x] Pedidos a funcionar no Postman
 * [ ] Implementação da confirmação ou rejeição do horário gerado.
 
 
@@ -134,6 +132,7 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 * [ ] Testes completos do fluxo de criação de horários.
 * [ ] Implementação da visualização de sessões de grupo.
 * [ ] Implementação de métricas de ocupação das sessões.
+* [ ] Realização da Apresentação de Progresso do Projeto.
 
 
 

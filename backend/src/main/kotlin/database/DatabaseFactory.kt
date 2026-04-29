@@ -11,7 +11,7 @@ object DatabaseFactory {
             jdbcUrl         = "jdbc:postgresql://localhost:5432/sph"
             driverClassName = "org.postgresql.Driver"
             username        = "postgres"
-            password        = "password"
+            password        = "postgres"
             maximumPoolSize = 10
         }
         Database.connect(HikariDataSource(config))
