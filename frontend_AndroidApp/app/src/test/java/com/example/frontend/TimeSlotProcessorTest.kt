@@ -91,4 +91,11 @@ class TimeSlotProcessorTest {
         val days = slots.map { it.dayOfWeek }
         assertTrue(1 in days && 5 in days)
     }
+
+    @Test
+    fun `intervalo de 2h com slots de 30min gera 4 slots`() {
+        val slots = TimeSlotProcessor.process(1, "09:00", "11:00", 30L)
+        assertEquals(4, slots.size)
+    }
+
 }

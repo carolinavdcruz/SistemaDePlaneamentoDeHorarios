@@ -40,8 +40,8 @@ fun AvailabilitySelector(
         AppModule.provideAvailabilityViewModel()
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.load(ownerId, ownerType)
+    LaunchedEffect(ownerId, ownerType){
+        viewModel.load(ownerId,ownerType)
     }
 
     val availabilityList by viewModel.availabilityList.collectAsState()

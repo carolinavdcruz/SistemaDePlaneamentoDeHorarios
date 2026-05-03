@@ -78,7 +78,7 @@ class ScheduleViewModel(
                 val students: List<StudentEntity> = studentRepository.getByTeacherId(teacherId)
                 val studentNames = students.associate { it.id to it.name }
                 if (students.isEmpty()) {
-                     ScheduleUiState.Empty(
+                    _uiState.value = ScheduleUiState.Empty(
                         "Sem alunos associados. Adiciona alunos primeiro."
                     )
                     return@launch
