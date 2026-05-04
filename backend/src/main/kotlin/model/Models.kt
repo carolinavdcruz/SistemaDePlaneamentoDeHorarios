@@ -35,3 +35,10 @@ data class TimeSlotEntity(
     val startTime: LocalTime,
     val endTime: LocalTime
 )
+
+data class Restrictions(
+    val sessionDurationMinutes: Int = 60,
+    val maxDailyHours: Int = 3,
+    val maxParticipantsPerSession: Int = 5,
+    val maxSessionsPerStudentPerDay: Int = 1
+)
