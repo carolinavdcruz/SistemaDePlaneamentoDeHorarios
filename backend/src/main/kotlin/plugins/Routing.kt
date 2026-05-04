@@ -15,13 +15,18 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import model.AvailabilityRequest
 import model.AvailabilityResponse
+import model.Restrictions
+import model.Session
+import model.Student
 import model.StudentResponse
 import model.TeacherResponse
+import model.TimeSlot
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import service.AvailabilityService
+import service.ScheduleService
 import java.time.LocalTime
 
 @Suppress("NewApi")
@@ -205,8 +210,86 @@ fun Application.configureRouting() {
             call.respond(HttpStatusCode.OK, students as List<StudentResponse>)
         }
 
+        // POST /schedule/create
+        // Cria horário para o professor com base nas disponibilidades
         post("/schedule/create") {
-            TODO()
+            val body = call.receive<Map<String, Int>>()
+            val teacherId = body["teacherId"]
+                ?: return@post call.respond(HttpStatusCode.BadRequest, "teacherId em falta")
+
+            val restrictions = Restrictions(
+                sessionDurationMinutes = body["sessionDurationMinutes"] ?: 60,
+                maxDailyHours = body["maxDailyHours"] ?: 3,
+                maxParticipantsPerSession = body["maxParticipantsPerSession"] ?: 5,
+                maxSessionsPerStudentPerDay = body["maxSessionsPerStudentPerDay"] ?: 1
+            )
+
+            val result = transaction {
+
+                // Vai buscar slots do professor
+                val teacherSlots = AvailabilityTable
+                    .select { AvailabilityTable.teacherId eq teacherId }
+                    .map {
+                        TimeSlot(
+                            id = it[AvailabilityTable.id].value,
+                            dayOfWeek = it[AvailabilityTable.dayOfWeek],
+                            startTime = it[AvailabilityTable.startTime],
+                            endTime = it[AvailabilityTable.endTime]
+                        )
+                    }
+
+                if (teacherSlots.isEmpty()) {
+                    return@transaction emptyList<Session>()
+                }
+
+                // Vai buscar todos os alunos
+                val students = StudentTable.selectAll().map {
+                    Student(
+                        id = it[StudentTable.id].value,
+                        name = it[StudentTable.name],
+                        email = it[StudentTable.email],
+                        maxDailySessions = it[StudentTable.maxDailySessions]
+                    )
+                }
+
+                if (students.isEmpty()) {
+                    return@transaction emptyList<Session>()
+                }
+
+                // Disponibilidades de cada aluno
+                val studentAvailabilities = students.associate { student ->
+                    student.id to AvailabilityTable
+                        .select { AvailabilityTable.studentId eq student.id }
+                        .map {
+                            TimeSlot(
+                                id        = it[AvailabilityTable.id].value,
+                                dayOfWeek = it[AvailabilityTable.dayOfWeek],
+                                startTime = it[AvailabilityTable.startTime],
+                                endTime   = it[AvailabilityTable.endTime]
+                            )
+                        }
+                }
+
+                // Algoritmo
+                ScheduleService.create(
+                    teacherId            = teacherId,
+                    teacherSlots         = teacherSlots,
+                    students             = students,
+                    studentAvailabilities = studentAvailabilities,
+                    restrictions         = restrictions
+                )
+            }
+
+            // Converte para resposta JSON
+            val response = result.map { session ->
+                mapOf(
+                    "dayOfWeek"  to session.slot.dayOfWeek.toString(),
+                    "startTime"  to session.slot.startTime.toString(),
+                    "endTime"    to session.slot.endTime.toString(),
+                    "studentIds" to session.studentIds.joinToString(",")
+                )
+            }
+            call.respond(HttpStatusCode.OK, response)
         }
     }
 }

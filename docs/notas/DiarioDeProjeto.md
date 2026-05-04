@@ -116,9 +116,8 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 ### Fase 4: Algoritmo e Visualização
 **Semana 11 (04/05 - 10/05)**
 * [ ] Melhorias na interface de visualização do horário.
-* [ ] Implementação da funcionalidade de criação de novos horários.
-* [ ] Implementação do armazenamento de horários gerados.
-* [ ] Criar endpoint POST /schedule/generate no Routing.kt
+* [x] Implementação da funcionalidade de criação de novos horários.
+* [ ] Implementação do armazenamento de horários criados.
 * [ ] Ligar à API.
 * [ ] Implementação da confirmação ou rejeição do horário gerado.
 * [ ] Liga a app Android ao backend local via emulador (10.0.2.2:8080)
