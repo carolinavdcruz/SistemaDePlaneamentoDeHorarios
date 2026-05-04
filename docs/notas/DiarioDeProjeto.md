@@ -107,9 +107,9 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 **Semana 10 (27/04 - 03/05)**
 
 *MILESTONE: Apresentação de Progresso (27/04)*
-* [ ] Ligar à API.
 * [x] Pedidos a funcionar no Postman
-* [ ] Implementação da confirmação ou rejeição do horário gerado.
+* [x] Criação dockerfile
+* [x] Atualização da criação do schedule no backend
 
 
 
@@ -118,8 +118,10 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 * [ ] Melhorias na interface de visualização do horário.
 * [ ] Implementação da funcionalidade de criação de novos horários.
 * [ ] Implementação do armazenamento de horários gerados.
-
-
+* [ ] Criar endpoint POST /schedule/generate no Routing.kt
+* [ ] Ligar à API.
+* [ ] Implementação da confirmação ou rejeição do horário gerado.
+* [ ] Liga a app Android ao backend local via emulador (10.0.2.2:8080)
 
 **Semana 12 (11/05 - 17/05)**
 * [ ] Integração com a API backend.

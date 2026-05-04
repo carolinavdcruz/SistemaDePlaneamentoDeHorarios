@@ -39,7 +39,7 @@ class ScheduleGeneratorTest {
         val students     = listOf(student(1))
         val avail        = mapOf(1 to listOf(slot(1, 9)))
 
-        val result = generator.generate(1, teacherSlots, students, avail, restrictions)
+        val result = generator.create(1, teacherSlots, students, avail, restrictions)
 
         assertEquals(1, result.size)
         assertTrue(1 in result[0].studentIds)
@@ -51,7 +51,7 @@ class ScheduleGeneratorTest {
         val students     = listOf(student(1))
         val avail        = mapOf(1 to listOf(slot(2, 9))) // dia diferente
 
-        val result = generator.generate(1, teacherSlots, students, avail, restrictions)
+        val result = generator.create(1, teacherSlots, students, avail, restrictions)
 
         assertEquals(0, result.size)
     }
@@ -67,7 +67,7 @@ class ScheduleGeneratorTest {
             3 to listOf(slot(1, 9))
         )
 
-        val result = generator.generate(1, teacherSlots, students, avail, r)
+        val result = generator.create(1, teacherSlots, students, avail, r)
 
         assertEquals(1, result.size)
         assertEquals(2, result[0].studentIds.size)
@@ -79,7 +79,7 @@ class ScheduleGeneratorTest {
         val students     = listOf(student(1, maxDaily = 1))
         val avail        = mapOf(1 to listOf(slot(1, 9), slot(1, 10)))
 
-        val result = generator.generate(1, teacherSlots, students, avail, restrictions)
+        val result = generator.create(1, teacherSlots, students, avail, restrictions)
 
         val totalAssignments = result.sumOf { it.studentIds.size }
         assertEquals(1, totalAssignments) // só 1 sessão no dia, apesar de 2 slots
@@ -97,7 +97,7 @@ class ScheduleGeneratorTest {
             2 to listOf(slot(1, 9))
         )
 
-        val result = generator.generate(1, teacherSlots, students, avail, r)
+        val result = generator.create(1, teacherSlots, students, avail, r)
 
         assertEquals(1, result[0].studentIds.size)
         assertEquals(2, result[0].studentIds[0]) // aluno 2 (mais restrito) vem primeiro
@@ -105,7 +105,7 @@ class ScheduleGeneratorTest {
 
     @Test
     fun `sem alunos devolve lista vazia`() {
-        val result = generator.generate(1, listOf(slot(1, 9)), emptyList(), emptyMap(), restrictions)
+        val result = generator.create(1, listOf(slot(1, 9)), emptyList(), emptyMap(), restrictions)
         assertEquals(0, result.size)
     }
 
@@ -113,7 +113,7 @@ class ScheduleGeneratorTest {
     fun `sem slots do professor devolve lista vazia`() {
         val students = listOf(student(1))
         val avail    = mapOf(1 to listOf(slot(1, 9)))
-        val result   = generator.generate(1, emptyList(), students, avail, restrictions)
+        val result   = generator.create(1, emptyList(), students, avail, restrictions)
         assertEquals(0, result.size)
     }
 }

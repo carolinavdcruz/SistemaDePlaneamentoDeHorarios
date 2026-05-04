@@ -52,7 +52,7 @@ object AppModule {
     }
 
     private val availabilityRepository by lazy {
-        AvailabilityRepository(db().availabilityDao())
+        AvailabilityRepository(db().availabilityDao(), availabilityApi)
     }
 
     private val restrictionsRepository by lazy {
@@ -63,12 +63,9 @@ object AppModule {
         TimeSlotRepository(db().timeSlotDao())
     }
 
-    /*
     private val availabilityApi by lazy {
         AvailabilityApi()
     }
-    */
-
 
     fun provideStudentViewModel(): StudentViewModel {
         return StudentViewModel(studentRepository)

@@ -95,7 +95,7 @@ class ScheduleViewModel(
                 }
 
                 // 5. Gerar horário com o ScheduleGenerator
-                val sessions = ScheduleGenerator().generate(
+                val sessions = ScheduleGenerator().create(
                     teacherId            = teacherId,
                     teacherSlots         = teacherSlots,
                     students             = students,

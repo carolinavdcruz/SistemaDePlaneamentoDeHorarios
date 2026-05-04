@@ -9,37 +9,31 @@ import com.example.frontend.data.remote.dto.AvailabilityRequest
 
 class AvailabilityRepository(
     private val dao: AvailabilityDao,
-    //private val api: AvailabilityApi
+    private val api: AvailabilityApi
 ) {
+    private val tag = "AvailabilityRepository"
 
-    //private val tag = "AvailabilityRepository"
 
-    /*
     suspend fun insert(availability: AvailabilityEntity) {
+        // guarda sempre localmente
+        dao.insert(availability)
+
         println("ROOM INSERT: $availability")
-        
+
         try {
             // envia para API
-            api.createAvailability(
+            api.setupAvailability(
                 AvailabilityRequest(
-                    ownerId = availability.ownerId,
-                    ownerType = availability.ownerType,
+                    ownerId   = availability.ownerId,
+                    ownerType = availability.ownerType.name,
                     dayOfWeek = availability.dayOfWeek,
                     startTime = availability.startTime,
-                    endTime = availability.endTime
+                    endTime   = availability.endTime
                 )
             )
         } catch (e: Exception) {
             Log.e(tag, "Error sending availability to API: ${e.message}")
         }
-
-        // guarda local sempre, mesmo que a API falhe para permitir modo offline
-        dao.insert(availability)
-    }
-     */
-
-    suspend fun insert(availability: AvailabilityEntity){
-        dao.insert(availability)
     }
 
     suspend fun update(availability: AvailabilityEntity) {
@@ -54,39 +48,28 @@ class AvailabilityRepository(
         return dao.getById(id)
     }
 
-    /*
-    suspend fun getByOwner(ownerId: Int, ownerType: String): List<AvailabilityEntity> {
-        try {
-            // Tenta API
-            val remote = api.getAvailability(ownerId, ownerType)
-
-            // Se a API responder, atualiza o cache local
+    suspend fun getByOwner(ownerId: Int, ownerType: OwnerType): List<AvailabilityEntity> {
+        return try {
+            // tenta ir buscar da API e atualiza o cache local
+            val remote = api.getAvailability(ownerId, ownerType.name)
             val entities = remote.map {
                 AvailabilityEntity(
-                    id = it.id,
-                    ownerId = it.ownerId,
-                    ownerType = it.ownerType,
+                    id        = it.id,
+                    ownerId   = it.ownerId,
+                    ownerType = OwnerType.valueOf(it.ownerType),
                     dayOfWeek = it.dayOfWeek,
                     startTime = it.startTime,
-                    endTime = it.endTime
+                    endTime   = it.endTime
                 )
             }
             dao.deleteByOwner(ownerId, ownerType)
             entities.forEach { dao.insert(it) }
-            
-            return entities
+            entities
         } catch (e: Exception) {
-            Log.e(tag, "Error fetching availability from API: ${e.message}")
-            // Fallback para o banco de dados local em caso de erro de rede
-            return dao.getByOwner(ownerId, ownerType)
+            Log.e(tag, "Erro ao buscar da API, usando cache local: ${e.message}")
+            dao.getByOwner(ownerId, ownerType)
         }
     }
-     */
-
-    suspend fun getByOwner(ownerId: Int, ownerType: OwnerType): List<AvailabilityEntity> {
-        return dao.getByOwner(ownerId, ownerType)
-    }
-
 
     suspend fun getByDay(dayOfWeek: Int): List<AvailabilityEntity> {
         return dao.getByDay(dayOfWeek)
@@ -95,32 +78,4 @@ class AvailabilityRepository(
     suspend fun deleteByOwner(ownerId: Int, ownerType: OwnerType) {
         dao.deleteByOwner(ownerId, ownerType)
     }
-
-    /*
-    suspend fun saveAndSync(ownerId: Int, ownerType: String, entities: List<AvailabilityEntity>) {
-        // Guarda localmente primeiro
-        entities.forEach { dao.insert(it) }
-
-        // Se for um Professor, envia para a API para gerar os TimeSlots de 1h
-        if (ownerType == "TEACHER") {
-            entities.forEach { entity ->
-                try {
-                    api.setupAvailability(
-                        AvailabilityRequest(
-                            ownerId = ownerId,
-                            ownerType = "TEACHER",
-                            dayOfWeek = entity.dayOfWeek,
-                            startTime = entity.startTime,
-                            endTime = entity.endTime
-                        )
-                    )
-                } catch (e: Exception) {
-                    Log.e(tag, "Error in setupAvailability: ${e.message}")
-                }
-            }
-        }
-    }
-     */
-
-
 }

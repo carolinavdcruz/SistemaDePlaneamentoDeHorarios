@@ -17,7 +17,7 @@ class ScheduleGenerator {
      *
      * Order students by least availability (most restricted first).
      */
-    fun generate(
+    fun create(
         teacherId: Int,
         teacherSlots: List<TimeSlot>,
         students: List<StudentEntity>,
