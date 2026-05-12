@@ -1,12 +1,25 @@
 package com.example.frontend.data.repository
 
+import android.util.Log
 import com.example.frontend.data.local.dao.StudentDao
 import com.example.frontend.data.local.entity.StudentEntity
+import com.example.frontend.data.remote.api.StudentApi
+import com.example.frontend.data.remote.api.StudentRequest
 
-class StudentRepository(private val dao: StudentDao) {
+class StudentRepository(
+    private val dao: StudentDao,
+    private val api: StudentApi
+) {
+
+    private val tag = "StudentRepository"
 
     suspend fun insert(student: StudentEntity) {
         dao.insert(student)
+        try {
+            api.register(StudentRequest(name = student.name, email = student.email))
+        } catch (e: Exception) {
+            Log.e(tag, "Error sending student to API: ${e.message}")
+        }
     }
 
     suspend fun update(student: StudentEntity) {

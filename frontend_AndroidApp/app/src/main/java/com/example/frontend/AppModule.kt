@@ -23,11 +23,16 @@ import com.example.frontend.ui.viewmodel.register.RegisterViewModel
 import com.example.frontend.ui.viewmodel.schedule.ScheduleViewModel
 import com.example.frontend.ui.viewmodel.student.ChooseTeacherViewModel
 import com.example.frontend.ui.viewmodel.teacher.RestrictionsViewModel
+import com.example.frontend.data.remote.api.StudentApi
+import com.example.frontend.data.remote.api.TeacherApi
 
 
 object AppModule {
 
     private var database: AppDatabase? = null
+    private val teacherApi by lazy { TeacherApi() }
+    private val studentApi by lazy { StudentApi() }
+
 
     fun init(context: Context) {
         database = DatabaseProvider.getDatabase(context)
@@ -43,12 +48,12 @@ object AppModule {
         SessionManager(AppContext.context)
     }
 
-    private val studentRepository by lazy {
-        StudentRepository(db().studentDao())
+    private val teacherRepository by lazy {
+        TeacherRepository(db().teacherDao(), teacherApi)
     }
 
-    private val teacherRepository by lazy {
-        TeacherRepository(db().teacherDao())
+    private val studentRepository by lazy {
+        StudentRepository(db().studentDao(), studentApi)
     }
 
     private val availabilityRepository by lazy {
