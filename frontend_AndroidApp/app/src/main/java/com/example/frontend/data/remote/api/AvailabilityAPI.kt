@@ -26,7 +26,7 @@ class AvailabilityApi {
     }
 
     suspend fun setupAvailability(request: AvailabilityRequest): HttpResponse {
-        return client.post("http://10.0.2.2:8080/availability/setup") {
+        return client.post("http://10.0.2.2:8080/availability") {
             setBody(request)
         }
     }
