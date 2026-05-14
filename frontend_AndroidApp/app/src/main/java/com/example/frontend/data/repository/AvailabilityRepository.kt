@@ -22,7 +22,7 @@ class AvailabilityRepository(
 
         try {
             // envia para API
-            api.setupAvailability(
+            api.createAvailability(
                 AvailabilityRequest(
                     ownerId   = availability.ownerId,
                     ownerType = availability.ownerType.name,
@@ -77,5 +77,11 @@ class AvailabilityRepository(
 
     suspend fun deleteByOwner(ownerId: Int, ownerType: OwnerType) {
         dao.deleteByOwner(ownerId, ownerType)
+        try {
+            api.deleteAvailability(ownerId, ownerType.name)
+        } catch (e: Exception) {
+            Log.e(tag, "Erro ao apagar disponibilidade na API: ${e.message}")
+        }
     }
+
 }

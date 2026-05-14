@@ -4,11 +4,11 @@ import com.example.frontend.data.remote.client
 import com.example.frontend.data.remote.dto.AvailabilityRequest
 import com.example.frontend.data.remote.dto.AvailabilityResponse
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
 
 class AvailabilityApi {
 
@@ -19,15 +19,16 @@ class AvailabilityApi {
         }.body()
     }
 
-    suspend fun createAvailability(request: AvailabilityRequest) {
-        client.post("http://10.0.2.2:8080/availability") {
-            setBody(request)
-        }
-    }
-
-    suspend fun setupAvailability(request: AvailabilityRequest): HttpResponse {
+    suspend fun createAvailability(request: AvailabilityRequest): AvailabilityResponse {
         return client.post("http://10.0.2.2:8080/availability") {
             setBody(request)
+        }.body()
+    }
+
+    suspend fun deleteAvailability(ownerId: Int, ownerType: String) {
+        client.delete("http://10.0.2.2:8080/availability") {
+            parameter("ownerId", ownerId)
+            parameter("ownerType", ownerType)
         }
     }
 }

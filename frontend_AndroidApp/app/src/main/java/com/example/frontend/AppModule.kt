@@ -12,6 +12,7 @@ import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
 import com.example.frontend.data.local.database.AppDatabase
 import com.example.frontend.data.local.database.DatabaseProvider
 import com.example.frontend.data.remote.api.AvailabilityApi
+import com.example.frontend.data.remote.api.RestrictionsApi
 import com.example.frontend.data.repository.RestrictionsRepository
 import com.example.frontend.data.session.SessionManager
 import com.example.frontend.ui.viewmodel.login.LoginViewModel
@@ -30,9 +31,16 @@ import com.example.frontend.data.remote.api.TeacherApi
 object AppModule {
 
     private var database: AppDatabase? = null
-    private val teacherApi by lazy { TeacherApi() }
-    private val studentApi by lazy { StudentApi() }
+    private val teacherApi by lazy {
+        TeacherApi()
+    }
+    private val studentApi by lazy {
+        StudentApi()
+    }
 
+    private val restrictionsApi by lazy {
+        RestrictionsApi()
+    }
 
     fun init(context: Context) {
         database = DatabaseProvider.getDatabase(context)
@@ -61,7 +69,7 @@ object AppModule {
     }
 
     private val restrictionsRepository by lazy {
-        RestrictionsRepository(db().restrictionsDao())
+        RestrictionsRepository(db().restrictionsDao(), restrictionsApi)
     }
 
     private val timeSlotRepository by lazy {

@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.frontend.data.local.dao.StudentDao
 import com.example.frontend.data.local.entity.StudentEntity
 import com.example.frontend.data.remote.api.StudentApi
-import com.example.frontend.data.remote.api.StudentRequest
+import com.example.frontend.data.remote.dto.StudentRequest
 
 class StudentRepository(
     private val dao: StudentDao,
@@ -42,17 +42,41 @@ class StudentRepository(
         return dao.getByEmail(email)
     }
 
-    suspend fun getByTeacherId(teacherId: Int): List<StudentEntity>{
-       return dao.getByTeacherId(teacherId)
+    suspend fun getByTeacherId(teacherId: Int): List<StudentEntity> {
+        return try {
+            val remote = api.getStudentsByTeacher(teacherId)
+            val entities = remote.map {
+                StudentEntity(
+                    id = it.id,
+                    name = it.name,
+                    email = it.email,
+                    teacherId = it.teacherId,
+                    maxDailySessions = 1
+                )
+            }
+            entities.forEach { dao.insert(it) }
+            entities
+        } catch (e: Exception) {
+            Log.e(tag, "Erro ao buscar alunos do professor na API: ${e.message}")
+            dao.getByTeacherId(teacherId)
+        }
     }
 
-    suspend fun assignTeacherToStudent(studentId: Int, teacherId: Int){
+    suspend fun assignTeacherToStudent(studentId: Int, teacherId: Int) {
         dao.assignTeacherToStudent(studentId, teacherId)
-
+        try {
+            api.assignTeacher(studentId, teacherId)
+        } catch (e: Exception) {
+            Log.e(tag, "Erro ao associar professor ao aluno na API: ${e.message}")
+        }
     }
 
-    suspend fun unassignTeacherFromStudent(studentId: Int){
+    suspend fun unassignTeacherFromStudent(studentId: Int) {
         dao.unassignTeacherFromStudent(studentId)
+        try {
+            api.unassignTeacher(studentId)
+        } catch (e: Exception) {
+            Log.e(tag, "Erro ao desassociar professor do aluno na API: ${e.message}")
+        }
     }
-
 }

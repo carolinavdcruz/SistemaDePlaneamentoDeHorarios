@@ -2,8 +2,14 @@ package com.example.frontend.data.repository
 
 import com.example.frontend.data.local.dao.RestrictionsDao
 import com.example.frontend.data.local.entity.RestrictionsEntity
+import com.example.frontend.data.remote.api.RestrictionsApi
 
-class RestrictionsRepository(private val dao: RestrictionsDao) {
+class RestrictionsRepository(
+    private val dao: RestrictionsDao,
+    private val api: RestrictionsApi
+) {
+
+    // TODO: verificar estas fun!!!
 
     suspend fun insert(restrictions: RestrictionsEntity) {
         dao.insert(restrictions)
