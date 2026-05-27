@@ -35,11 +35,67 @@ fun GenerateScheduleButton(teacherId: Int) {
     val uiState by viewModel.uiState.collectAsState()
     val isLoading = uiState is ScheduleUiState.Loading
 
+    // Guarda automaticamente quando gera com sucesso
+    LaunchedEffect(uiState) {
+        if (uiState is ScheduleUiState.Success) {
+            viewModel.saveSchedule(teacherId, (uiState as ScheduleUiState.Success).sessions)
+        }
+    }
+
     Column {
         ProposedScheduleCard(uiState = uiState)
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Botões aceitar/rejeitar só aparecem quando há horário gerado
+        if (uiState is ScheduleUiState.Success) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Rejeitar
+                OutlinedButton(
+                    onClick = { viewModel.rejectSchedule() },
+                    modifier = Modifier.weight(1f).height(50.dp),
+                    border = BorderStroke(1.dp, Color.Red),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Rejeitar", color = Color.Red, fontSize = 14.sp)
+                }
+
+                // Aceitar
+                Button(
+                    onClick = { viewModel.acceptSchedule() },
+                    modifier = Modifier.weight(1f).height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = StatusActive),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Aceitar", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        // Mensagem de aceite
+        if (uiState is ScheduleUiState.Accepted) {
+            Surface(
+                color = StatusActive.copy(alpha = 0.15f),
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    "✓ Horário aceite e guardado!",
+                    color = StatusActive,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(12.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        // Botão gerar
         Button(
             onClick = { viewModel.generateSchedule(teacherId) },
             enabled = !isLoading,
@@ -103,6 +159,9 @@ fun ProposedScheduleCard(uiState: ScheduleUiState) {
                         sessions = uiState.sessions,
                         studentNames = uiState.studentName
                     )
+                }
+                is ScheduleUiState.Accepted -> {
+                    ScheduleEmptyState("Horário aceite com sucesso!")
                 }
             }
         }

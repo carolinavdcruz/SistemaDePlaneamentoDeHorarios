@@ -115,23 +115,19 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 ### Fase 4: Algoritmo e Visualização
 **Semana 11 (04/05 - 10/05)**
-* [x] Melhorias na interface de visualização do horário.
+* [x] Melhorias na ‘interface’ de visualização do horário.
 * [x] Implementação da funcionalidade de criação de novos horários.
 * [x] Implementação do armazenamento local de horários criados.
 * [x] Liga a app Android ao backend local via emulador (10.0.2.2:8080)
 
 **Semana 12 (11/05 - 17/05)**
-* [ ] Integração com a API backend.
-* [ ] Implementação de endpoints para geração de horários.
-* [ ] Implementação da persistência completa no PostgreSQL.
-* [ ] Implementação da confirmação ou rejeição do horário gerado.
+* [x] Integração com a API backend.
+* [x] Implementação de endpoints para geração de horários.
+* [x] Implementação da confirmação ou rejeição do horário criado no frontend.
 
 
 **Semana 13 (18/05 - 24/05)**
-* [ ] Testes completos do fluxo de criação de horários.
-* [ ] Implementação da visualização de sessões de grupo.
-* [ ] Implementação de métricas de ocupação das sessões.
-* [ ] Realização da Apresentação de Progresso do Projeto.
+* [x] Realização da Apresentação de Progresso do Projeto.
 
 
 
@@ -139,7 +135,7 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 * [ ] Correção de erros e melhorias na aplicação.
 * [ ] Preparação da versão beta.
 * [ ] Preparação da demonstração da aplicação.
-
+* [ ] Testes completos do fluxo de criação de horários.
 
 
 ### Fase 5: Integrações, Versão Beta e Finalização

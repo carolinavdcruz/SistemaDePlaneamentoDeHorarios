@@ -11,7 +11,6 @@ import com.example.frontend.data.model.ScheduledSession
 import com.example.frontend.data.model.TimeSlot
 import com.example.frontend.data.model.scheduling.ScheduleGenerator
 import com.example.frontend.data.model.scheduling.TimeSlotProcessor
-import com.example.frontend.data.remote.api.ScheduleApi
 import com.example.frontend.data.repository.AvailabilityRepository
 import com.example.frontend.data.repository.RestrictionsRepository
 import com.example.frontend.data.repository.StudentRepository
@@ -31,7 +30,8 @@ sealed class ScheduleUiState {
 }
 
 class ScheduleViewModel(
-    private val scheduleApi: ScheduleApi,
+    private val availabilityRepository: AvailabilityRepository,
+    private val restrictionsRepository: RestrictionsRepository,
     private val studentRepository: StudentRepository
 ) : ViewModel() {
 
@@ -40,31 +40,73 @@ class ScheduleViewModel(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun generateSchedule(teacherId: Int) {
+
         viewModelScope.launch {
             _uiState.value = ScheduleUiState.Loading
 
             try {
-                val remoteSessions = scheduleApi.generateSchedule(teacherId)
-                val students = studentRepository.getByTeacherId(teacherId)
-                val studentNames = students.associate { it.id to it.name }
-
-                val sessions = remoteSessions.map {
-                    ScheduledSession(
-                        teacherId = teacherId,
-                        studentIds = it.studentIds,
-                        dayOfWeek = it.dayOfWeek,
-                        startTime = it.startTime,
-                        endTime = it.endTime
+                // 1. Buscar restrições do professor
+                val restrictionsEntity = restrictionsRepository.getByTeacherId(teacherId)
+                if (restrictionsEntity == null) {
+                    _uiState.value = ScheduleUiState.Empty(
+                        "Sem restrições definidas. Configura as restrições primeiro."
                     )
+                    return@launch
                 }
+                val restrictions = Restrictions(
+                    teacherId                 = teacherId,
+                    maxDailyHours             = restrictionsEntity.maxDailyHours,
+                    sessionDurationMinutes    = restrictionsEntity.sessionDurationMinutes,
+                    maxParticipantsPerSession = restrictionsEntity.maxParticipantsPerSession,
+                    maxSessionsPerStudentPerDay = restrictionsEntity.maxSessionsPerStudentPerDay
+                )
+
+                // 2. Buscar disponibilidade do professor → converter em TimeSlots de 1h
+                val teacherAvailabilities = availabilityRepository.getByOwner(teacherId, OwnerType.TEACHER)
+                if (teacherAvailabilities.isEmpty()) {
+                    _uiState.value = ScheduleUiState.Empty(
+                        "O professor não tem disponibilidades definidas."
+                    )
+                    return@launch
+                }
+                val teacherSlots: List<TimeSlot> = TimeSlotProcessor.processAll(
+                    teacherAvailabilities.map { Triple(it.dayOfWeek, it.startTime, it.endTime) },
+                    slotDurationMinutes = restrictions.sessionDurationMinutes.toLong()
+                )
+
+                // 3. Buscar alunos associados ao professor
+                val students: List<StudentEntity> = studentRepository.getByTeacherId(teacherId)
+                val studentNames = students.associate { it.id to it.name }
+                if (students.isEmpty()) {
+                    _uiState.value = ScheduleUiState.Empty(
+                        "Sem alunos associados. Adiciona alunos primeiro."
+                    )
+                    return@launch
+                }
+
+                // 4. Buscar disponibilidades de cada aluno → Map<studentId, List<TimeSlot>>
+                val studentAvailabilities: Map<Int, List<TimeSlot>> = students.associate { student ->
+                    val avails = availabilityRepository.getByOwner(student.id, OwnerType.STUDENT)
+                    val slots = TimeSlotProcessor.processAll(
+                        avails.map { Triple(it.dayOfWeek, it.startTime, it.endTime) },
+                        slotDurationMinutes = restrictions.sessionDurationMinutes.toLong()
+                    )
+                    student.id to slots
+                }
+
+                // 5. Gerar horário com o ScheduleGenerator
+                val sessions = ScheduleGenerator().create(
+                    teacherId            = teacherId,
+                    teacherSlots         = teacherSlots,
+                    students             = students,
+                    studentAvailabilities = studentAvailabilities,
+                    restrictions         = restrictions
+                )
 
                 _uiState.value = if (sessions.isEmpty()) {
                     ScheduleUiState.Empty("Sem sobreposições de disponibilidade encontradas.")
                 } else {
-                    ScheduleUiState.Success(
-                        sessions = sessions,
-                        studentName = studentNames
-                    )
+                    ScheduleUiState.Success(sessions,studentNames)
                 }
 
             } catch (e: Exception) {

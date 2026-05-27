@@ -37,7 +37,8 @@ data class TeacherResponse(
 @Serializable
 data class StudentRequest(
     val name: String,
-    val email: String
+    val email: String,
+    val teacherId: Int? = null
 )
 
 @Serializable
