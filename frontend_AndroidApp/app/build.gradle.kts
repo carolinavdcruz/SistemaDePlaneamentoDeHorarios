@@ -55,6 +55,12 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.text)
 
+    //Google Calendar
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation("com.google.api-client:google-api-client-android:2.2.0")
+    implementation("com.google.apis:google-api-services-calendar:v3-rev20231123-2.0.0")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+
     // Ktor
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
