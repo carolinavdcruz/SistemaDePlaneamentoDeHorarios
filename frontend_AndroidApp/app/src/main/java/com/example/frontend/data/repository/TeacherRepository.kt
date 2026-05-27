@@ -14,20 +14,21 @@ class TeacherRepository(
 
     private val tag = "TeacherRepository"
 
-    suspend fun insert(teacher: TeacherEntity) {
-        try {
+    suspend fun insert(teacher: TeacherEntity): Int {
+        return try {
             val remote = api.register(TeacherRequest(name = teacher.name, email = teacher.email))
-            // guarda sempre localmente
             dao.insert(
                 TeacherEntity(
-                id = remote.id,
-                name = remote.name,
-                email = remote.email
+                    id = remote.id,
+                    name = remote.name,
+                    email = remote.email
+                )
             )
-            )
+            remote.id  // devolve o id real do backend
         } catch (e: Exception) {
             Log.e(tag, "Error sending teacher to API: ${e.message}")
             dao.insert(teacher)
+            teacher.id  // fallback: devolve o id local
         }
     }
 

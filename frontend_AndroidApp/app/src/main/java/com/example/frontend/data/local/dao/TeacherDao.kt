@@ -11,7 +11,7 @@ import com.example.frontend.data.local.entity.TeacherEntity
 interface TeacherDao {
 
     @Insert
-    suspend fun insert(teacher: TeacherEntity)
+    suspend fun insert(teacher: TeacherEntity): Long
 
     @Update
     suspend fun update(teacher: TeacherEntity)

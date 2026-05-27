@@ -21,6 +21,12 @@ import com.example.frontend.data.model.ScheduledSession
 import com.example.frontend.ui.theme.*
 import com.example.frontend.ui.viewmodel.schedule.ScheduleUiState
 import com.example.frontend.ui.viewmodel.schedule.ScheduleViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.common.api.ApiException
 
 private val DAY_NAMES = mapOf(
     1 to "Monday", 2 to "Tuesday", 3 to "Wednesday",
@@ -31,29 +37,49 @@ private val DAY_NAMES = mapOf(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun GenerateScheduleButton(teacherId: Int) {
+    val context = LocalContext.current
     val viewModel: ScheduleViewModel = remember { AppModule.provideScheduleViewModel() }
     val uiState by viewModel.uiState.collectAsState()
     val isLoading = uiState is ScheduleUiState.Loading
 
-    // Guarda automaticamente quando gera com sucesso
     LaunchedEffect(uiState) {
         if (uiState is ScheduleUiState.Success) {
             viewModel.saveSchedule(teacherId, (uiState as ScheduleUiState.Success).sessions)
         }
     }
 
+    // Google Sign-In launcher
+    val signInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            try {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                val account = task.getResult(ApiException::class.java)
+                if (account != null) {
+                    viewModel.acceptSchedule(context)
+                }
+            } catch (e: ApiException) { }
+        }
+    }
+
+    LaunchedEffect(uiState) {
+        if (uiState is ScheduleUiState.Error &&
+            (uiState as ScheduleUiState.Error).message == "GOOGLE_SIGN_IN_REQUIRED"
+        ) {
+            signInLauncher.launch(viewModel.buildGoogleSignInIntent(context))
+        }
+    }
+
     Column {
         ProposedScheduleCard(uiState = uiState)
-
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botões aceitar/rejeitar só aparecem quando há horário gerado
         if (uiState is ScheduleUiState.Success) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Rejeitar
                 OutlinedButton(
                     onClick = { viewModel.rejectSchedule() },
                     modifier = Modifier.weight(1f).height(50.dp),
@@ -63,9 +89,15 @@ fun GenerateScheduleButton(teacherId: Int) {
                     Text("Rejeitar", color = Color.Red, fontSize = 14.sp)
                 }
 
-                // Aceitar
                 Button(
-                    onClick = { viewModel.acceptSchedule() },
+                    onClick = {
+                        val account = GoogleSignIn.getLastSignedInAccount(context)
+                        if (account != null) {
+                            viewModel.acceptSchedule(context)
+                        } else {
+                            signInLauncher.launch(viewModel.buildGoogleSignInIntent(context))
+                        }
+                    },
                     modifier = Modifier.weight(1f).height(50.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = StatusActive),
                     shape = RoundedCornerShape(8.dp)
@@ -73,11 +105,9 @@ fun GenerateScheduleButton(teacherId: Int) {
                     Text("Aceitar", fontSize = 14.sp, fontWeight = FontWeight.Medium)
                 }
             }
-
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        // Mensagem de aceite
         if (uiState is ScheduleUiState.Accepted) {
             Surface(
                 color = StatusActive.copy(alpha = 0.15f),
@@ -85,7 +115,7 @@ fun GenerateScheduleButton(teacherId: Int) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    "✓ Horário aceite e guardado!",
+                    "Horário aceite e adicionado ao Google Calendar!",
                     color = StatusActive,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
@@ -95,7 +125,6 @@ fun GenerateScheduleButton(teacherId: Int) {
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        // Botão gerar
         Button(
             onClick = { viewModel.generateSchedule(teacherId) },
             enabled = !isLoading,

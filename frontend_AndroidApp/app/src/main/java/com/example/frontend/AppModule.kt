@@ -1,13 +1,9 @@
 package com.example.frontend
 
 import android.content.Context
-import com.example.frontend.data.local.entity.StudentEntity
 import com.example.frontend.data.repository.StudentRepository
 import com.example.frontend.data.remote.api.ScheduleApi
 import com.example.frontend.ui.viewmodel.student.StudentViewModel
-import com.example.frontend.data.local.dao.StudentDao
-import com.example.frontend.data.local.entity.AvailabilityEntity
-import com.example.frontend.data.local.dao.AvailabilityDao
 import com.example.frontend.data.repository.AvailabilityRepository
 import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
 import com.example.frontend.data.local.database.AppDatabase
@@ -28,20 +24,15 @@ import com.example.frontend.ui.viewmodel.teacher.RestrictionsViewModel
 import com.example.frontend.data.remote.api.StudentApi
 import com.example.frontend.data.remote.api.TeacherApi
 
-
 object AppModule {
 
     private var database: AppDatabase? = null
-    private val teacherApi by lazy {
-        TeacherApi()
-    }
-    private val studentApi by lazy {
-        StudentApi()
-    }
-
-    private val restrictionsApi by lazy {
-        RestrictionsApi()
-    }
+    
+    private val teacherApi by lazy { TeacherApi() }
+    private val studentApi by lazy { StudentApi() }
+    private val restrictionsApi by lazy { RestrictionsApi() }
+    private val availabilityApi by lazy { AvailabilityApi() }
+    private val scheduleApi by lazy { ScheduleApi() }
 
     fun init(context: Context) {
         database = DatabaseProvider.getDatabase(context)
@@ -77,14 +68,6 @@ object AppModule {
         TimeSlotRepository(db().timeSlotDao())
     }
 
-    private val availabilityApi by lazy {
-        AvailabilityApi()
-    }
-
-    private val scheduleApi by lazy {
-        ScheduleApi()
-    }
-
     fun provideStudentViewModel(): StudentViewModel {
         return StudentViewModel(studentRepository)
     }
@@ -94,11 +77,7 @@ object AppModule {
     }
 
     fun provideAvailabilityViewModel(): AvailabilityViewModel {
-        return AvailabilityViewModel(
-            availabilityRepository,
-            //timeSlotRepository
-        )
-
+        return AvailabilityViewModel(availabilityRepository)
     }
 
     fun provideLoginViewModel(): LoginViewModel {
@@ -123,13 +102,10 @@ object AppModule {
 
     fun provideScheduleViewModel(): ScheduleViewModel {
         return ScheduleViewModel(
-            scheduleApi,
-            studentRepository = studentRepository
+            availabilityRepository = availabilityRepository,
+            restrictionsRepository = restrictionsRepository,
+            studentRepository = studentRepository,
+            scheduleApi = scheduleApi
         )
     }
 }
-
-
-
-
-
