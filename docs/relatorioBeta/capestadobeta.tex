@@ -1,0 +1,85 @@
+%
+% Capítulo 7
+%
+\chapter{Estado Atual da Beta e Próximos Passos} \label{cap:estadobeta}
+
+A versão beta do projeto representa uma fase intermédia de consolidação funcional da solução,
+em que os principais fluxos do sistema já se encontram implementados e testados, embora ainda 
+existam aspetos a melhorar e integrar totalmente. 
+Esta fase foi essencial para validar a viabilidade técnica da arquitetura adotada, confirmar o 
+funcionamento dos componentes principais e estabelecer uma base sólida para a continuação do desenvolvimento.
+
+A solução já não se encontra limitada a um protótipo exclusivamente local. Com a introdução do backend em Ktor, 
+a integração com PostgreSQL e a utilização de uma API REST funcional, o sistema passou a assumir uma estrutura mais próxima da versão final pretendida.
+
+\section{Funcionalidades Concluídas na Versão Beta}
+
+Na fase atual do projeto, já se encontram implementadas as funcionalidades centrais do sistema. 
+Entre os principais elementos já concluídos destacam-se:
+\begin{itemize}
+    \item aplicação Android com separação de fluxos entre professor e aluno;
+    \item gestão de sessão e adaptação da interface ao perfil autenticado;
+    \item registo e consulta de professores e alunos;
+    \item associação e desassociação entre alunos e professor;
+    \item definição e persistência de disponibilidades;
+    \item definição e persistência de restrições do professor;
+    \item geração de propostas de horário;
+    \item visualização organizada do horário semanal gerado;
+    \item backend funcional com API REST;
+    \item persistência remota em PostgreSQL;
+    \item validação dos endpoints principais com Postman.
+\end{itemize}
+
+Estes resultados demonstram que a versão beta já suporta os casos de uso mais importantes do projeto, 
+permitindo recolher a informação necessária, processá-la e apresentar ao utilizador uma proposta concreta de horário.
+
+\section{Estado da Integração do Sistema}
+
+Um dos principais avanços da versão beta foi a integração progressiva entre frontend e backend. 
+A aplicação Android já comunica com a API para um conjunto importante de operações, nomeadamente na gestão de utilizadores, 
+disponibilidades, restrições e geração de horários. 
+Esta evolução permitiu validar a arquitetura distribuída da solução e reduzir a dependência de mecanismos exclusivamente locais.
+
+Apesar deste progresso, a integração ainda não pode ser considerada totalmente concluída em todos os fluxos. 
+Em alguns pontos, subsistem aspetos híbridos entre persistência local e remota, o que exige atenção adicional para garantir consistência total 
+entre os diferentes componentes. Ainda assim, a base da comunicação entre cliente e servidor encontra-se estabelecida e operacional, 
+constituindo um avanço significativo face às fases iniciais do projeto.
+
+\section{Limitações Atuais}
+
+Embora a versão beta demonstre a viabilidade da solução, existem ainda limitações que deverão ser tratadas até à entrega final.
+Uma dessas limitações prende-se com a necessidade de consolidar plenamente a sincronização entre os dados locais armazenados em Room e os dados persistidos no backend. 
+A coexistência destas duas camadas de persistência, embora útil durante o desenvolvimento incremental, introduz complexidade adicional e requer uma definição mais clara do papel de cada uma na arquitetura final.
+
+Outra limitação atual diz respeito ao algoritmo de geração de horários. 
+A abordagem implementada já é suficiente para validar os fluxos principais e produzir propostas coerentes em cenários representativos, 
+mas poderá ainda ser refinada para responder melhor a casos mais complexos ou a critérios adicionais de qualidade na distribuição das sessões.
+
+Para além disso, existem funcionalidades previstas que ainda não se encontram concluídas, como a exploração de mecanismos adicionais de entrada de dados, 
+a melhoria da cobertura de testes e o reforço da robustez geral do sistema em cenários de utilização mais variados.
+
+\section{Próximos Passos}
+
+Tendo em conta o estado atual do projeto, os próximos passos mais relevantes passam por consolidar a solução já implementada e preparar a transição para a versão final. 
+Entre as prioridades identificadas destacam-se:
+\begin{itemize}
+    \item concluir a integração total entre frontend e backend;
+    \item reduzir as dependências híbridas entre persistência local e remota;
+    \item reforçar a coerência e sincronização dos dados do sistema;
+    \item melhorar a robustez da geração de horários;
+    \item aprofundar os testes funcionais e de integração;
+    \item melhorar a apresentação final da solução e da demonstração.
+\end{itemize}
+
+Adicionalmente, prevê-se a exploração de funcionalidades mais avançadas, como mecanismos de apoio à extração automática de disponibilidades a partir de inputs externos, 
+caso tal se revele viável dentro do calendário do projeto. 
+Esta linha de evolução poderá acrescentar valor significativo à solução, mas deverá ser enquadrada de forma realista face ao estado atual de desenvolvimento.
+
+\section{Balanço da Versão Beta}
+
+De uma forma geral, a versão beta permitiu demonstrar que o projeto já possui uma base funcional consistente e tecnicamente viável. O sistema consegue suportar os fluxos 
+fundamentais do problema, desde a recolha de dados até à criação e apresentação de propostas de horário. A arquitetura adotada mostrou-se adequada à evolução do projeto e 
+os resultados obtidos nesta fase constituem um indicador positivo para a continuação do trabalho.
+
+A partir deste ponto, o foco deixa de estar apenas na implementação de novas funcionalidades e passa também pela consolidação, integração e refinamento do que já foi desenvolvido. 
+Este balanço é particularmente importante, pois permite encarar a versão final não como o início da solução, mas como uma etapa de maturação e aperfeiçoamento de uma base já operacional.

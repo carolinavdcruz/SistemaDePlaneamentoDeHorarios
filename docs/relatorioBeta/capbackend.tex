@@ -1,0 +1,138 @@
+%
+% Capítulo 5
+%
+\chapter{Backend e API} \label{cap:backend}
+
+O backend do sistema foi desenvolvido com o objetivo de centralizar a persistência remota de dados e disponibilizar uma API 
+capaz de suportar os principais fluxos funcionais da aplicação. 
+Esta componente desempenha um papel essencial na arquitetura da solução, funcionando como ponto de articulação entre a 
+aplicação Android e a base de dados PostgreSQL.
+
+A introdução do backend permitiu ultrapassar as limitações de uma solução exclusivamente local, abrindo caminho para 
+uma estrutura mais próxima de um sistema real distribuído, onde os dados principais deixam de depender apenas do armazenamento 
+existente no dispositivo do utilizador.
+
+\section{Escolha Tecnológica}
+
+A implementação do backend foi realizada em Kotlin, utilizando Ktor como framework principal para criação da API REST.
+Esta escolha revelou-se adequada ao contexto do projeto, sobretudo por permitir manter consistência com a linguagem 
+já utilizada no frontend e por oferecer uma base relativamente simples e leve para a construção do servidor.
+
+A persistência foi suportada por PostgreSQL, escolhido por ser um sistema de gestão de bases de dados relacional robusto, 
+amplamente utilizado e adequado ao armazenamento estruturado das entidades do projeto. 
+Para a interação com a base de dados foi utilizada a biblioteca Exposed, que facilita a definição de tabelas e a execução 
+de operações de acesso a dados em Kotlin. 
+A gestão de conexões foi assegurada por HikariCP, permitindo configurar o acesso à base de dados de forma eficiente e consistente.
+
+No conjunto, estas tecnologias permitiram construir uma base sólida para a versão beta, conciliando simplicidade de desenvolvimento 
+com capacidade de evolução futura.
+
+\section{Estrutura do Backend}
+
+O backend foi organizado em vários componentes com responsabilidades distintas, de forma a manter o código compreensível e modular. 
+Entre os principais elementos da sua estrutura destacam-se:
+\begin{itemize}
+    \item ficheiro principal de arranque da aplicação, responsável pela inicialização do servidor;
+    \item configuração das rotas da API;
+    \item modelos e DTOs utilizados na troca de informação entre cliente e servidor;
+    \item serviços responsáveis por partes relevantes da lógica do sistema;
+    \item configuração e inicialização da ligação à base de dados;
+    \item definição das tabelas persistidas em PostgreSQL.
+\end{itemize}
+
+Esta organização permite separar as diferentes preocupações do sistema, distinguindo a exposição de endpoints, a representação dos dados, 
+a lógica funcional e o acesso à persistência.
+
+\section{Modelo de Persistência no Backend}
+
+A camada de persistência do backend foi concebida para suportar as entidades centrais do domínio do projeto. 
+Na versão beta, foram modeladas estruturas que permitem armazenar:
+\begin{itemize}
+    \item professores;
+    \item alunos;
+    \item associação entre alunos e professor;
+    \item disponibilidades;
+    \item restrições associadas ao professor.
+\end{itemize}
+
+A informação é persistida em PostgreSQL, permitindo manter um repositório central do estado do sistema. 
+Esta abordagem representa um passo importante relativamente às fases iniciais do projeto, em que a aplicação 
+dependia fortemente de persistência local. Com a introdução do backend, foi possível começar a transferir a 
+responsabilidade da gestão de dados principais para uma componente remota, mais adequada a uma solução multiutilizador.
+
+No caso das disponibilidades, o backend armazena os intervalos registados por professores e alunos, utilizando essa informação 
+posteriormente para a geração de propostas de horário. No caso das restrições, os dados configurados pelo professor são também persistidos, 
+permitindo que a criação de horários seja baseada em regras efetivamente armazenadas e reutilizáveis.
+
+\section{API REST Implementada}
+
+A API desenvolvida no backend foi desenhada para suportar os fluxos principais do sistema. Os endpoints existentes permitem realizar operações 
+de registo, consulta, associação de utilizadores, gestão de disponibilidades, gestão de restrições e criação de horários.
+
+Entre os principais endpoints implementados incluem-se:
+\begin{itemize}
+    \item verificação de disponibilidade do servidor;
+    \item criação e consulta de professores;
+    \item criação e consulta de alunos;
+    \item associação e desassociação de alunos a professores;
+    \item consulta de alunos de um professor;
+    \item criação, remoção e consulta de disponibilidades;
+    \item criação e consulta de restrições;
+    \item criação de propostas de horário.
+\end{itemize}
+
+A utilização de uma API REST permitiu estabelecer um contrato claro entre o frontend e o backend, facilitando a integração progressiva da aplicação Android com a componente remota. 
+O formato JSON foi adotado como mecanismo de serialização dos dados, permitindo representar os pedidos e respostas de forma simples e consistente.
+
+\section{Geração de Horários no Backend}
+
+Uma das evoluções mais relevantes da versão beta foi a passagem da lógica de geração de horários para o backend. 
+Esta decisão permite centralizar a lógica principal do sistema e reduzir a duplicação de comportamento entre cliente e servidor.
+
+A partir da informação armazenada, o backend:
+\begin{itemize}
+    \item obtém a disponibilidade do professor;
+    \item obtém as disponibilidades dos alunos associados;
+    \item carrega as restrições definidas;
+    \item divide os intervalos em blocos temporais adequados;
+    \item gera sessões compatíveis com os dados disponíveis.
+\end{itemize}
+
+Esta lógica permite que a proposta de horário seja construída de forma coerente e reutilizável, garantindo que diferentes clientes possam consumir 
+o mesmo comportamento central sem necessidade de replicar o algoritmo localmente.
+
+\section{Validação com Postman}
+
+A validação do backend foi realizada com recurso ao Postman, ferramenta utilizada para testar os endpoints desenvolvidos antes da integração total com o frontend. 
+Este processo foi importante para confirmar que os contratos da API estavam corretos e que as operações principais produziam os resultados esperados.
+
+Durante os testes foram validados fluxos como:
+\begin{itemize}
+    \item criação de professores e alunos;
+    \item consulta de listas de utilizadores;
+    \item associação entre aluno e professor;
+    \item registo e consulta de disponibilidades;
+    \item registo e consulta de restrições;
+    \item geração de propostas de horário.
+\end{itemize}
+
+A utilização do Postman permitiu isolar o backend durante o processo de validação, facilitando a identificação de problemas antes da integração direta com a aplicação Android. 
+Este passo revelou-se particularmente útil para testar a coerência das respostas devolvidas pela API e a persistência correta dos dados em PostgreSQL.
+
+\section{Integração com a Aplicação Android}
+
+Após a validação inicial dos endpoints, a integração com o frontend foi sendo realizada de forma progressiva. 
+A aplicação Android passou a consumir a API para operações relacionadas com utilizadores, disponibilidades, restrições e, mais recentemente, geração de horários.
+
+Esta integração permitiu aproximar a solução da sua arquitetura final, em que o backend assume o papel de componente central na gestão dos dados e da lógica principal do sistema. 
+Apesar de ainda existirem aspetos híbridos entre persistência local e remota, a evolução observada nesta fase demonstra que a base da comunicação cliente-servidor já se encontra estabelecida e funcional.
+
+\section{Síntese do Estado Atual do Backend}
+
+Na versão beta, o backend já se encontra suficientemente estruturado para suportar os principais fluxos do projeto. 
+A API implementada encontra-se funcional, a ligação à base de dados PostgreSQL foi estabelecida com sucesso e os principais 
+endpoints já foram validados de forma independente e em conjunto com a aplicação móvel.
+
+Este estado representa um marco importante no desenvolvimento da solução, pois demonstra que o projeto já não depende apenas de lógica local no frontend. 
+O backend passou a constituir uma parte ativa e central do sistema, permitindo sustentar a evolução futura da solução para uma arquitetura mais consistente, 
+integrada e próxima da versão final pretendida.
