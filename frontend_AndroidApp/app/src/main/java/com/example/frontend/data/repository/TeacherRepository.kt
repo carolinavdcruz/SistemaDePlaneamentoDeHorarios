@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.frontend.data.local.dao.TeacherDao
 import com.example.frontend.data.local.entity.TeacherEntity
 import com.example.frontend.data.remote.api.TeacherApi
-import com.example.frontend.data.remote.api.TeacherRequest
+import com.example.frontend.data.remote.dto.TeacherRequest
 
 
 class TeacherRepository(
@@ -14,14 +14,18 @@ class TeacherRepository(
 
     private val tag = "TeacherRepository"
 
-    suspend fun insert(teacher: TeacherEntity) {
-        // guarda sempre localmente
-        dao.insert(teacher)
-        // envia para API
-        try {
-            api.register(TeacherRequest(name = teacher.name, email = teacher.email))
+    suspend fun insert(teacher: TeacherEntity): Int {
+        // primeiro insere no backend para obter o ID real
+        return try {
+            val backendId = api.register(
+                TeacherRequest(name = teacher.name, email = teacher.email)
+            )
+            backendId
         } catch (e: Exception) {
-            Log.e(tag, "Error sending teacher to API: ${e.message}")
+            Log.e(tag, "Erro ao registar professor no backend: ${e.message}")
+            // fallback: guarda só local
+            dao.insert(teacher)
+            teacher.id
         }
     }
 

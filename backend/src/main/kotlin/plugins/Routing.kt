@@ -247,6 +247,26 @@ fun Application.configureRouting() {
             call.respond(HttpStatusCode.OK, students as List<StudentResponse>)
         }
 
+        // GET /students/by-teacher/{teacherId}
+        get("/students/by-teacher/{teacherId}") {
+            val teacherId = call.parameters["teacherId"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, "teacherId inválido")
+
+            val students = transaction {
+                StudentTable
+                    .select { StudentTable.teacherId eq teacherId }
+                    .map {
+                        StudentResponse(
+                            id = it[StudentTable.id].value,
+                            name = it[StudentTable.name],
+                            email = it[StudentTable.email],
+                            teacherId = teacherId
+                        )
+                    }
+            }
+            call.respond(HttpStatusCode.OK, students)
+        }
+
         // GET /restrictions/{teacherId}
         get("/restrictions/{teacherId}") {
             val teacherId = call.parameters["teacherId"]?.toIntOrNull()

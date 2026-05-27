@@ -139,11 +139,9 @@ Para o aluno, foi organizada uma experiência centrada em:
 ## LOGIN
 
 ### GMAIL
-    
-    c@gmail.com
-    tf@gmail.com
+
+    test@example.com
 
 ### Pass
 
-    Teacher2026
-    TestFirst26
+    Testprof0

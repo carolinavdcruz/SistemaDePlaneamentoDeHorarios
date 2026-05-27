@@ -4,6 +4,7 @@ import com.example.frontend.data.remote.client
 import com.example.frontend.data.remote.dto.RestrictionsRequest
 import com.example.frontend.data.remote.dto.RestrictionsResponse
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
@@ -18,5 +19,9 @@ class RestrictionsApi {
         client.put("http://10.0.2.2:8080/restrictions/${request.teacherId}") {
             setBody(request)
         }
+    }
+
+    suspend fun deleteRestrictions(request: RestrictionsRequest) {
+        client.delete("http://10.0.2.2:8080/restrictions/${request.teacherId}") {}
     }
 }

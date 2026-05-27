@@ -15,6 +15,7 @@ object StudentTable : IntIdTable("student") {
     val name             = varchar("name", 100)
     val email            = varchar("email", 150).uniqueIndex()
     val maxDailySessions = integer("max_daily_sessions").default(1)
+    val teacherId       = reference("teacher_id", TeacherTable).nullable()
 }
 
 object TimeSlotTable : IntIdTable("timeslots") {

@@ -13,7 +13,8 @@ data class Student(
     val id: Int,
     val name: String,
     val email: String,
-    val maxDailySessions: Int = 1
+    val maxDailySessions: Int = 1,
+    val teacherId: Int? = null
 )
 
 data class Teacher(

@@ -13,12 +13,18 @@ class StudentRepository(
 
     private val tag = "StudentRepository"
 
-    suspend fun insert(student: StudentEntity) {
-        dao.insert(student)
-        try {
-            api.register(StudentRequest(name = student.name, email = student.email))
+    suspend fun insert(student: StudentEntity): Int {
+        // primeiro insere no backend para obter o ID real
+        return try {
+            val backendId = api.register(
+                StudentRequest(name = student.name, email = student.email)
+            )
+            backendId
         } catch (e: Exception) {
-            Log.e(tag, "Error sending student to API: ${e.message}")
+            Log.e(tag, "Erro ao registar professor no backend: ${e.message}")
+            // fallback: guarda só local
+            dao.insert(student)
+            student.id
         }
     }
 

@@ -25,6 +25,13 @@ class AvailabilityApi {
         }.body()
     }
 
+    suspend fun setupAvailability(request: AvailabilityRequest) {
+        val response = client.post("http://10.0.2.2:8080/availability/setup") {
+            setBody(request)
+        }
+        println(">>> setupAvailability status: ${response.status}")
+    }
+
     suspend fun deleteAvailability(ownerId: Int, ownerType: String) {
         client.delete("http://10.0.2.2:8080/availability") {
             parameter("ownerId", ownerId)

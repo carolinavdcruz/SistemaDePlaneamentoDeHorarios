@@ -16,7 +16,8 @@ CREATE TABLE student (
     id INTEGER PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
-    max_daily_sessions INTEGER DEFAULT 1
+    max_daily_sessions INTEGER DEFAULT 1,
+    teacher_id INTEGER,
 );
 
 -- AVAILABILITY

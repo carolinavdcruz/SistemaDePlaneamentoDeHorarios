@@ -100,29 +100,16 @@ class RegisterViewModel (
                                 maxDailySessions = 0
                             )
                         )
-                        val savedStudent = studentRepository.getByEmail(currentEmail)
-                        if (savedStudent != null){
-                            sessionManager.saveSession(userId = savedStudent.id, role = OwnerType.STUDENT)
-                            _registerSuccess.value = true
-                        } else {
-                            _errorMessage.value = "Não foi possível criar conta."
-                        }
                     }
 
                     OwnerType.TEACHER -> {
-                        teacherRepository.insert(
+                        val savedId = teacherRepository.insert(
                             TeacherEntity(
                                 name = currentName,
-                                email = currentEmail
-                            )
+                                email = currentEmail)
                         )
-                        val savedTeacher = teacherRepository.getByEmail(currentEmail)
-                        if (savedTeacher != null){
-                            sessionManager.saveSession(userId = savedTeacher.id, role = OwnerType.TEACHER)
-                            _registerSuccess.value = true
-                        } else {
-                            _errorMessage.value = "Não foi possível criar conta."
-                        }
+                        sessionManager.saveSession(userId = savedId, role = OwnerType.TEACHER)
+                        _registerSuccess.value = true
                     }
                 }
 

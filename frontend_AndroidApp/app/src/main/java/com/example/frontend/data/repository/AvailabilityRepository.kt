@@ -19,10 +19,11 @@ class AvailabilityRepository(
         dao.insert(availability)
 
         println("ROOM INSERT: $availability")
+        println(">>> A enviar para API: ownerId=${availability.ownerId} ownerType=${availability.ownerType} day=${availability.dayOfWeek}")
 
         try {
             // envia para API
-            api.createAvailability(
+            api.setupAvailability(
                 AvailabilityRequest(
                     ownerId   = availability.ownerId,
                     ownerType = availability.ownerType.name,
@@ -32,6 +33,8 @@ class AvailabilityRepository(
                 )
             )
         } catch (e: Exception) {
+            println(">>> ERRO ao enviar: ${e::class.simpleName} - ${e.message}")
+            e.printStackTrace()
             Log.e(tag, "Error sending availability to API: ${e.message}")
         }
     }
@@ -49,8 +52,8 @@ class AvailabilityRepository(
     }
 
     suspend fun getByOwner(ownerId: Int, ownerType: OwnerType): List<AvailabilityEntity> {
-        return try {
-            // tenta ir buscar da API e atualiza o cache local
+        // sincroniza com API em background (não bloqueia)
+        try {
             val remote = api.getAvailability(ownerId, ownerType.name)
             val entities = remote.map {
                 AvailabilityEntity(
@@ -64,11 +67,10 @@ class AvailabilityRepository(
             }
             dao.deleteByOwner(ownerId, ownerType)
             entities.forEach { dao.insert(it) }
-            entities
         } catch (e: Exception) {
-            Log.e(tag, "Erro ao buscar da API, usando cache local: ${e.message}")
-            dao.getByOwner(ownerId, ownerType)
+            Log.e(tag, "Sincronização com API falhou, usando cache: ${e.message}")
         }
+        return dao.getByOwner(ownerId, ownerType)
     }
 
     suspend fun getByDay(dayOfWeek: Int): List<AvailabilityEntity> {
