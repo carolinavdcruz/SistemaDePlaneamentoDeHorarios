@@ -2,7 +2,13 @@ package database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import database.tables.AvailabilityTable
+import database.tables.RestrictionsTable
+import database.tables.StudentTable
+import database.tables.TeacherTable
+import database.tables.TimeSlotTable
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
@@ -16,12 +22,14 @@ object DatabaseFactory {
         }
         Database.connect(HikariDataSource(config))
 
-        transaction {/*
+        transaction {
             SchemaUtils.create(
-                TeacherTable, StudentTable,
-                AvailabilityTable, TimeSlotTable,
-                SchedulesTable, SessionsTable, SessionEnrollmentsTable
-            )*/
+                TeacherTable,
+                StudentTable,
+                AvailabilityTable,
+                RestrictionsTable,
+                TimeSlotTable
+            )
         }
     }
 }

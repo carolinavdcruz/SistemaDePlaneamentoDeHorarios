@@ -1,4 +1,9 @@
 package model
 
-class OwnerType {
+import kotlinx.serialization.Serializable
+
+@Serializable
+enum class OwnerType {
+    TEACHER,
+    STUDENT
 }

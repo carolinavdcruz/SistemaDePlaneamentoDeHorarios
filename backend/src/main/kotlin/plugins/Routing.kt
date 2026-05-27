@@ -1,30 +1,42 @@
 package plugins
 
 import database.tables.AvailabilityTable
+import database.tables.RestrictionsTable
 import database.tables.StudentTable
 import database.tables.TeacherTable
-import database.tables.TimeSlotTable
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
-import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
+import model.AssignTeacherRequest
 import model.AvailabilityRequest
 import model.AvailabilityResponse
+import model.OwnerType
 import model.Restrictions
+import model.RestrictionsRequest
+import model.RestrictionsResponse
+import model.ScheduleCreateRequest
+import model.ScheduleSessionResponse
 import model.Session
 import model.Student
+import model.StudentRequest
 import model.StudentResponse
+import model.TeacherRequest
 import model.TeacherResponse
 import model.TimeSlot
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import service.AvailabilityService
 import service.ScheduleService
 import java.time.LocalTime
@@ -37,147 +49,23 @@ fun Application.configureRouting() {
             call.respond(HttpStatusCode.OK, mapOf("status" to "ok"))
         }
 
-        // POST /availability/setup
-        // Recebe um intervalo (ex: 09:00–11:00)
-        // guarda cada slot na tabela timeslots e regista a disponibilidade
-        // na tabela availability, devolvendo a lista de slots criados.
-        // Body JSON esperado:
-        // {
-        //   "ownerType": "TEACHER",   <- "TEACHER" ou "STUDENT"
-        //   "ownerId": 1,
-        //   "dayOfWeek": 2,           <- 1=Segunda ... 7=Domingo
-        //   "startTime": "09:00",
-        //   "endTime": "11:00"
-        // }
-        post("/availability/setup") {
-            val request = call.receive<AvailabilityRequest>()
-            println(">>> ownerType: ${request.ownerType}")
-            println(">>> ownerId: ${request.ownerId}")
-            val start   = LocalTime.parse(request.startTime)
-            val end     = LocalTime.parse(request.endTime)
-
-            // Valida ownerType
-            if (request.ownerType != "TEACHER" && request.ownerType != "STUDENT") {
-                call.respond(HttpStatusCode.BadRequest, "ownerType deve ser TEACHER ou STUDENT")
-                return@post
-            }
-
-            // Fatia o intervalo em slots uniformes
-            val slots = AvailabilityService.splitIntoSlots(
-                dayOfWeek  = request.dayOfWeek,
-                startTime  = start,
-                endTime    = end
-            )
-
-            val saved = transaction {
-                slots.map { slot ->
-                    // 1. Insere o timeslot
-                    val slotId = TimeSlotTable.insert {
-                        it[TimeSlotTable.dayOfWeek]  = slot.dayOfWeek
-                        it[TimeSlotTable.startTime]  = slot.startTime
-                        it[TimeSlotTable.endTime]    = slot.endTime
-                    } get TimeSlotTable.id
-
-                    // 2. Regista a disponibilidade ligada ao teacher ou student
-                    AvailabilityTable.insert {
-                        it[AvailabilityTable.dayOfWeek]  = slot.dayOfWeek
-                        it[AvailabilityTable.startTime]  = slot.startTime
-                        it[AvailabilityTable.endTime]    = slot.endTime
-                        if (request.ownerType == "TEACHER") {
-                            it[AvailabilityTable.teacherId] = request.ownerId
-                        } else {
-                            it[AvailabilityTable.studentId] = request.ownerId
-                        }
-                    }
-
-                    AvailabilityResponse(
-                        id        = slotId.value,
-                        ownerId   = request.ownerId,
-                        ownerType = request.ownerType,
-                        dayOfWeek = slot.dayOfWeek,
-                        startTime = slot.startTime.toString(),
-                        endTime   = slot.endTime.toString()
-                    )
-                }
-            }
-
-            call.respond(HttpStatusCode.OK, saved)
-        }
-
-        // GET /availability?ownerType=TEACHER&ownerId=1
-        // Devolve todas as disponibilidades de um professor ou aluno.
-        get("/availability") {
-            val ownerType = call.request.queryParameters["ownerType"]
-                ?: return@get call.respond(HttpStatusCode.BadRequest, "Parâmetro ownerType em falta")
-            val ownerId = call.request.queryParameters["ownerId"]?.toIntOrNull()
-                ?: return@get call.respond(HttpStatusCode.BadRequest, "Parâmetro ownerId em falta ou inválido")
-
-            val result = transaction {
-                val query = if (ownerType == "TEACHER") {
-                    AvailabilityTable.select { AvailabilityTable.teacherId eq ownerId }
-                } else {
-                    AvailabilityTable.select { AvailabilityTable.studentId eq ownerId }
-                }
-
-                query.map {
-                    AvailabilityResponse(
-                        id        = it[AvailabilityTable.id].value,
-                        ownerId   = ownerId,
-                        ownerType = ownerType,
-                        dayOfWeek = it[AvailabilityTable.dayOfWeek],
-                        startTime = it[AvailabilityTable.startTime].toString(),
-                        endTime   = it[AvailabilityTable.endTime].toString()
-                    )
-                }
-            }
-            call.respond(HttpStatusCode.OK, result as List<AvailabilityResponse>)
-        }
-
         // POST /teachers
         // Regista um novo professor.
         // Body JSON esperado:
         // {
         //   "name": "João Silva",
         //   "email": "joao@isel.pt",
-        //   "sessionDurationMinutes": 60,
-        //   "maxParticipantsPerSession": 5
         // }
         post("/teachers") {
-            val body = call.receive<Map<String, String>>()
-            val name  = body["name"]  ?: return@post call.respond(HttpStatusCode.BadRequest, "name em falta")
-            val email = body["email"] ?: return@post call.respond(HttpStatusCode.BadRequest, "email em falta")
-            val duration     = body["sessionDurationMinutes"]?.toIntOrNull() ?: 60
-            val maxParticipants = body["maxParticipantsPerSession"]?.toIntOrNull() ?: 5
-
+            val request = call.receive<TeacherRequest>()
             transaction {
                 TeacherTable.insert {
-                    it[TeacherTable.name]                      = name
-                    it[TeacherTable.email]                     = email
-                    it[TeacherTable.sessionDurationMinutes]    = duration
-                    it[TeacherTable.maxParticipantsPerSession] = maxParticipants
+                    it[name] = request.name
+                    it[email] = request.email
                 }
             }
 
             call.respond(HttpStatusCode.Created, mapOf("message" to "Professor criado com sucesso"))
-        }
-
-        // POST /students
-        // Regista um novo aluno.
-        // Body JSON esperado:
-        // { "name": "Ana Costa", "email": "ana@alunos.isel.pt" }
-        post("/students") {
-            val body  = call.receive<Map<String, String>>()
-            val name  = body["name"]  ?: return@post call.respond(HttpStatusCode.BadRequest, "name em falta")
-            val email = body["email"] ?: return@post call.respond(HttpStatusCode.BadRequest, "email em falta")
-
-            transaction {
-                StudentTable.insert {
-                    it[StudentTable.name]  = name
-                    it[StudentTable.email] = email
-                }
-            }
-
-            call.respond(HttpStatusCode.Created, mapOf("message" to "Aluno criado com sucesso"))
         }
 
         // GET /teachers
@@ -192,7 +80,26 @@ fun Application.configureRouting() {
                     )
                 }
             }
-            call.respond(HttpStatusCode.OK, teachers as List<TeacherResponse>)
+            call.respond(HttpStatusCode.OK, teachers)
+        }
+
+        // POST /students
+        // Regista um novo aluno.
+        // Body JSON esperado:
+        // {
+        // "name": "Ana Costa",
+        // "email": "ana@alunos.isel.pt"
+        // }
+        post("/students") {
+            val request = call.receive<StudentRequest>()
+            transaction {
+                StudentTable.insert {
+                    it[name] = request.name
+                    it[email] = request.email
+                }
+            }
+
+            call.respond(HttpStatusCode.Created, mapOf("message" to "Aluno criado com sucesso"))
         }
 
         // GET /students
@@ -203,92 +110,341 @@ fun Application.configureRouting() {
                     StudentResponse(
                         id = it[StudentTable.id].value,
                         name = it[StudentTable.name],
-                        email = it[StudentTable.email]
+                        email = it[StudentTable.email],
+                        teacherId = it[StudentTable.teacherId]?.value
                     )
                 }
             }
-            call.respond(HttpStatusCode.OK, students as List<StudentResponse>)
+            call.respond(HttpStatusCode.OK, students)
+        }
+
+        post("/students/assign-teacher") {
+            val request = call.receive<AssignTeacherRequest>()
+            val updateRowStudent = transaction {
+                StudentTable.update({ StudentTable.id eq request.studentId }) {
+                    it[teacherId] = request.teacherId
+                }
+            }
+            if (updateRowStudent == 0) {
+                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Aluno não encontrado"))
+            }
+            call.respond(HttpStatusCode.OK, mapOf("message" to "Professor associado com sucesso"))
+        }
+
+        post("/students/unassign-teacher/{studentId}") {
+            val studentId = call.parameters["studentId"]?.toIntOrNull()
+                ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "studentId inválido")
+                )
+
+            val updatedRowsStudent = transaction {
+                StudentTable.update({ StudentTable.id eq studentId }) {
+                    it[teacherId] = null
+                }
+            }
+
+            if (updatedRowsStudent == 0) {
+                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Aluno não encontrado"))
+                return@post
+            }
+
+            call.respond(
+                HttpStatusCode.OK,
+                mapOf("message" to "Professor desassociado com sucesso")
+            )
+        }
+
+        get("/students/by-teacher/{teacherId}") {
+            val teacherId = call.parameters["teacherId"]?.toIntOrNull()
+                ?: return@get call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "teacherId inválido")
+                )
+
+            val students = transaction {
+                StudentTable
+                    .select { StudentTable.teacherId eq teacherId }
+                    .map {
+                        StudentResponse(
+                            id = it[StudentTable.id].value,
+                            name = it[StudentTable.name],
+                            email = it[StudentTable.email],
+                            teacherId = it[StudentTable.teacherId]?.value
+                        )
+                    }
+            }
+
+            call.respond(HttpStatusCode.OK, students)
+        }
+
+
+        // POST /availability
+        // Recebe um intervalo (ex: 09:00–11:00)
+        // guarda cada slot na tabela timeslots e regista a disponibilidade
+        // na tabela availability, devolvendo a lista de slots criados.
+        // Body JSON esperado:
+        // {
+        //   "id": 1,
+        //   "ownerId": 1,
+        //   "ownerType": "TEACHER",   <- "TEACHER" ou "STUDENT"
+        //   "dayOfWeek": 2,           <- 1=Segunda ... 7=Domingo
+        //   "startTime": "09:00",
+        //   "endTime": "11:00"
+        // }
+        post("/availability") {
+            val request = call.receive<AvailabilityRequest>()
+            val idSavedAvailability = transaction {
+                AvailabilityTable.insert {
+                    it[dayOfWeek] = request.dayOfWeek
+                    it[startTime] = LocalTime.parse(request.startTime)
+                    it[endTime] = LocalTime.parse(request.endTime)
+
+                    if (request.ownerType == OwnerType.TEACHER) {
+                        it[teacherId] = request.ownerId
+                    } else {
+                        it[studentId] = request.ownerId
+                    }
+                } get AvailabilityTable.id
+            }
+            val response = AvailabilityResponse(
+                id = idSavedAvailability.value,
+                ownerId = request.ownerId,
+                ownerType = request.ownerType,
+                dayOfWeek = request.dayOfWeek,
+                startTime = request.startTime,
+                endTime = request.endTime
+            )
+            call.respond(HttpStatusCode.Created, response)
+        }
+
+        // GET /availability?ownerType=TEACHER&ownerId=1
+        // Devolve todas as disponibilidades de um professor ou aluno.
+        get("/availability") {
+            val ownerId = call.request.queryParameters["ownerId"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerId inválido"))
+
+            val ownerTypeParam = call.request.queryParameters["ownerType"]
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerType em falta"))
+
+            val ownerType = try {
+                OwnerType.valueOf(ownerTypeParam)
+            } catch (e: IllegalArgumentException) {
+                return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerType inválido"))
+            }
+
+            val result = transaction {
+                val query = if (ownerType == OwnerType.TEACHER) {
+                    AvailabilityTable.select { AvailabilityTable.teacherId eq ownerId }
+                } else {
+                    AvailabilityTable.select { AvailabilityTable.studentId eq ownerId }
+                }
+
+                query.map {
+                    AvailabilityResponse(
+                        id = it[AvailabilityTable.id].value,
+                        ownerId = ownerId,
+                        ownerType = ownerType,
+                        dayOfWeek = it[AvailabilityTable.dayOfWeek],
+                        startTime = it[AvailabilityTable.startTime].toString(),
+                        endTime = it[AvailabilityTable.endTime].toString()
+                    )
+                }
+            }
+
+            call.respond(HttpStatusCode.OK, result)
+        }
+
+        // DELETE /availability?ownerId=1&ownerType=TEACHER
+        // Remove todas as disponibilidades de um professor ou aluno.
+        delete("/availability") {
+            val ownerId = call.request.queryParameters["ownerId"]?.toIntOrNull()
+                ?: return@delete call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerId inválido"))
+
+            val ownerTypeParam = call.request.queryParameters["ownerType"]
+                ?: return@delete call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerType em falta"))
+
+            val ownerType = try {
+                OwnerType.valueOf(ownerTypeParam)
+            } catch (e: IllegalArgumentException) {
+                return@delete call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerType inválido"))
+            }
+
+            transaction {
+                if (ownerType == OwnerType.TEACHER) {
+                    AvailabilityTable.deleteWhere { teacherId eq ownerId }
+                } else {
+                    AvailabilityTable.deleteWhere { studentId eq ownerId }
+                }
+            }
+
+            call.respond(HttpStatusCode.OK, mapOf("message" to "Disponibilidade removida com sucesso"))
+        }
+
+        get("/restrictions/{teacherId}") {
+            val teacherId = call.parameters["teacherId"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "teacherId inválido"))
+
+            val restrictions = transaction {
+                RestrictionsTable
+                    .select { RestrictionsTable.teacherId eq teacherId }
+                    .singleOrNull()
+                    ?.let {
+                        RestrictionsResponse(
+                            teacherId = it[RestrictionsTable.teacherId].value,
+                            maxDailyHours = it[RestrictionsTable.maxDailyHours],
+                            sessionDurationMinutes = it[RestrictionsTable.sessionDurationMinutes],
+                            maxParticipantsPerSession = it[RestrictionsTable.maxParticipantsPerSession],
+                            maxSessionsPerStudentPerDay = it[RestrictionsTable.maxSessionsPerStudentPerDay]
+                        )
+                    }
+            }
+
+            if (restrictions == null) {
+                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Restrições não encontradas"))
+                return@get
+            }
+
+            call.respond(HttpStatusCode.OK, restrictions)
+        }
+
+        put("/restrictions/{teacherId}") {
+            val teacherId = call.parameters["teacherId"]?.toIntOrNull()
+                ?: return@put call.respond(HttpStatusCode.BadRequest, mapOf("error" to "teacherId inválido"))
+
+            val request = call.receive<RestrictionsRequest>()
+
+            val updatedRows = transaction {
+                RestrictionsTable.update({ RestrictionsTable.teacherId eq teacherId }) {
+                    it[maxDailyHours] = request.maxDailyHours
+                    it[sessionDurationMinutes] = request.sessionDurationMinutes
+                    it[maxParticipantsPerSession] = request.maxParticipantsPerSession
+                    it[maxSessionsPerStudentPerDay] = request.maxSessionsPerStudentPerDay
+                }
+            }
+
+            if (updatedRows == 0) {
+                transaction {
+                    RestrictionsTable.insert {
+                        it[RestrictionsTable.teacherId] = teacherId
+                        it[maxDailyHours] = request.maxDailyHours
+                        it[sessionDurationMinutes] = request.sessionDurationMinutes
+                        it[maxParticipantsPerSession] = request.maxParticipantsPerSession
+                        it[maxSessionsPerStudentPerDay] = request.maxSessionsPerStudentPerDay
+                    }
+                }
+            }
+
+            call.respond(HttpStatusCode.OK, mapOf("message" to "Restrições guardadas com sucesso"))
         }
 
         // POST /schedule/create
         // Cria horário para o professor com base nas disponibilidades
         post("/schedule/create") {
-            val body = call.receive<Map<String, Int>>()
-            val teacherId = body["teacherId"]
-                ?: return@post call.respond(HttpStatusCode.BadRequest, "teacherId em falta")
+            val request = call.receive<ScheduleCreateRequest>()
+            val teacherId = request.teacherId
 
-            val restrictions = Restrictions(
-                sessionDurationMinutes = body["sessionDurationMinutes"] ?: 60,
-                maxDailyHours = body["maxDailyHours"] ?: 3,
-                maxParticipantsPerSession = body["maxParticipantsPerSession"] ?: 5,
-                maxSessionsPerStudentPerDay = body["maxSessionsPerStudentPerDay"] ?: 1
-            )
+            val response = transaction {
+                val restrictionsRow = RestrictionsTable
+                    .select { RestrictionsTable.teacherId eq teacherId }
+                    .singleOrNull()
+                    ?: return@transaction null
 
-            val result = transaction {
+                val restrictions = Restrictions(
+                    teacherId = teacherId,
+                    maxDailyHours = restrictionsRow[RestrictionsTable.maxDailyHours],
+                    sessionDurationMinutes = restrictionsRow[RestrictionsTable.sessionDurationMinutes],
+                    maxParticipantsPerSession = restrictionsRow[RestrictionsTable.maxParticipantsPerSession],
+                    maxSessionsPerStudentPerDay = restrictionsRow[RestrictionsTable.maxSessionsPerStudentPerDay]
+                )
 
-                // Vai buscar slots do professor
-                val teacherSlots = AvailabilityTable
+                val teacherAvailability = AvailabilityTable
                     .select { AvailabilityTable.teacherId eq teacherId }
                     .map {
-                        TimeSlot(
-                            id = it[AvailabilityTable.id].value,
-                            dayOfWeek = it[AvailabilityTable.dayOfWeek],
-                            startTime = it[AvailabilityTable.startTime],
-                            endTime = it[AvailabilityTable.endTime]
+                        Triple(
+                            it[AvailabilityTable.dayOfWeek],
+                            it[AvailabilityTable.startTime],
+                            it[AvailabilityTable.endTime]
                         )
                     }
 
-                if (teacherSlots.isEmpty()) {
-                    return@transaction emptyList<Session>()
+                val teacherSlots = teacherAvailability.flatMap { (dayOfWeek, startTime, endTime) ->
+                    AvailabilityService.splitIntoSlots(
+                        dayOfWeek = dayOfWeek,
+                        startTime = startTime,
+                        endTime = endTime,
+                        slotDurationMinutes = restrictions.sessionDurationMinutes.toLong()
+                    ).map { slot ->
+                        TimeSlot(
+                            dayOfWeek = slot.dayOfWeek,
+                            startTime = slot.startTime,
+                            endTime = slot.endTime
+                        )
+                    }
                 }
 
-                // Vai buscar todos os alunos
-                val students = StudentTable.selectAll().map {
-                    Student(
-                        id = it[StudentTable.id].value,
-                        name = it[StudentTable.name],
-                        email = it[StudentTable.email],
-                        maxDailySessions = it[StudentTable.maxDailySessions]
-                    )
-                }
+                val students = StudentTable
+                    .select { StudentTable.teacherId eq teacherId }
+                    .map {
+                        Student(
+                            id = it[StudentTable.id].value,
+                            name = it[StudentTable.name],
+                            email = it[StudentTable.email],
+                            teacherId = it[StudentTable.teacherId]?.value,
+                            maxDailySessions = it[StudentTable.maxDailySessions]
+                        )
+                    }
 
-                if (students.isEmpty()) {
-                    return@transaction emptyList<Session>()
-                }
-
-                // Disponibilidades de cada aluno
                 val studentAvailabilities = students.associate { student ->
-                    student.id to AvailabilityTable
+                    val availabilityIntervals = AvailabilityTable
                         .select { AvailabilityTable.studentId eq student.id }
                         .map {
-                            TimeSlot(
-                                id        = it[AvailabilityTable.id].value,
-                                dayOfWeek = it[AvailabilityTable.dayOfWeek],
-                                startTime = it[AvailabilityTable.startTime],
-                                endTime   = it[AvailabilityTable.endTime]
+                            Triple(
+                                it[AvailabilityTable.dayOfWeek],
+                                it[AvailabilityTable.startTime],
+                                it[AvailabilityTable.endTime]
                             )
                         }
+
+                    val slots = availabilityIntervals.flatMap { (dayOfWeek, startTime, endTime) ->
+                        AvailabilityService.splitIntoSlots(
+                            dayOfWeek = dayOfWeek,
+                            startTime = startTime,
+                            endTime = endTime,
+                            slotDurationMinutes = restrictions.sessionDurationMinutes.toLong()
+                        ).map { slot ->
+                            TimeSlot(
+                                dayOfWeek = slot.dayOfWeek,
+                                startTime = slot.startTime,
+                                endTime = slot.endTime
+                            )
+                        }
+                    }
+
+                    student.id to slots
                 }
 
-                // Algoritmo
                 ScheduleService.create(
-                    teacherId            = teacherId,
-                    teacherSlots         = teacherSlots,
-                    students             = students,
+                    teacherId = teacherId,
+                    teacherSlots = teacherSlots,
+                    students = students,
                     studentAvailabilities = studentAvailabilities,
-                    restrictions         = restrictions
-                )
+                    restrictions = restrictions
+                ).map { session ->
+                    ScheduleSessionResponse(
+                        dayOfWeek = session.slot.dayOfWeek,
+                        startTime = session.slot.startTime.toString(),
+                        endTime = session.slot.endTime.toString(),
+                        studentIds = session.studentIds
+                    )
+                }
             }
 
-            // Converte para resposta JSON
-            val response = result.map { session ->
-                mapOf(
-                    "dayOfWeek"  to session.slot.dayOfWeek.toString(),
-                    "startTime"  to session.slot.startTime.toString(),
-                    "endTime"    to session.slot.endTime.toString(),
-                    "studentIds" to session.studentIds.joinToString(",")
-                )
+            if (response == null) {
+                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Restrições do professor não encontradas"))
+                return@post
             }
+
             call.respond(HttpStatusCode.OK, response)
         }
     }

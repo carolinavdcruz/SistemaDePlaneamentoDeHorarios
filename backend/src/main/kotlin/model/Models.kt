@@ -13,6 +13,7 @@ data class Student(
     val id: Int,
     val name: String,
     val email: String,
+    val teacherId: Int? = null,
     val maxDailySessions: Int = 1
 )
 
@@ -20,8 +21,8 @@ data class Teacher(
     val id: Int,
     val name: String,
     val email: String,
-    val sessionDurationMinutes: Int = 60,
-    val maxParticipantsPerSession: Int = 5
+    //val sessionDurationMinutes: Int = 60,
+    //val maxParticipantsPerSession: Int = 5
 )
 
 data class Session(
@@ -37,6 +38,7 @@ data class TimeSlotEntity(
 )
 
 data class Restrictions(
+    val teacherId: Int? = null,
     val sessionDurationMinutes: Int = 60,
     val maxDailyHours: Int = 3,
     val maxParticipantsPerSession: Int = 5,
