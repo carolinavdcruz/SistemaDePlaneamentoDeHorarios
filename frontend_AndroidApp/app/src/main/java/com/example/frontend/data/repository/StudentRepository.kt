@@ -14,11 +14,20 @@ class StudentRepository(
     private val tag = "StudentRepository"
 
     suspend fun insert(student: StudentEntity) {
-        dao.insert(student)
         try {
-            api.register(StudentRequest(name = student.name, email = student.email))
+            val remote = api.register(StudentRequest(name = student.name, email = student.email))
+            dao.insert(
+                StudentEntity(
+                    id = remote.id,
+                    teacherId = remote.teacherId,
+                    name = remote.name,
+                    email = remote.email,
+                    maxDailySessions = student.maxDailySessions
+                )
+            )
         } catch (e: Exception) {
             Log.e(tag, "Error sending student to API: ${e.message}")
+            dao.insert(student)
         }
     }
 

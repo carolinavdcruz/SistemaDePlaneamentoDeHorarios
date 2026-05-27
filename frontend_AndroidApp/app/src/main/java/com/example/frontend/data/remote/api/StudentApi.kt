@@ -12,10 +12,10 @@ import kotlinx.serialization.Serializable
 
 class StudentApi {
 
-    suspend fun register(request: StudentRequest) {
-        client.post("http://10.0.2.2:8080/students") {
+    suspend fun register(request: StudentRequest) : StudentResponse {
+        return client.post("http://10.0.2.2:8080/students") {
             setBody(request)
-        }
+        }.body()
     }
 
     suspend fun assignTeacher(studentId: Int, teacherId: Int) {

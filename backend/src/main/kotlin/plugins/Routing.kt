@@ -43,6 +43,7 @@ import java.time.LocalTime
 
 @Suppress("NewApi")
 fun Application.configureRouting() {
+
     routing {
         // GET /health  →  confirma que o servidor está vivo
         get("/health") {
@@ -58,13 +59,18 @@ fun Application.configureRouting() {
         // }
         post("/teachers") {
             val request = call.receive<TeacherRequest>()
-            transaction {
-                TeacherTable.insert {
+            val created = transaction {
+                val id = TeacherTable.insert {
                     it[name] = request.name
                     it[email] = request.email
-                }
-            }
+                } get TeacherTable.id
+                TeacherResponse(
+                    id = id.value,
+                    name = request.name,
+                    email = request.email
 
+                )
+            }
             call.respond(HttpStatusCode.Created, mapOf("message" to "Professor criado com sucesso"))
         }
 
@@ -92,13 +98,18 @@ fun Application.configureRouting() {
         // }
         post("/students") {
             val request = call.receive<StudentRequest>()
-            transaction {
-                StudentTable.insert {
+            val created = transaction {
+                val id = StudentTable.insert {
                     it[name] = request.name
                     it[email] = request.email
-                }
+                } get StudentTable.id
+                StudentResponse(
+                    id = id.value,
+                    name = request.name,
+                    email = request.email,
+                    teacherId = null
+                )
             }
-
             call.respond(HttpStatusCode.Created, mapOf("message" to "Aluno criado com sucesso"))
         }
 

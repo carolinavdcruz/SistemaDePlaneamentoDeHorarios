@@ -31,6 +31,13 @@ data class TeacherRequest(
 )
 
 @Serializable
+data class TeacherResponse(
+    val id: Int,
+    val name: String,
+    val email: String,
+    )
+
+@Serializable
 data class AvailabilityRequest(
     val ownerId: Int,
     val ownerType: String,
@@ -65,4 +72,18 @@ data class RestrictionsResponse(
     val sessionDurationMinutes: Int,
     val maxParticipantsPerSession: Int,
     val maxSessionsPerStudentPerDay: Int
+)
+
+
+@Serializable
+data class ScheduleCreateRequest(
+    val teacherId: Int
+)
+
+@Serializable
+data class ScheduleSessionResponse(
+    val dayOfWeek: Int,
+    val startTime: String,
+    val endTime: String,
+    val studentIds: List<Int>
 )

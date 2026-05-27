@@ -3,6 +3,7 @@ package com.example.frontend
 import android.content.Context
 import com.example.frontend.data.local.entity.StudentEntity
 import com.example.frontend.data.repository.StudentRepository
+import com.example.frontend.data.remote.api.ScheduleApi
 import com.example.frontend.ui.viewmodel.student.StudentViewModel
 import com.example.frontend.data.local.dao.StudentDao
 import com.example.frontend.data.local.entity.AvailabilityEntity
@@ -80,6 +81,10 @@ object AppModule {
         AvailabilityApi()
     }
 
+    private val scheduleApi by lazy {
+        ScheduleApi()
+    }
+
     fun provideStudentViewModel(): StudentViewModel {
         return StudentViewModel(studentRepository)
     }
@@ -118,8 +123,7 @@ object AppModule {
 
     fun provideScheduleViewModel(): ScheduleViewModel {
         return ScheduleViewModel(
-            availabilityRepository = availabilityRepository,
-            restrictionsRepository = restrictionsRepository,
+            scheduleApi,
             studentRepository = studentRepository
         )
     }
