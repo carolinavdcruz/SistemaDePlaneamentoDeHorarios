@@ -1,0 +1,48 @@
+\babel@toc {portuguese}{}\relax 
+\contentsline {chapter}{\numberline {1}Introdução}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Motivação e Objetivos}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Visão Geral da Solução}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Organização do Documento}{3}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Enquadramento}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Problema e Contexto de Aplicação}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Trabalho Relacionado e Soluções Semelhantes}{6}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Justificação da Solução Proposta}{6}{section.2.3}%
+\contentsline {chapter}{\numberline {3}Arquitetura da Solução}{9}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Visão Global da Arquitetura}{9}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Arquitetura do Frontend}{10}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Arquitetura do Backend}{10}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Persistência de Dados}{11}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Comunicação entre Frontend e Backend}{11}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Considerações sobre a Arquitetura Atual}{12}{section.3.6}%
+\contentsline {chapter}{\numberline {4}Implementação do Sistema}{13}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Organização Funcional da Aplicação}{13}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Gestão de Utilizadores e Perfis}{13}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Gestão de Disponibilidades}{14}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Gestão de Restrições}{14}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Associação entre Alunos e Professores}{15}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Geração de Propostas de Horário}{15}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Visualização do Horário Gerado}{16}{section.4.7}%
+\contentsline {section}{\numberline {4.8}Integração Progressiva com o Backend}{16}{section.4.8}%
+\contentsline {chapter}{\numberline {5}Backend e API}{19}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Escolha Tecnológica}{19}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Estrutura do Backend}{19}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Modelo de Persistência no Backend}{20}{section.5.3}%
+\contentsline {section}{\numberline {5.4}API REST Implementada}{20}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Geração de Horários no Backend}{21}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Validação com Postman}{22}{section.5.6}%
+\contentsline {section}{\numberline {5.7}Integração com a Aplicação Android}{22}{section.5.7}%
+\contentsline {section}{\numberline {5.8}Síntese do Estado Atual do Backend}{22}{section.5.8}%
+\contentsline {chapter}{\numberline {6}Testes e Validação}{25}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Testes Unitários}{25}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Validação do Backend com Postman}{26}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Testes Funcionais da Aplicação Android}{27}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Validação da Geração de Horários}{27}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Integração e Validação Progressiva}{28}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Síntese dos Resultados Obtidos}{28}{section.6.6}%
+\contentsline {chapter}{\numberline {7}Estado Atual da Beta e Próximos Passos}{29}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Funcionalidades Concluídas na Versão Beta}{29}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Estado da Integração do Sistema}{30}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Limitações Atuais}{30}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Próximos Passos}{31}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Balanço da Versão Beta}{31}{section.7.5}%
+\contentsline {chapter}{Refer\^{e}ncias}{33}{chapter*.4}%
