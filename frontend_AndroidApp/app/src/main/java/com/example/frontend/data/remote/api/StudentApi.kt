@@ -18,6 +18,10 @@ class StudentApi {
         }.body()
     }
 
+    suspend fun getAll(): List<StudentResponse> {
+        return client.get("http://10.0.2.2:8080/students").body()
+    }
+
     suspend fun assignTeacher(studentId: Int, teacherId: Int) {
         client.post("http://10.0.2.2:8080/students/assign-teacher") {
             setBody(AssignTeacherRequest(studentId, teacherId))

@@ -21,7 +21,4 @@ class RestrictionsApi {
         }
     }
 
-    suspend fun deleteRestrictions(request: RestrictionsRequest) {
-        client.delete("http://10.0.2.2:8080/restrictions/${request.teacherId}") {}
-    }
 }

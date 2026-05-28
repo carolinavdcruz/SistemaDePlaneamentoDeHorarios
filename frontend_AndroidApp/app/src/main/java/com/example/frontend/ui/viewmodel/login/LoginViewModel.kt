@@ -16,7 +16,7 @@ class LoginViewModel(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val _email = MutableStateFlow("m@example.com")
+    private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email
 
     private val _password = MutableStateFlow("")
@@ -48,8 +48,8 @@ class LoginViewModel(
         val currentPassword = _password.value
 
         _errorMessage.value = when {
-            currentEmail.isBlank() -> "O email e obrigatorio."
-            currentPassword.isBlank() -> "A password e obrigatoria."
+            currentEmail.isBlank() -> "O email é obrigatório."
+            currentPassword.isBlank() -> "A password é obrigatória."
             else -> null
         }
         return _errorMessage.value == null
