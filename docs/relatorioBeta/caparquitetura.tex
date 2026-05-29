@@ -3,22 +3,22 @@
 %
 \chapter{Arquitetura da Solução} \label{cap:arquitetura}
 
-A solução desenvolvida assenta numa arquitetura composta por dois blocos principais: uma aplicação móvel Android, 
-responsável pela interação com os utilizadores, e um backend com API REST, responsável pela persistência central 
-de dados e pela execução da lógica associada à gestão de informação do sistema. Esta separação permite distribuir 
+A solução desenvolvida assenta numa arquitetura composta por dois blocos principais: uma aplicação móvel Android,
+responsável pela interação com os utilizadores, e um backend com API REST, responsável pela persistência central
+de dados e pela execução da lógica associada à gestão de informação do sistema. Esta separação permite distribuir
 responsabilidades de forma clara entre os componentes, simplificando a evolução da solução e favorecendo a manutenção do código.
 
-De forma geral, a aplicação Android permite ao utilizador interagir com o sistema de acordo com o seu perfil, 
-nomeadamente professor ou aluno, enquanto o backend disponibiliza os serviços necessários para registo e consulta 
-de informação. A comunicação entre ambos é realizada através de pedidos HTTP a uma API REST, permitindo que o 
+De forma geral, a aplicação Android permite ao utilizador interagir com o sistema de acordo com o seu perfil,
+nomeadamente professor ou aluno, enquanto o backend disponibiliza os serviços necessários para registo e consulta
+de informação. A comunicação entre ambos é realizada através de pedidos HTTP a uma API REST, permitindo que o
 frontend envie dados estruturados e obtenha respostas consistentes para os vários fluxos funcionais da aplicação.
 
 \section{Visão Global da Arquitetura}
 
-A arquitetura adotada segue uma abordagem em camadas, onde cada componente desempenha uma função específica. 
-No frontend, a interface foi construída com Jetpack Compose, recorrendo a \textit{ViewModels} e repositórios 
-para organizar o estado da aplicação e a lógica de acesso a dados. 
-No backend, a API foi implementada em Ktor, com persistência em PostgreSQL e uma camada de acesso à base de dados 
+A arquitetura adotada segue uma abordagem em camadas, onde cada componente desempenha uma função específica.
+No frontend, a interface foi construída com Jetpack Compose, recorrendo a \textit{ViewModels} e repositórios
+para organizar o estado da aplicação e a lógica de acesso a dados.
+No backend, a API foi implementada em Ktor, com persistência em PostgreSQL e uma camada de acesso à base de dados
 suportada por Exposed e HikariCP.
 
 Em termos funcionais, a arquitetura pode ser vista como composta pelos seguintes elementos:
@@ -30,13 +30,13 @@ Em termos funcionais, a arquitetura pode ser vista como composta pelos seguintes
     \item armazenamento local com Room, utilizado como suporte local no dispositivo Android.
 \end{itemize}
 
-Esta organização permite que a aplicação continue a evoluir de forma modular, com fronteiras relativamente claras entre 
+Esta organização permite que a aplicação continue a evoluir de forma modular, com fronteiras relativamente claras entre
 apresentação, lógica de negócio, comunicação remota e persistência.
 
 \section{Arquitetura do Frontend}
 
-O frontend da solução foi desenvolvido em Kotlin para Android, utilizando Jetpack Compose como tecnologia principal para 
-construção da interface. Esta escolha permite uma abordagem declarativa ao desenho dos ecrãs, facilitando a gestão de 
+O frontend da solução foi desenvolvido em Kotlin para Android, utilizando Jetpack Compose como tecnologia principal para
+construção da interface. Esta escolha permite uma abordagem declarativa ao desenho dos ecrãs, facilitando a gestão de
 estados e a criação de componentes reutilizáveis.
 
 A aplicação encontra-se organizada em várias camadas, com destaque para:
@@ -47,13 +47,13 @@ A aplicação encontra-se organizada em várias camadas, com destaque para:
     \item entidades locais em Room, que suportam persistência local no dispositivo.
 \end{itemize}
 
-Do ponto de vista funcional, a aplicação distingue dois perfis de utilizador: professor e aluno. Cada perfil possui ecrãs e ações específicas. 
-O professor pode gerir a sua disponibilidade, definir restrições e consultar os alunos associados. O aluno pode escolher um professor e registar 
+Do ponto de vista funcional, a aplicação distingue dois perfis de utilizador: professor e aluno. Cada perfil possui ecrãs e ações específicas.
+O professor pode gerir a sua disponibilidade, definir restrições e consultar os alunos associados. O aluno pode escolher um professor e registar
 a sua disponibilidade. Esta separação por papéis foi integrada tanto na navegação da aplicação como na própria lógica dos \textit{ViewModels}.
 
 \section{Arquitetura do Backend}
 
-O backend foi desenvolvido em Kotlin com Ktor, funcionando como servidor de aplicação e ponto central de integração de dados. 
+O backend foi desenvolvido em Kotlin com Ktor, funcionando como servidor de aplicação e ponto central de integração de dados.
 A API implementada segue o estilo REST e expõe endpoints para operações como:
 
 \begin {itemize}
@@ -61,7 +61,7 @@ A API implementada segue o estilo REST e expõe endpoints para operações como:
     \item associação de alunos a professores;
     \item registo e consulta de disponibilidades;
     \item registo e consulta de restrições;
-    \item geração de propostas de horário.
+    \item criação de propostas de horário.
 \end{itemize}
 
 A estrutura interna do backend encontra-se organizada em componentes como:
@@ -72,13 +72,13 @@ A estrutura interna do backend encontra-se organizada em componentes como:
     \item acesso à base de dados, com apoio de Exposed para modelação e manipulação de tabelas.
 \end{itemize}
 
-A escolha de Ktor permitiu construir um backend leve, relativamente simples de estruturar e bem alinhado com o restante ecossistema Kotlin do projeto. 
+A escolha de Ktor permitiu construir um backend leve, relativamente simples de estruturar e bem alinhado com o restante ecossistema Kotlin do projeto.
 Esta solução revelou-se adequada para suportar o conjunto de operações necessárias à versão beta e para validar a integração com a aplicação móvel.
 
 \section{Persistência de Dados}
 
-A persistência do sistema está dividida em dois níveis complementares. No backend, os dados principais são armazenados em PostgreSQL, 
-funcionando esta base de dados como repositório central do sistema. No frontend, foi utilizado Room para persistência local, 
+A persistência do sistema está dividida em dois níveis complementares. No backend, os dados principais são armazenados em PostgreSQL,
+funcionando esta base de dados como repositório central do sistema. No frontend, foi utilizado Room para persistência local,
 permitindo manter dados no dispositivo e suportar alguns fluxos locais ou híbridos durante a evolução da aplicação.
 
 Na base de dados central são armazenadas entidades essenciais ao domínio do problema, tais como:
@@ -89,14 +89,14 @@ Na base de dados central são armazenadas entidades essenciais ao domínio do pr
     \item restrições.
 \end{itemize}
 
-A utilização de Room no frontend permite preservar alguma informação localmente, o que facilita o funcionamento de certas operações 
-e reduz dependência imediata da comunicação remota em todos os momentos. No entanto, o objetivo global da arquitetura é que a API 
+A utilização de Room no frontend permite preservar alguma informação localmente, o que facilita o funcionamento de certas operações
+e reduz dependência imediata da comunicação remota em todos os momentos. No entanto, o objetivo global da arquitetura é que a API
 e a base de dados remota assumam progressivamente o papel de fonte principal de verdade do sistema.
 
 \section{Comunicação entre Frontend e Backend}
 
-A comunicação entre a aplicação Android e o backend é feita através de pedidos HTTP para a API REST, utilizando o endereço local do 
-servidor durante o desenvolvimento. Os dados trocados entre os componentes são serializados em formato JSON, permitindo uma 
+A comunicação entre a aplicação Android e o backend é feita através de pedidos HTTP para a API REST, utilizando o endereço local do
+servidor durante o desenvolvimento. Os dados trocados entre os componentes são serializados em formato JSON, permitindo uma
 representação simples e facilmente interpretável por ambas as partes.
 
 Esta comunicação suporta já um conjunto importante de operações, incluindo:
@@ -106,20 +106,20 @@ Esta comunicação suporta já um conjunto importante de operações, incluindo:
     \item associação de alunos a professores;
     \item registo e consulta de disponibilidades;
     \item registo e consulta de restrições;
-    \item geração de propostas de horário.
+    \item criação de propostas de horário.
 \end{itemize}
 
-A existência desta comunicação remota permite validar o sistema como uma solução efetivamente distribuída, em que a aplicação cliente 
-e o backend colaboram para concretizar os fluxos principais do projeto. A versão beta representa uma etapa importante desta integração, 
+A existência desta comunicação remota permite validar o sistema como uma solução efetivamente distribuída, em que a aplicação cliente
+e o backend colaboram para concretizar os fluxos principais do projeto. A versão beta representa uma etapa importante desta integração,
 demonstrando que os componentes já comunicam entre si e que a base funcional do sistema se encontra operacional.
 
 \section{Considerações sobre a Arquitetura Atual}
 
-A arquitetura adotada foi escolhida tendo em conta a necessidade de construir uma solução progressivamente, validando primeiro os fluxos 
-principais e a integração entre componentes, antes de avançar para otimizações mais profundas. A existência simultânea de persistência local 
-e remota reflete a evolução incremental do projeto, permitindo apoiar o desenvolvimento da aplicação móvel ao mesmo tempo que se consolida a 
+A arquitetura adotada foi escolhida tendo em conta a necessidade de construir uma solução progressivamente, validando primeiro os fluxos
+principais e a integração entre componentes, antes de avançar para otimizações mais profundas. A existência simultânea de persistência local
+e remota reflete a evolução incremental do projeto, permitindo apoiar o desenvolvimento da aplicação móvel ao mesmo tempo que se consolida a
 API e a base de dados central.
 
-Embora a arquitetura atual já permita demonstrar de forma consistente o funcionamento da solução, existem ainda aspetos a consolidar, 
-nomeadamente o reforço da sincronização entre dados locais e remotos e a clarificação do papel de cada camada em alguns fluxos específicos. 
+Embora a arquitetura atual já permita demonstrar de forma consistente o funcionamento da solução, existem ainda aspetos a consolidar,
+nomeadamente o reforço da sincronização entre dados locais e remotos e a clarificação do papel de cada camada em alguns fluxos específicos.
 Ainda assim, a base estrutural da solução encontra-se definida e suficientemente sólida para suportar a continuação do desenvolvimento até à versão final.

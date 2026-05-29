@@ -133,7 +133,7 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 **Semana 14 (25/05 - 31/05)**
 * [ ] Correção de erros e melhorias na aplicação.
-* [ ] Preparação da versão beta.
+* [x] Preparação da versão beta.
 * [ ] Preparação da demonstração da aplicação.
 * [ ] Testes completos do fluxo de criação de horários.
 

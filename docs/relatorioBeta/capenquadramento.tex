@@ -3,69 +3,69 @@
 %
 \chapter{Enquadramento} \label{cap:enquadramento}
 
-O problema da organização de horários encontra-se presente em múltiplos contextos, nomeadamente em ambientes educativos, 
-centros de formação e serviços em que um responsável necessita de gerir sessões com vários participantes. 
-Nestes cenários, a compatibilização de disponibilidades e restrições é frequentemente um processo complexo, sobretudo quando existe necessidade 
+O problema da organização de horários encontra-se presente em múltiplos contextos, nomeadamente em ambientes educativos,
+centros de formação e serviços em que um responsável necessita de gerir sessões com vários participantes.
+Nestes cenários, a compatibilização de disponibilidades e restrições é frequentemente um processo complexo, sobretudo quando existe necessidade
 de acomodar vários alunos, respeitar limites temporais e assegurar uma distribuição adequada das sessões ao longo da semana.
 
-No caso particular deste projeto, o foco recai sobre a construção de uma solução orientada à relação entre professor e alunos, em que o professor define 
-a sua disponibilidade e restrições, os alunos indicam os seus períodos disponíveis e o sistema cria automaticamente propostas de horário compatíveis com a informação recolhida. 
+No caso particular deste projeto, o foco recai sobre a construção de uma solução orientada à relação entre professor e alunos, em que o professor define
+a sua disponibilidade e restrições, os alunos indicam os seus períodos disponíveis e o sistema cria automaticamente propostas de horário compatíveis com a informação recolhida.
 Este enquadramento combina aspetos de gestão de dados, interação utilizador-sistema e lógica de planeamento, tornando o problema simultaneamente prático e tecnicamente relevante.
 
 \section{Problema e Contexto de Aplicação}
 
-A construção manual de horários tende a envolver sucessivas trocas de informação entre os intervenientes, registos informais 
-e verificação manual de compatibilidades. Este método, embora viável em contextos muito reduzidos, torna-se pouco eficiente 
-quando o número de alunos aumenta ou quando as disponibilidades variam de forma significativa. Além disso, a gestão manual 
-não facilita a aplicação consistente de regras como a duração das sessões, o número máximo de alunos por sessão ou o número 
+A construção manual de horários tende a envolver sucessivas trocas de informação entre os intervenientes, registos informais
+e verificação manual de compatibilidades. Este método, embora viável em contextos muito reduzidos, torna-se pouco eficiente
+quando o número de alunos aumenta ou quando as disponibilidades variam de forma significativa. Além disso, a gestão manual
+não facilita a aplicação consistente de regras como a duração das sessões, o número máximo de alunos por sessão ou o número
 máximo de sessões permitidas por dia.
 
-O projeto desenvolvido procura responder a este problema através de uma solução digital que apoia a recolha e organização de 
-informação relevante para o agendamento. Em vez de depender exclusivamente da intervenção manual do utilizador para encontrar 
-combinações possíveis, o sistema recolhe dados estruturados e utiliza-os para construir propostas de horário automaticamente. 
-Esta abordagem permite reduzir o esforço necessário para planear sessões, diminuir erros de compatibilidade e tornar mais clara 
+O projeto desenvolvido procura responder a este problema através de uma solução digital que apoia a recolha e organização de
+informação relevante para o agendamento. Em vez de depender exclusivamente da intervenção manual do utilizador para encontrar
+combinações possíveis, o sistema recolhe dados estruturados e utiliza-os para construir propostas de horário automaticamente.
+Esta abordagem permite reduzir o esforço necessário para planear sessões, diminuir erros de compatibilidade e tornar mais clara
 a gestão do tempo disponível do professor.
 
-O contexto de aplicação da solução é suficientemente abrangente para poder ser adaptado a vários cenários de ensino ou acompanhamento 
-individual e em grupo. Embora a implementação atual esteja focada numa relação entre professor e alunos, o modelo adotado poderá futuramente 
+O contexto de aplicação da solução é suficientemente abrangente para poder ser adaptado a vários cenários de ensino ou acompanhamento
+individual e em grupo. Embora a implementação atual esteja focada numa relação entre professor e alunos, o modelo adotado poderá futuramente
 ser estendido a outros contextos em que exista necessidade de coordenar horários entre um responsável e vários participantes.
 
 \section{Trabalho Relacionado e Soluções Semelhantes}
 
-O problema abordado neste projeto insere-se na área mais ampla de \textit{scheduling} e planeamento de recursos, em que se procura distribuir 
-entidades, atividades e intervalos temporais de forma compatível com um conjunto de restrições. Em termos conceptuais, trata-se de um problema 
-em que é necessário representar disponibilidades, aplicar regras de negócio e encontrar combinações válidas entre vários intervenientes. 
+O problema abordado neste projeto insere-se na área mais ampla de \textit{scheduling} e planeamento de recursos, em que se procura distribuir
+entidades, atividades e intervalos temporais de forma compatível com um conjunto de restrições. Em termos conceptuais, trata-se de um problema
+em que é necessário representar disponibilidades, aplicar regras de negócio e encontrar combinações válidas entre vários intervenientes.
 Este tipo de problema surge em várias áreas, como planeamento académico, gestão de turnos, marcação de reuniões e organização de sessões de formação.
 
-Existem atualmente diversas ferramentas digitais que apoiam a marcação de horários, sobretudo em cenários de agendamento individual. Muitas dessas 
-soluções permitem selecionar intervalos disponíveis, marcar sessões e enviar confirmações aos participantes. Contudo, nem sempre oferecem mecanismos 
-ajustados a cenários em que um professor trabalha com vários alunos, em que é necessário cruzar múltiplas disponibilidades e respeitar restrições 
+Existem atualmente diversas ferramentas digitais que apoiam a marcação de horários, sobretudo em cenários de agendamento individual. Muitas dessas
+soluções permitem selecionar intervalos disponíveis, marcar sessões e enviar confirmações aos participantes. Contudo, nem sempre oferecem mecanismos
+ajustados a cenários em que um professor trabalha com vários alunos, em que é necessário cruzar múltiplas disponibilidades e respeitar restrições
 específicas associadas à organização de sessões.
 
-Em paralelo, aplicações de calendário amplamente utilizadas, como soluções de gestão de agenda e serviços de calendário online, facilitam a visualização 
-e o registo de eventos, mas não resolvem diretamente o problema de construir automaticamente um horário com base em informação distribuída por vários utilizadores 
+Em paralelo, aplicações de calendário amplamente utilizadas, como soluções de gestão de agenda e serviços de calendário online, facilitam a visualização
+e o registo de eventos, mas não resolvem diretamente o problema de construir automaticamente um horário com base em informação distribuída por vários utilizadores
 e restrições próprias do domínio. Assim, embora sejam úteis como ferramentas complementares, não substituem uma solução pensada especificamente para este contexto.
 
-A solução desenvolvida neste projeto posiciona-se, por isso, como uma plataforma orientada a um caso de uso mais específico, combinando funcionalidades de gestão 
-de utilizadores, recolha de disponibilidades, definição de restrições e criação de propostas de horário. Em vez de atuar apenas como repositório de eventos, 
+A solução desenvolvida neste projeto posiciona-se, por isso, como uma plataforma orientada a um caso de uso mais específico, combinando funcionalidades de gestão
+de utilizadores, recolha de disponibilidades, definição de restrições e criação de propostas de horário. Em vez de atuar apenas como repositório de eventos,
 o sistema procura apoiar de forma ativa o processo de planeamento, servindo como base para uma automatização progressiva da criação de horários.
 
 \section{Justificação da Solução Proposta}
 
-A escolha de desenvolver uma solução própria justifica-se pela necessidade de responder a requisitos concretos que não são completamente satisfeitos por ferramentas 
-genéricas de calendário ou por sistemas simples de marcação. O projeto pretende integrar, numa única solução, vários elementos que normalmente surgem dispersos: 
+A escolha de desenvolver uma solução própria justifica-se pela necessidade de responder a requisitos concretos que não são completamente satisfeitos por ferramentas
+genéricas de calendário ou por sistemas simples de marcação. O projeto pretende integrar, numa única solução, vários elementos que normalmente surgem dispersos:
 
- \begin{itemize}
-    \item gestão de utilizadores, 
-    \item associação entre alunos e professor, 
-    \item registo estruturado de disponibilidades, 
+\begin{itemize}
+    \item gestão de utilizadores,
+    \item associação entre alunos e professor,
+    \item registo estruturado de disponibilidades,
     \item configuração de restrições,
     \item criação automática de propostas de horário.
- \end{itemize}
+\end{itemize}
 
-Além disso, o desenvolvimento do sistema permite explorar aspetos técnicos relevantes do ponto de vista da engenharia de software, nomeadamente a construção de uma 
-aplicação Android, o desenvolvimento de uma API REST, a persistência local e remota de dados, e a implementação de lógica de planeamento baseada em restrições. 
+Além disso, o desenvolvimento do sistema permite explorar aspetos técnicos relevantes do ponto de vista da engenharia de software, nomeadamente a construção de uma
+aplicação Android, o desenvolvimento de uma API REST, a persistência local e remota de dados, e a implementação de lógica de planeamento baseada em restrições.
 Desta forma, o projeto não se limita a resolver um problema prático, mas constitui também uma oportunidade para consolidar competências técnicas adquiridas ao longo do curso e novas competências relacionadas com a utilização de LLM's e bibliotecas externas.
 
-A versão beta do projeto procura, assim, demonstrar a viabilidade desta abordagem, validando os fluxos principais da solução e preparando o caminho para funcionalidades 
+A versão beta do projeto procura, assim, demonstrar a viabilidade desta abordagem, validando os fluxos principais da solução e preparando o caminho para funcionalidades
 futuras, como reforço da integração entre componentes, melhoria do algoritmo de planeamento e eventual suporte a novos tipos de entrada de dados.

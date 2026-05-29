@@ -24,15 +24,20 @@ import com.example.frontend.ui.viewmodel.teacher.RestrictionsViewModel
 import com.example.frontend.data.remote.api.StudentApi
 import com.example.frontend.data.remote.api.TeacherApi
 
+
 object AppModule {
 
     private var database: AppDatabase? = null
-    
-    private val teacherApi by lazy { TeacherApi() }
-    private val studentApi by lazy { StudentApi() }
-    private val restrictionsApi by lazy { RestrictionsApi() }
-    private val availabilityApi by lazy { AvailabilityApi() }
-    private val scheduleApi by lazy { ScheduleApi() }
+    private val teacherApi by lazy {
+        TeacherApi()
+    }
+    private val studentApi by lazy {
+        StudentApi()
+    }
+
+    private val restrictionsApi by lazy {
+        RestrictionsApi()
+    }
 
     fun init(context: Context) {
         database = DatabaseProvider.getDatabase(context)
@@ -68,6 +73,14 @@ object AppModule {
         TimeSlotRepository(db().timeSlotDao())
     }
 
+    private val availabilityApi by lazy {
+        AvailabilityApi()
+    }
+
+    private val scheduleApi by lazy {
+        ScheduleApi()
+    }
+
     fun provideStudentViewModel(): StudentViewModel {
         return StudentViewModel(studentRepository)
     }
@@ -77,7 +90,10 @@ object AppModule {
     }
 
     fun provideAvailabilityViewModel(): AvailabilityViewModel {
-        return AvailabilityViewModel(availabilityRepository)
+        return AvailabilityViewModel(
+            availabilityRepository
+        )
+
     }
 
     fun provideLoginViewModel(): LoginViewModel {

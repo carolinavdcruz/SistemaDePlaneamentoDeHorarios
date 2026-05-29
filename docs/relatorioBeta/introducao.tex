@@ -3,23 +3,23 @@
 %
 \chapter{Introdução} \label{cap:intro}
 
-A organização de horários entre professores e alunos é uma tarefa que, em muitos contextos, continua a ser realizada 
-de forma manual, recorrendo a trocas sucessivas de mensagens, folhas de cálculo ou registos informais. 
-Este processo tende a ser demorado, pouco flexível e propenso a erros, especialmente quando existem múltiplos alunos, 
-disponibilidades distintas e restrições específicas que precisam de ser respeitadas. A dificuldade aumenta quando se 
-pretende encontrar uma distribuição equilibrada de sessões, compatível com a disponibilidade do professor e com as 
+A organização de horários entre professores e alunos é uma tarefa que, em muitos contextos, continua a ser realizada
+de forma manual, recorrendo a trocas sucessivas de mensagens, folhas de cálculo ou registos informais.
+Este processo tende a ser demorado, pouco flexível e propenso a erros, especialmente quando existem múltiplos alunos,
+disponibilidades distintas e restrições específicas que precisam de ser respeitadas. A dificuldade aumenta quando se
+pretende encontrar uma distribuição equilibrada de sessões, compatível com a disponibilidade do professor e com as
 preferências ou limitações dos alunos.
 
-A motivação para este projeto surgiu de uma experiência concreta das autoras no contexto de um centro de estudos, onde 
-ambas desempenham funções de explicadoras. Neste contexto, a gestão dos horários dos alunos era realizada manualmente e 
-exigia reajustes frequentes sempre que entrava um novo aluno ou surgiam alterações de disponibilidade. Na prática, isso 
-implicava refazer sucessivamente os horários já definidos, tentar encontrar novos encaixes e, muitas vezes, lidar com a 
-dificuldade de conciliar todos os alunos de forma equilibrada e sustentável. Esta experiência permitiu identificar de 
+A motivação para este projeto surgiu de uma experiência concreta das autoras no contexto de um centro de estudos, onde
+ambas desempenham funções de explicadoras. Neste contexto, a gestão dos horários dos alunos era realizada manualmente e
+exigia reajustes frequentes sempre que entrava um novo aluno ou surgiam alterações de disponibilidade. Na prática, isso
+implicava refazer sucessivamente os horários já definidos, tentar encontrar novos encaixes e, muitas vezes, lidar com a
+dificuldade de conciliar todos os alunos de forma equilibrada e sustentável. Esta experiência permitiu identificar de
 forma clara a necessidade de uma solução que apoiasse este processo de forma mais eficiente e estruturada.
 
-Neste contexto, surgiu a proposta do projeto \textit{Sistema de Planeamento de Horários}, cujo objetivo consiste no 
-desenvolvimento de uma solução capaz de apoiar a gestão e criação automática de horários entre professores e alunos. 
-A solução permite recolher disponibilidades, definir restrições de agendamento e gerar propostas de horário de forma 
+Neste contexto, surgiu a proposta do projeto \textit{Sistema de Planeamento de Horários}, cujo objetivo consiste no
+desenvolvimento de uma solução capaz de apoiar a gestão e criação automática de horários entre professores e alunos.
+A solução permite recolher disponibilidades, definir restrições de agendamento e criar propostas de horário de forma
 estruturada, reduzindo o esforço manual associado a este processo e tornando a gestão de sessões mais clara e eficiente.
 
 %
@@ -27,10 +27,10 @@ estruturada, reduzindo o esforço manual associado a este processo e tornando a 
 %
 \section{Motivação e Objetivos} \label{sec11}
 
-A motivação principal para o desenvolvimento deste projeto prende-se com a necessidade de criar uma ferramenta capaz de 
-simplificar a coordenação de horários em cenários onde um professor trabalha com vários alunos e necessita de conciliar 
-diferentes disponibilidades ao longo da semana. Em vez de depender exclusivamente de planeamento manual, a solução proposta 
-procura automatizar parte desse trabalho, permitindo que os dados relevantes sejam recolhidos de forma consistente e utilizados 
+A motivação principal para o desenvolvimento deste projeto prende-se com a necessidade de criar uma ferramenta capaz de
+simplificar a coordenação de horários em cenários onde um professor trabalha com vários alunos e necessita de conciliar
+diferentes disponibilidades ao longo da semana. Em vez de depender exclusivamente de planeamento manual, a solução proposta
+procura automatizar parte desse trabalho, permitindo que os dados relevantes sejam recolhidos de forma consistente e utilizados
 para construir propostas de horário com base em regras bem definidas.
 
 O objetivo central do projeto consiste, assim, em disponibilizar um sistema que permita:
@@ -43,7 +43,7 @@ O objetivo central do projeto consiste, assim, em disponibilizar um sistema que 
     \item apresentar o horário resultante de forma legível, organizada, dinamica e facilitada.
 \end{itemize}
 
-Numa perspetiva mais ampla, o projeto pretende também servir como base para a evolução de funcionalidades futuras, como integração 
+Numa perspetiva mais ampla, o projeto pretende também servir como base para a evolução de funcionalidades futuras, como integração
 com sistemas externos, persistência remota mais completa e eventual suporte a extração automática de informação a partir de documentos ou imagens.
 
 %
@@ -51,20 +51,20 @@ com sistemas externos, persistência remota mais completa e eventual suporte a e
 %
 \section{Visão Geral da Solução} \label{sec12}
 
-A solução desenvolvida assenta numa arquitetura composta por uma aplicação Android, responsável pela interação com o utilizador, 
-e por um backend com API REST, responsável pela persistência e disponibilização de dados centrais do sistema. No frontend foi utilizada 
-a linguagem Kotlin com Jetpack Compose para a construção da interface, enquanto no backend foi adotado Ktor para a implementação da API, 
+A solução desenvolvida assenta numa arquitetura composta por uma aplicação Android, responsável pela interação com o utilizador,
+e por um backend com API REST, responsável pela persistência e disponibilização de dados centrais do sistema. No frontend foi utilizada
+a linguagem Kotlin com Jetpack Compose para a construção da interface, enquanto no backend foi adotado Ktor para a implementação da API,
 em conjunto com PostgreSQL para persistência de dados.
 
-A aplicação distingue dois tipos principais de utilizador através de uma classe "Owner Type" desenvolvida por nós: professor e aluno. 
+A aplicação distingue dois tipos principais de utilizador através de uma classe "Owner Type" desenvolvida por nós: professor e aluno.
 Cada um destes perfis tem acesso a um conjunto próprio de funcionalidades.
-O professor pode definir a sua disponibilidade, configurar restrições associadas ao planeamento e consultar os alunos que lhe estão associados. 
+O professor pode definir a sua disponibilidade, configurar restrições associadas ao planeamento e consultar os alunos que lhe estão associados.
 O aluno pode escolher um professor e definir a sua própria disponibilidade.
 A partir destes dados, o sistema pode criar uma proposta de horário semanal compatível com as disponibilidades registadas e com as restrições configuradas.
 Por sua vez o professor irá avaliar o resultado final e, caso seja necessário, poderá requesitar uma nova proposta de horário.
 Ao ser aceite a proposta de horário, o sistema irá registálo no Google Calendar do professor, utilizando a API do Google Calendar, e irá disponibilizar o horário especifico de cada aluno no seu email pessoal.
 
-Na versão beta do projeto, foi dada especial atenção à validação dos fluxos principais do sistema, à integração entre frontend e backend, e à implementação 
+Na versão beta do projeto, foi dada especial atenção à validação dos fluxos principais do sistema, à integração entre frontend e backend, e à implementação
 de uma primeira abordagem para a criação automática de horários. Esta fase permite demonstrar a viabilidade técnica da solução e serve como base para melhorias e refinamentos futuros.
 
 %
@@ -72,8 +72,8 @@ de uma primeira abordagem para a criação automática de horários. Esta fase p
 %
 \section{Organização do Documento} \label{sec13}
 
-O presente relatório encontra-se organizado da seguinte forma. No Capítulo~\ref{cap:enquadramento} é apresentado o enquadramento do problema, a motivação do projeto e o contexto em que a solução se insere. 
-No Capítulo~\ref{cap:arquitetura} é descrita a organização global do sistema, incluindo os principais componentes e a sua interação. 
-Seguidamente, são apresentados os detalhes de implementação mais relevantes, tanto ao nível do frontend como do backend, bem como os principais aspetos da API e da persistência de dados. 
-Posteriormente, é descrita a estratégia de testes e validação aplicada ao sistema. 
+O presente relatório encontra-se organizado da seguinte forma. No Capítulo~\ref{cap:enquadramento} é apresentado o enquadramento do problema, a motivação do projeto e o contexto em que a solução se insere.
+No Capítulo~\ref{cap:arquitetura} é descrita a organização global do sistema, incluindo os principais componentes e a sua interação.
+Seguidamente, são apresentados os detalhes de implementação mais relevantes, tanto ao nível do frontend como do backend, bem como os principais aspetos da API e da persistência de dados.
+Posteriormente, é descrita a estratégia de testes e validação aplicada ao sistema.
 Por fim, é feito um balanço do estado atual da versão beta, identificando as funcionalidades já concluídas, as limitações atuais e os próximos passos previstos para a evolução do projeto.

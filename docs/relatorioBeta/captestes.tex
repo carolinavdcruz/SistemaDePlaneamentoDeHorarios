@@ -3,32 +3,32 @@
 %
 \chapter{Testes e Validação} \label{cap:testes}
 
-A validação do sistema foi realizada de forma progressiva ao longo do desenvolvimento, acompanhando a implementação das diferentes funcionalidades da aplicação e do backend. 
-Esta abordagem permitiu testar isoladamente componentes específicos e, posteriormente, verificar o comportamento integrado da solução. Na versão beta, os testes incidiram 
-sobretudo sobre a lógica de tratamento de disponibilidades, a geração de horários, o funcionamento da API e os fluxos principais da aplicação Android.
+A validação do sistema foi realizada de forma progressiva ao longo do desenvolvimento, acompanhando a implementação das diferentes funcionalidades da aplicação e do backend.
+Esta abordagem permitiu testar isoladamente componentes específicos e, posteriormente, verificar o comportamento integrado da solução. Na versão beta, os testes incidiram
+sobretudo sobre a lógica de tratamento de disponibilidades, a criação de horários, o funcionamento da API e os fluxos principais da aplicação Android.
 
 A estratégia adotada combinou diferentes níveis de validação, incluindo testes unitários, testes manuais da aplicação e testes aos endpoints da API com recurso ao Postman.
 
 \section{Testes Unitários}
 
-Ao nível da lógica local da aplicação, foram implementados testes unitários para componentes diretamente relacionados com a geração de horários e o processamento de disponibilidades. 
+Ao nível da lógica local da aplicação, foram implementados testes unitários para componentes diretamente relacionados com a criação de horários e o processamento de disponibilidades.
 Estes testes tiveram como objetivo garantir que os blocos mais sensíveis da lógica do sistema produziam resultados coerentes e previsíveis.
 
 Entre os componentes testados destacam-se:
 \begin{itemize}
     \item o processador de intervalos temporais, responsável por dividir disponibilidades em blocos utilizáveis pelo algoritmo;
-    \item o gerador de horários, responsável por construir propostas de sessões com base nas disponibilidades e restrições.
+    \item o criação de horários, responsável por construir propostas de sessões com base nas disponibilidades e restrições.
 \end{itemize}
 
 No caso do processamento de intervalos temporais, os testes permitiram verificar aspetos como:
 \begin{itemize}
-    \item número de blocos gerados para diferentes intervalos;
+    \item número de blocos criados para diferentes intervalos;
     \item preservação correta do dia da semana;
     \item comportamento em intervalos inválidos ou demasiado curtos;
     \item suporte a diferentes durações de bloco.
 \end{itemize}
 
-No caso do algoritmo de geração de horários, os testes procuraram validar:
+No caso do algoritmo de criação de horários, os testes procuraram validar:
 \begin{itemize}
     \item atribuição correta de alunos disponíveis;
     \item respeito pelo número máximo de participantes por sessão;
@@ -40,7 +40,7 @@ Estes testes constituem uma base importante de confiança para o comportamento d
 
 \section{Validação do Backend com Postman}
 
-Para a validação do backend foi utilizada a ferramenta Postman, permitindo testar os endpoints da API REST de forma independente da aplicação Android. 
+Para a validação do backend foi utilizada a ferramenta Postman, permitindo testar os endpoints da API REST de forma independente da aplicação Android.
 Esta fase revelou-se importante para confirmar a correção dos contratos HTTP, a estrutura dos pedidos e respostas e a persistência efetiva dos dados em PostgreSQL.
 
 Os testes realizados no Postman abrangeram, entre outros, os seguintes cenários:
@@ -53,15 +53,15 @@ Os testes realizados no Postman abrangeram, entre outros, os seguintes cenários
     \item consulta dos alunos associados a um professor;
     \item registo e consulta de disponibilidades;
     \item registo e consulta de restrições;
-    \item geração de propostas de horário.
+    \item  criação de propostas de horário.
 \end{itemize}
 
-Através destes testes foi possível confirmar que a API se encontrava funcional e que os principais fluxos do domínio estavam corretamente representados no backend. 
+Através destes testes foi possível confirmar que a API se encontrava funcional e que os principais fluxos do domínio estavam corretamente representados no backend.
 Esta validação permitiu também identificar e corrigir inconsistências entre o modelo de dados do frontend e o do backend, contribuindo para uma integração mais robusta entre os dois componentes.
 
 \section{Testes Funcionais da Aplicação Android}
 
-Ao nível da aplicação Android, os testes realizados incidiram sobre os principais fluxos funcionais disponíveis para cada tipo de utilizador. 
+Ao nível da aplicação Android, os testes realizados incidiram sobre os principais fluxos funcionais disponíveis para cada tipo de utilizador.
 O objetivo foi validar o comportamento da interface, a navegação entre ecrãs, a persistência de dados e a integração progressiva com a API.
 
 Entre os fluxos testados destacam-se:
@@ -72,16 +72,16 @@ Entre os fluxos testados destacam-se:
     \item visualização de alunos associados ao professor;
     \item definição de disponibilidades;
     \item definição de restrições;
-    \item geração e apresentação do horário.
+    \item  criação e apresentação do horário.
 \end{itemize}
 
-A validação funcional da aplicação foi importante para garantir que a interface suportava corretamente os comportamentos previstos pelo domínio 
+A validação funcional da aplicação foi importante para garantir que a interface suportava corretamente os comportamentos previstos pelo domínio
 do problema e que a informação apresentada ao utilizador era consistente com o estado armazenado localmente e, quando aplicável, com a informação obtida do backend.
 
-\section{Validação da Geração de Horários}
+\section{Validação da Criação de Horários}
 
-A geração de horários foi alvo de validação específica, dado tratar-se da funcionalidade central do projeto. 
-Para esse efeito, foram construídos cenários de teste com diferentes combinações de disponibilidades, alunos e restrições, 
+A criação de horários foi alvo de validação específica, dado tratar-se da funcionalidade central do projeto.
+Para esse efeito, foram construídos cenários de teste com diferentes combinações de disponibilidades, alunos e restrições,
 permitindo observar o comportamento do sistema em situações representativas.
 
 Os testes incidiram sobre aspetos como:
@@ -93,24 +93,24 @@ Os testes incidiram sobre aspetos como:
     \item distribuição de alunos por diferentes blocos quando aplicável.
 \end{itemize}
 
-Através destes testes foi possível confirmar que a versão beta já produz propostas de horário coerentes com as regras definidas e com a informação introduzida no sistema. 
+Através destes testes foi possível confirmar que a versão beta já produz propostas de horário coerentes com as regras definidas e com a informação introduzida no sistema.
 Embora a abordagem atual ainda possa ser melhorada, os resultados obtidos mostram que a funcionalidade principal do projeto já se encontra operacional.
 
 \section{Integração e Validação Progressiva}
 
-Um aspeto relevante da fase de testes foi a validação progressiva da integração entre frontend e backend. Em vez de tentar validar toda a solução apenas no final, 
-as funcionalidades foram sendo testadas à medida que a comunicação remota era introduzida. 
+Um aspeto relevante da fase de testes foi a validação progressiva da integração entre frontend e backend. Em vez de tentar validar toda a solução apenas no final,
+as funcionalidades foram sendo testadas à medida que a comunicação remota era introduzida.
 Esta estratégia permitiu identificar mais cedo inconsistências em endpoints, modelos de dados e fluxos de sincronização.
 
-A coexistência de persistência local e persistência remota exigiu também atenção adicional, uma vez que parte da validação teve de assegurar que os dados obtidos da API 
-se mantinham consistentes com o estado visível na aplicação. 
+A coexistência de persistência local e persistência remota exigiu também atenção adicional, uma vez que parte da validação teve de assegurar que os dados obtidos da API
+se mantinham consistentes com o estado visível na aplicação.
 Esta abordagem incremental revelou-se útil para consolidar a versão beta e preparar a solução para uma integração mais completa nas fases seguintes do projeto.
 
 \section{Síntese dos Resultados Obtidos}
 
-Os testes realizados permitiram concluir que a versão beta do sistema já apresenta um nível de funcionalidade significativo. O backend encontra-se operacional, 
-os principais endpoints foram validados com sucesso, a aplicação Android executa os fluxos centrais do sistema e a geração de horários produz resultados coerentes em cenários representativos.
+Os testes realizados permitiram concluir que a versão beta do sistema já apresenta um nível de funcionalidade significativo. O backend encontra-se operacional,
+os principais endpoints foram validados com sucesso, a aplicação Android executa os fluxos centrais do sistema e a criação de horários produz resultados coerentes em cenários representativos.
 
-Apesar de persistirem aspetos a refinar, nomeadamente ao nível da integração total entre componentes e da evolução futura do algoritmo, a validação efetuada demonstra que a solução 
-já consegue suportar os casos de uso mais importantes do projeto. 
+Apesar de persistirem aspetos a refinar, nomeadamente ao nível da integração total entre componentes e da evolução futura do algoritmo, a validação efetuada demonstra que a solução
+já consegue suportar os casos de uso mais importantes do projeto.
 Este resultado constitui um indicador positivo para a continuação do desenvolvimento até à versão final.

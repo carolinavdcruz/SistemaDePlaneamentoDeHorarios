@@ -3,18 +3,18 @@
 %
 \chapter{Implementação do Sistema} \label{cap:implementacao}
 
-A implementação do sistema foi realizada de forma incremental, começando pela definição dos fluxos principais da aplicação 
-Android e evoluindo depois para a integração com o backend e com a base de dados remota. 
-Esta abordagem permitiu validar gradualmente os principais casos de uso do projeto, garantindo que cada funcionalidade 
+A implementação do sistema foi realizada de forma incremental, começando pela definição dos fluxos principais da aplicação
+Android e evoluindo depois para a integração com o backend e com a base de dados remota.
+Esta abordagem permitiu validar gradualmente os principais casos de uso do projeto, garantindo que cada funcionalidade
 essencial ficava operacional antes da introdução de novos componentes ou maior complexidade.
 
-A solução resultante permite já concretizar um conjunto alargado de operações centrais ao domínio do problema, nomeadamente 
-registo de utilizadores, definição de disponibilidades, gestão de restrições, associação entre alunos e professores e geração 
+A solução resultante permite já concretizar um conjunto alargado de operações centrais ao domínio do problema, nomeadamente
+registo de utilizadores, definição de disponibilidades, gestão de restrições, associação entre alunos e professores e criação
 de propostas de horário.
 
 \section{Organização Funcional da Aplicação}
 
-A aplicação foi concebida em torno de dois perfis principais de utilizador: professor e aluno. 
+A aplicação foi concebida em torno de dois perfis principais de utilizador: professor e aluno.
 A interface e os fluxos disponíveis são ajustados a cada um destes perfis, permitindo apresentar apenas as operações relevantes para cada caso.
 
 A implementação do frontend procurou manter uma separação clara entre:
@@ -24,12 +24,12 @@ A implementação do frontend procurou manter uma separação clara entre:
     \item acesso a dados locais e remotos.
 \end{itemize}
 
-Desta forma, cada ecrã da aplicação está associado a um conjunto de operações específicas, 
+Desta forma, cada ecrã da aplicação está associado a um conjunto de operações específicas,
 suportadas por \textit{ViewModels} e repositórios que coordenam a lógica necessária à execução dos respetivos fluxos.
 
 \section{Gestão de Utilizadores e Perfis}
 
-Uma das primeiras preocupações da implementação foi distinguir corretamente os dois tipos de utilizador suportados pelo sistema. 
+Uma das primeiras preocupações da implementação foi distinguir corretamente os dois tipos de utilizador suportados pelo sistema.
 Esta separação é essencial porque professores e alunos desempenham papéis diferentes no problema do planeamento de horários.
 
 Na solução implementada:
@@ -39,16 +39,16 @@ Na solução implementada:
     \item a navegação da aplicação adapta-se ao perfil autenticado, apresentando diferentes opções no \textit{dashboard}.
 \end{itemize}
 
-A gestão de sessão local foi integrada no frontend, permitindo preservar informação sobre o utilizador autenticado e suportar a adaptação dos fluxos 
+A gestão de sessão local foi integrada no frontend, permitindo preservar informação sobre o utilizador autenticado e suportar a adaptação dos fluxos
 da aplicação ao papel desempenhado. Esta distinção entre perfis foi também refletida no modelo de dados e na lógica dos ecrãs principais.
 
 \section{Gestão de Disponibilidades}
 
-A funcionalidade de gestão de disponibilidades representa uma parte fundamental da solução, pois constitui a base sobre a qual são construídas as propostas de horário. 
+A funcionalidade de gestão de disponibilidades representa uma parte fundamental da solução, pois constitui a base sobre a qual são construídas as propostas de horário.
 Tanto professores como alunos podem registar a sua disponibilidade semanal, indicando os dias e intervalos horários em que se encontram disponíveis.
 
-Numa fase inicial da implementação, a disponibilidade foi modelada de forma mais simples, com um único intervalo comum aos dias selecionados. 
-Contudo, verificou-se que esta abordagem não representava adequadamente situações reais, em que diferentes dias podem ter janelas horárias distintas. 
+Numa fase inicial da implementação, a disponibilidade foi modelada de forma mais simples, com um único intervalo comum aos dias selecionados.
+Contudo, verificou-se que esta abordagem não representava adequadamente situações reais, em que diferentes dias podem ter janelas horárias distintas.
 Por esse motivo, a funcionalidade foi evoluída para suportar disponibilidade por dia, permitindo que cada dia da semana possua horários próprios.
 
 Esta evolução teve impacto direto na interface e na lógica da aplicação, permitindo:
@@ -58,12 +58,12 @@ Esta evolução teve impacto direto na interface e na lógica da aplicação, pe
     \item persistir e recuperar corretamente essa informação.
 \end{itemize}
 
-A gestão de disponibilidades foi implementada de forma a suportar persistência local e, progressivamente, comunicação com o backend, permitindo que os dados 
-fiquem disponíveis para posterior utilização na geração de horários.
+A gestão de disponibilidades foi implementada de forma a suportar persistência local e, progressivamente, comunicação com o backend, permitindo que os dados
+fiquem disponíveis para posterior utilização na criação de horários.
 
 \section{Gestão de Restrições}
 
-Para além das disponibilidades, o sistema implementa um conjunto de restrições que orientam a construção do horário do professor. 
+Para além das disponibilidades, o sistema implementa um conjunto de restrições que orientam a construção do horário do professor.
 Estas restrições representam regras de negócio relevantes para o problema e são definidas a partir do perfil do professor.
 
 Na implementação atual, o professor pode configurar:
@@ -75,11 +75,11 @@ Na implementação atual, o professor pode configurar:
 \end{itemize}
 
 A introdução desta funcionalidade permitiu passar de uma simples compatibilização de horários para um problema de planeamento mais próximo do caso de uso real.
-As restrições são persistidas e utilizadas posteriormente pelo mecanismo de geração de horários, desempenhando um papel central na validação das sessões propostas.
+As restrições são persistidas e utilizadas posteriormente pelo mecanismo de criação de horários, desempenhando um papel central na validação das sessões propostas.
 
 \section{Associação entre Alunos e Professores}
 
-Outro aspeto relevante da implementação foi a definição do modelo de associação entre alunos e professores. 
+Outro aspeto relevante da implementação foi a definição do modelo de associação entre alunos e professores.
 A solução adotada considera que cada aluno pode escolher um único professor, enquanto um professor pode ter vários alunos associados.
 
 Esta decisão foi refletida:
@@ -90,20 +90,20 @@ Esta decisão foi refletida:
     \item nos ecrãs de seleção e visualização de alunos.
 \end{itemize}
 
-Na aplicação, o aluno pode selecionar um professor a partir da lista de professores disponíveis. Por sua vez, o professor pode consultar os alunos que lhe estão associados. 
+Na aplicação, o aluno pode selecionar um professor a partir da lista de professores disponíveis. Por sua vez, o professor pode consultar os alunos que lhe estão associados.
 Foi também introduzida a possibilidade de desassociar um aluno, removendo a ligação ao professor sem eliminar o registo do aluno do sistema.
 
-Esta funcionalidade é essencial para garantir que a geração do horário é feita apenas com base nos alunos relevantes para cada professor, 
+Esta funcionalidade é essencial para garantir que a criação do horário é feita apenas com base nos alunos relevantes para cada professor,
 tornando o problema mais bem definido e mais próximo do contexto de utilização previsto.
 
-\section{Geração de Propostas de Horário}
+\section{Criação de Propostas de Horário}
 
-A geração de horários constitui o núcleo funcional do projeto. 
-A implementação atual baseia-se na recolha de disponibilidades do professor e dos seus alunos, na consideração das restrições definidas e na 
+A criação de horários constitui o núcleo funcional do projeto.
+A implementação atual baseia-se na recolha de disponibilidades do professor e dos seus alunos, na consideração das restrições definidas e na
 construção de sessões válidas a partir da interseção desses dados.
 
-A lógica de geração parte de uma representação em blocos temporais, obtidos a partir dos intervalos de disponibilidade registados. 
-Estes blocos são depois analisados para identificar combinações possíveis entre professor e alunos. 
+A lógica de criação parte de uma representação em blocos temporais, obtidos a partir dos intervalos de disponibilidade registados.
+Estes blocos são depois analisados para identificar combinações possíveis entre professor e alunos.
 O processo de construção das sessões considera, entre outros aspetos:
 \begin{itemize}
     \item compatibilidade de disponibilidade entre professor e alunos;
@@ -112,13 +112,13 @@ O processo de construção das sessões considera, entre outros aspetos:
     \item limite de carga diária do professor.
 \end{itemize}
 
-A versão beta implementa uma primeira abordagem funcional a este problema, suficiente para demonstrar o comportamento do sistema e validar o fluxo completo de criação de horários. 
+A versão beta implementa uma primeira abordagem funcional a este problema, suficiente para demonstrar o comportamento do sistema e validar o fluxo completo de criação de horários.
 Embora o algoritmo atual ainda possa ser refinado em versões futuras, já permite produzir propostas coerentes para cenários representativos do domínio do projeto.
 
-\section{Visualização do Horário Gerado}
+\section{Visualização do Horário Criado}
 
-Após a criação das sessões, a aplicação apresenta o horário gerado de forma organizada e legível. 
-Em vez de mostrar apenas uma lista simples de resultados, foi construída uma visualização semanal agrupada por dia, 
+Após a criação das sessões, a aplicação apresenta o horário criado de forma organizada e legível.
+Em vez de mostrar apenas uma lista simples de resultados, foi construída uma visualização semanal agrupada por dia,
 onde cada sessão aparece com o respetivo intervalo horário e a lista de alunos atribuídos.
 
 Esta representação permite ao utilizador compreender facilmente:
@@ -129,18 +129,18 @@ Esta representação permite ao utilizador compreender facilmente:
     \item em que dias não existem sessões previstas.
 \end{itemize}
 
-A implementação desta visualização constitui uma componente importante da versão beta, pois transforma o resultado do algoritmo 
+A implementação desta visualização constitui uma componente importante da versão beta, pois transforma o resultado do algoritmo
 num artefacto diretamente compreensível e utilizável pelo utilizador final.
 
 \section{Integração Progressiva com o Backend}
 
-Ao longo da implementação, foi também sendo reforçada a integração entre o frontend e o backend. 
-Algumas operações começaram por ser validadas localmente, recorrendo à persistência em Room, e foram posteriormente adaptadas para consumir 
+Ao longo da implementação, foi também sendo reforçada a integração entre o frontend e o backend.
+Algumas operações começaram por ser validadas localmente, recorrendo à persistência em Room, e foram posteriormente adaptadas para consumir
 a API REST e interagir com o PostgreSQL.
 
-Este processo de integração foi realizado de forma progressiva, permitindo validar cada funcionalidade antes da passagem completa para a componente remota. 
-Como resultado, a versão beta já demonstra um nível significativo de comunicação entre a aplicação Android e o backend, particularmente nos fluxos de utilizadores, 
-disponibilidades, restrições e geração de horário.
+Este processo de integração foi realizado de forma progressiva, permitindo validar cada funcionalidade antes da passagem completa para a componente remota.
+Como resultado, a versão beta já demonstra um nível significativo de comunicação entre a aplicação Android e o backend, particularmente nos fluxos de utilizadores,
+disponibilidades, restrições e criação de horário.
 
-A implementação atual representa, assim, uma base funcional robusta sobre a qual será possível continuar a consolidar a solução até à versão final, 
+A implementação atual representa, assim, uma base funcional robusta sobre a qual será possível continuar a consolidar a solução até à versão final,
 reduzindo gradualmente a dependência de mecanismos locais auxiliares e reforçando o papel do backend como componente central do sistema.
