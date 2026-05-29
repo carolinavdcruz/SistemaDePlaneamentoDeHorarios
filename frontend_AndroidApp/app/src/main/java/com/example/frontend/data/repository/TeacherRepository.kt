@@ -26,7 +26,7 @@ class TeacherRepository(
             )
             remote.id  // devolve o id real do backend
         } catch (e: Exception) {
-            Log.e(tag, "Error sending teacher to API: ${e.message}")
+            Log.e(tag, "Erro enviar professor para a API: ${e.message}")
             dao.insert(teacher)
             teacher.id  // fallback: devolve o id local
         }
@@ -45,7 +45,24 @@ class TeacherRepository(
     }
 
     suspend fun getAll(): List<TeacherEntity> {
-        return dao.getAll()
+        return try {
+            val remote = api.getAll()
+            val entities = remote.map {
+                TeacherEntity(
+                    id = it.id,
+                    name = it.name,
+                    email = it.email
+                )
+            }
+
+            dao.deleteAll()
+            entities.forEach { dao.insert(it) }
+
+            entities
+        } catch (e: Exception) {
+            Log.e(tag, "Erro ao buscar professores da API: ${e.message}")
+            dao.getAll()
+        }
     }
 
     suspend fun getById(id: Int): TeacherEntity? {
@@ -53,7 +70,24 @@ class TeacherRepository(
     }
 
     suspend fun getByEmail(email: String): TeacherEntity? {
-        return dao.getByEmail(email)
+        return try {
+            val remote = api.getAll()
+            val entities = remote.map {
+                TeacherEntity(
+                    id = it.id,
+                    name = it.name,
+                    email = it.email
+                )
+            }
+
+            dao.deleteAll()
+            entities.forEach { dao.insert(it) }
+
+            dao.getByEmail(email)
+        } catch (e: Exception) {
+            Log.e(tag, "Erro ao procurar professor por email via API: ${e.message}")
+            dao.getByEmail(email)
+        }
     }
 
 }

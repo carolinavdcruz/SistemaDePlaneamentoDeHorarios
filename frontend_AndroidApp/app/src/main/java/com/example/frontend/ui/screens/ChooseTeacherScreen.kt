@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,7 +43,6 @@ import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.room.PrimaryKey
 import com.example.frontend.ui.viewmodel.student.ChooseTeacherViewModel
 
 @Composable
@@ -163,8 +163,7 @@ fun TeacherChoiceCard(
                 tint = if (isSelected) AccentPurple else TextSecondary
             )
 
-            Spacer(modifier = Modifier.height(0.dp).padding(0.dp))
-            androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(8.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(

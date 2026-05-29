@@ -25,6 +25,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.common.api.ApiException
 
@@ -41,12 +43,6 @@ fun GenerateScheduleButton(teacherId: Int) {
     val viewModel: ScheduleViewModel = remember { AppModule.provideScheduleViewModel() }
     val uiState by viewModel.uiState.collectAsState()
     val isLoading = uiState is ScheduleUiState.Loading
-
-    LaunchedEffect(uiState) {
-        if (uiState is ScheduleUiState.Success) {
-            viewModel.saveSchedule(teacherId, (uiState as ScheduleUiState.Success).sessions)
-        }
-    }
 
     // Google Sign-In launcher
     val signInLauncher = rememberLauncherForActivityResult(
@@ -71,7 +67,7 @@ fun GenerateScheduleButton(teacherId: Int) {
         }
     }
 
-    Column {
+    Column{
         ProposedScheduleCard(uiState = uiState)
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -80,14 +76,6 @@ fun GenerateScheduleButton(teacherId: Int) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                OutlinedButton(
-                    onClick = { viewModel.rejectSchedule() },
-                    modifier = Modifier.weight(1f).height(50.dp),
-                    border = BorderStroke(1.dp, Color.Red),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Rejeitar", color = Color.Red, fontSize = 14.sp)
-                }
 
                 Button(
                     onClick = {
@@ -137,7 +125,7 @@ fun GenerateScheduleButton(teacherId: Int) {
             } else {
                 Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("Gerar Horário", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                Text("Criar Horário", fontSize = 14.sp, fontWeight = FontWeight.Medium)
             }
         }
     }

@@ -23,7 +23,7 @@ class AvailabilityRepository(
 
         try {
             // envia para API
-            api.setupAvailability(
+            api.createAvailability(
                 AvailabilityRequest(
                     ownerId   = availability.ownerId,
                     ownerType = availability.ownerType.name,

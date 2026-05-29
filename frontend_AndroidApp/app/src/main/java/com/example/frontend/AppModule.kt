@@ -118,10 +118,9 @@ object AppModule {
 
     fun provideScheduleViewModel(): ScheduleViewModel {
         return ScheduleViewModel(
-            availabilityRepository = availabilityRepository,
-            restrictionsRepository = restrictionsRepository,
+            scheduleApi = scheduleApi,
             studentRepository = studentRepository,
-            scheduleApi = scheduleApi
         )
     }
+
 }
