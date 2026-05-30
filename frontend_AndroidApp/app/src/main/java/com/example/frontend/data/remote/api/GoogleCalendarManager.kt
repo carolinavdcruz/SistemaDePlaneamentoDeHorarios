@@ -3,6 +3,7 @@ package com.example.frontend.data.remote.api
 import android.content.Context
 import com.example.frontend.data.model.ScheduledSession
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.Scope
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.ExponentialBackOff
@@ -20,6 +21,14 @@ class GoogleCalendarManager(private val context: Context) {
         val SCOPES = listOf(CalendarScopes.CALENDAR)
     }
 
+    fun hasCalendarPermission(context: Context): Boolean {
+        val account = GoogleSignIn.getLastSignedInAccount(context) ?: return false
+        return GoogleSignIn.hasPermissions(
+            account,
+            Scope(CalendarScopes.CALENDAR)
+        )
+    }
+
     // Cria as credenciais OAuth com a conta Google já autenticada via Google Sign-In
     private fun buildCalendarService(): Calendar? {
         val account = GoogleSignIn.getLastSignedInAccount(context) ?: return null
@@ -27,7 +36,7 @@ class GoogleCalendarManager(private val context: Context) {
         val credential = GoogleAccountCredential
             .usingOAuth2(context, SCOPES)
             .setBackOff(ExponentialBackOff())
-            .also { it.selectedAccountName = account.email }
+            .also { it.selectedAccount = account.account }
 
         return Calendar.Builder(
             com.google.api.client.http.javanet.NetHttpTransport(),

@@ -5,7 +5,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StudentRequest(
     val name: String,
-    val email: String
+    val email: String,
+    val password: String,
+    val teacherId: Int? = null
 )
 
 @Serializable
@@ -13,6 +15,7 @@ data class StudentResponse(
     val id: Int,
     val name: String,
     val email: String,
+    val password: String,
     val teacherId: Int?
 )
 
@@ -26,8 +29,9 @@ data class AssignTeacherRequest(
 data class TeacherRequest(
     val name: String,
     val email: String,
-    val sessionDurationMinutes: Int = 60,
-    val maxParticipantsPerSession: Int = 5
+    val password: String
+    //val sessionDurationMinutes: Int = 60,
+    //val maxParticipantsPerSession: Int = 5
 )
 
 @Serializable
@@ -35,7 +39,8 @@ data class TeacherResponse(
     val id: Int,
     val name: String,
     val email: String,
-    )
+    val password: String
+)
 
 @Serializable
 data class AvailabilityRequest(

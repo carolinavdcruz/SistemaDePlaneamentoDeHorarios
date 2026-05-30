@@ -13,21 +13,29 @@ class StudentRepository(
 
     private val tag = "StudentRepository"
 
-    suspend fun insert(student: StudentEntity) {
+    suspend fun insert(student: StudentEntity): Int {
         try {
-            val remote = api.register(StudentRequest(name = student.name, email = student.email))
+            val remote = api.register(
+                StudentRequest(
+                    name = student.name,
+                    email = student.email,
+                    password = student.password
+                )
+            )
             dao.insert(
                 StudentEntity(
                     id = remote.id,
                     teacherId = remote.teacherId,
                     name = remote.name,
                     email = remote.email,
+                    password = remote.password,
                     maxDailySessions = student.maxDailySessions
                 )
             )
+            return remote.id
         } catch (e: Exception) {
             Log.e(tag, "Error sending student to API: ${e.message}")
-            dao.insert(student)
+            throw e
         }
     }
 
@@ -56,6 +64,7 @@ class StudentRepository(
                     teacherId = it.teacherId,
                     name = it.name,
                     email = it.email,
+                    password = it.password,
                     maxDailySessions = 1
                 )
             }
@@ -78,10 +87,12 @@ class StudentRepository(
                     id = it.id,
                     name = it.name,
                     email = it.email,
+                    password = it.password,
                     teacherId = it.teacherId,
                     maxDailySessions = 1
                 )
             }
+            dao.deleteByTeacherId(teacherId)
             entities.forEach { dao.insert(it) }
             entities
         } catch (e: Exception) {
@@ -91,18 +102,19 @@ class StudentRepository(
     }
 
     suspend fun assignTeacherToStudent(studentId: Int, teacherId: Int) {
-        dao.assignTeacherToStudent(studentId, teacherId)
         try {
             api.assignTeacher(studentId, teacherId)
+            dao.assignTeacherToStudent(studentId, teacherId)
         } catch (e: Exception) {
             Log.e(tag, "Erro ao associar professor ao aluno na API: ${e.message}")
+            throw e
         }
     }
 
     suspend fun unassignTeacherFromStudent(studentId: Int) {
-        dao.unassignTeacherFromStudent(studentId)
         try {
             api.unassignTeacher(studentId)
+            dao.unassignTeacherFromStudent(studentId)
         } catch (e: Exception) {
             Log.e(tag, "Erro ao desassociar professor do aluno na API: ${e.message}")
         }

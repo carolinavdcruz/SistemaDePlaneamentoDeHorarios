@@ -22,7 +22,7 @@ import com.example.frontend.data.local.entity.TimeSlotEntity
         AvailabilityEntity::class,
         TimeSlotEntity::class
     ],
-    version = 3, // subimos versao da db porque a estrutura das tabelas mudou
+    version = 4, // subimos versao da db porque a estrutura das tabelas mudou
     exportSchema = false
 )
 

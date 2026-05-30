@@ -56,42 +56,34 @@ class LoginViewModel(
     }
 
     fun login() {
-
         if (!validateLogin()) return
 
         viewModelScope.launch {
             _isLoading.value = true
             val email = _email.value.trim()
+            val password = _password.value
 
-            // Procura primeiro em Student, depois em Teacher
             try {
                 val student = studentRepository.getByEmail(email)
-                if (student != null) {
+                if (student != null && student.password == password) {
                     sessionManager.saveSession(student.id, OwnerType.STUDENT)
                     _loginSuccess.value = true
                     return@launch
                 }
 
                 val teacher = teacherRepository.getByEmail(email)
-                if (teacher != null) {
+                if (teacher != null && teacher.password == password) {
                     sessionManager.saveSession(teacher.id, OwnerType.TEACHER)
                     _loginSuccess.value = true
                     return@launch
                 }
 
                 _errorMessage.value = "Email ou password incorretos."
-
-            // Nenhum utilizador encontrado
             } catch (e: Exception) {
-
                 _errorMessage.value = "Erro ao fazer login."
-
             } finally {
-
                 _isLoading.value = false
-
             }
-
         }
     }
 

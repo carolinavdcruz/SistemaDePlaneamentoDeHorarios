@@ -23,16 +23,18 @@ class TeacherViewModel(
         }
     }
 
-    fun addTeacher(name: String, email: String) {
+    fun addTeacher(name: String, email: String, password: String) {
         viewModelScope.launch {
             val teacher = TeacherEntity(
                 name = name,
                 email = email,
+                password = password
             )
             teacherRepository.insert(teacher)
             loadTeachers()
         }
     }
+
 
     fun updateTeacher(teacher: TeacherEntity) {
         viewModelScope.launch {

@@ -24,20 +24,23 @@ data class AvailabilityResponse(
 @Serializable
 data class TeacherRequest(
     val name: String,
-    val email: String
+    val email: String,
+    val password: String,
 )
 
 @Serializable
 data class TeacherResponse(
     val id: Int,
     val name: String,
-    val email: String
+    val email: String,
+    val password: String,
 )
 
 @Serializable
 data class StudentRequest(
     val name: String,
     val email: String,
+    val password: String,
     val teacherId: Int? = null
 )
 
@@ -46,6 +49,7 @@ data class StudentResponse(
     val id: Int,
     val name: String,
     val email: String,
+    val password: String,
     val teacherId: Int?
 )
 

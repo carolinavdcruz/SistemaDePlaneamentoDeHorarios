@@ -63,15 +63,17 @@ fun Application.configureRouting() {
                 val id = TeacherTable.insert {
                     it[name] = request.name
                     it[email] = request.email
+                    it[password] = request.password
                 } get TeacherTable.id
+
                 TeacherResponse(
                     id = id.value,
                     name = request.name,
-                    email = request.email
-
+                    email = request.email,
+                    password = request.password
                 )
             }
-            call.respond(HttpStatusCode.Created, mapOf("message" to "Professor criado com sucesso"))
+            call.respond(HttpStatusCode.Created, created)
         }
 
         // GET /teachers
@@ -82,7 +84,8 @@ fun Application.configureRouting() {
                     TeacherResponse(
                         id = it[TeacherTable.id].value,
                         name = it[TeacherTable.name],
-                        email = it[TeacherTable.email]
+                        email = it[TeacherTable.email],
+                        password = it[TeacherTable.password]
                     )
                 }
             }
@@ -100,17 +103,21 @@ fun Application.configureRouting() {
             val request = call.receive<StudentRequest>()
             val created = transaction {
                 val id = StudentTable.insert {
-                    it[name] = request.name
-                    it[email] = request.email
+                    it[StudentTable.name] = request.name
+                    it[StudentTable.email] = request.email
+                    it[StudentTable.password] = request.password
+                    it[StudentTable.teacherId] = request.teacherId
                 } get StudentTable.id
+
                 StudentResponse(
                     id = id.value,
                     name = request.name,
                     email = request.email,
-                    teacherId = null
+                    password = request.password,
+                    teacherId = request.teacherId
                 )
             }
-            call.respond(HttpStatusCode.Created, mapOf("message" to "Aluno criado com sucesso"))
+            call.respond(HttpStatusCode.Created, created)
         }
 
         // GET /students
@@ -122,6 +129,7 @@ fun Application.configureRouting() {
                         id = it[StudentTable.id].value,
                         name = it[StudentTable.name],
                         email = it[StudentTable.email],
+                        password = it[StudentTable.password],
                         teacherId = it[StudentTable.teacherId]?.value
                     )
                 }
@@ -181,7 +189,8 @@ fun Application.configureRouting() {
                             id = it[StudentTable.id].value,
                             name = it[StudentTable.name],
                             email = it[StudentTable.email],
-                            teacherId = it[StudentTable.teacherId]?.value
+                            teacherId = it[StudentTable.teacherId]?.value,
+                            password = it[StudentTable.password]
                         )
                     }
             }

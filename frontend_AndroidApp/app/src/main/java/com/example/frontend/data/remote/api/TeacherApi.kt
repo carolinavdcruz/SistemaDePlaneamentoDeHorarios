@@ -7,7 +7,6 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import kotlinx.serialization.Serializable
 
 class TeacherApi {
     suspend fun register(request: TeacherRequest) : TeacherResponse {

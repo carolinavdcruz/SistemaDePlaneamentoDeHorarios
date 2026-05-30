@@ -93,20 +93,25 @@ class RegisterViewModel (
                 when (currentRole) {
 
                     OwnerType.STUDENT -> {
-                        studentRepository.insert(
+                        val savedId = studentRepository.insert(
                             StudentEntity(
                                 name = currentName,
                                 email = currentEmail,
+                                password = _password.value,
                                 maxDailySessions = 0
                             )
                         )
+                        sessionManager.saveSession(userId = savedId, role = OwnerType.STUDENT)
+                        _registerSuccess.value = true
                     }
 
                     OwnerType.TEACHER -> {
                         val savedId = teacherRepository.insert(
                             TeacherEntity(
                                 name = currentName,
-                                email = currentEmail)
+                                email = currentEmail,
+                                password = _password.value
+                            )
                         )
                         sessionManager.saveSession(userId = savedId, role = OwnerType.TEACHER)
                         _registerSuccess.value = true

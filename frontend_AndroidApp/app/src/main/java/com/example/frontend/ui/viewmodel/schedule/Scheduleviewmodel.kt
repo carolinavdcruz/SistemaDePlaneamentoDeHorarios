@@ -10,6 +10,7 @@ import com.example.frontend.data.remote.api.ScheduleApi
 import com.example.frontend.data.repository.StudentRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.Scope
 import com.google.api.services.calendar.CalendarScopes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,6 +53,14 @@ class ScheduleViewModel(
             )
             .build()
         return GoogleSignIn.getClient(context, gso).signInIntent
+    }
+
+    fun hasCalendarPermission(context: Context): Boolean {
+        val account = GoogleSignIn.getLastSignedInAccount(context) ?: return false
+        return GoogleSignIn.hasPermissions(
+            account,
+            Scope(CalendarScopes.CALENDAR)
+        )
     }
 
     fun generateSchedule(teacherId: Int) {
@@ -120,5 +129,10 @@ class ScheduleViewModel(
             }
         }
     }
+
+    fun setUiError(message: String) {
+        _uiState.value = ScheduleUiState.Error(message)
+    }
+
 
 }

@@ -6,17 +6,20 @@ import org.jetbrains.exposed.sql.javatime.time
 object TeacherTable : IntIdTable("teacher") {
     val name = varchar("name", 100)
     val email = varchar("email", 150).uniqueIndex()
-    //val sessionDurationMinutes      = integer("session_duration_minutes").default(60)
+    val password = varchar("password", 255)
+
+//val sessionDurationMinutes      = integer("session_duration_minutes").default(60)
     //val maxParticipantsPerSession   = integer("max_participants_per_session").default(5)
 }
 
 object StudentTable : IntIdTable("student") {
     val name = varchar("name", 100)
     val email = varchar("email", 150).uniqueIndex()
+    val password = varchar("password", 255)
     val teacherId = reference("teacher_id", TeacherTable).nullable()
     val maxDailySessions = integer("max_daily_sessions").default(1)
-    val teacherId       = reference("teacher_id", TeacherTable).nullable()
 }
+
 
 object TimeSlotTable : IntIdTable("timeslots") {
     val dayOfWeek = integer("day_of_week")

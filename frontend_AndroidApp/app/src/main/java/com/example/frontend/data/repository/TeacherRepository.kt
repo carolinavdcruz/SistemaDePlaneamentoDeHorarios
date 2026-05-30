@@ -16,19 +16,25 @@ class TeacherRepository(
 
     suspend fun insert(teacher: TeacherEntity): Int {
         return try {
-            val remote = api.register(TeacherRequest(name = teacher.name, email = teacher.email))
+            val remote = api.register(
+                TeacherRequest(
+                    name = teacher.name,
+                    email = teacher.email,
+                    password = teacher.password
+                )
+            )
             dao.insert(
                 TeacherEntity(
                     id = remote.id,
                     name = remote.name,
-                    email = remote.email
+                    email = remote.email,
+                    password = remote.password
                 )
             )
-            remote.id  // devolve o id real do backend
+            remote.id
         } catch (e: Exception) {
             Log.e(tag, "Erro enviar professor para a API: ${e.message}")
-            dao.insert(teacher)
-            teacher.id  // fallback: devolve o id local
+            throw e
         }
     }
 
@@ -51,7 +57,8 @@ class TeacherRepository(
                 TeacherEntity(
                     id = it.id,
                     name = it.name,
-                    email = it.email
+                    email = it.email,
+                    password = it.password
                 )
             }
 
@@ -76,7 +83,8 @@ class TeacherRepository(
                 TeacherEntity(
                     id = it.id,
                     name = it.name,
-                    email = it.email
+                    email = it.email,
+                    password = it.password
                 )
             }
 

@@ -19,8 +19,11 @@ interface StudentDao {
     @Delete
     suspend fun delete(student: StudentEntity)
 
-    @Delete
+    @Query("DELETE FROM student")
     suspend fun deleteAll()
+
+    @Query("DELETE FROM student WHERE teacherId = :teacherId")
+    suspend fun deleteByTeacherId(teacherId: Int)
 
     @Query("SELECT * FROM student WHERE id = :id")
     suspend fun getById(id: Int): StudentEntity?

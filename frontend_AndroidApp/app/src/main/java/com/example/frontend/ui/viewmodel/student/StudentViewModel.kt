@@ -21,6 +21,9 @@ class StudentViewModel(
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email
 
+    private val _password = MutableStateFlow("")
+    val password: StateFlow<String> = _password
+
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
@@ -41,10 +44,16 @@ class StudentViewModel(
         clearErrorMessage()
     }
 
+    fun setPassword(value: String){
+        _password.value = value
+        clearErrorMessage()
+    }
+
     fun addStudent() {
 
         val currentName = _name.value
         val currentEmail = _email.value
+        val currentPassword = _password.value
 
         if (currentName.isBlank()) {
             _errorMessage.value = "O nome do aluno é obrigatorio."
@@ -56,10 +65,16 @@ class StudentViewModel(
             return
         }
 
+        if (currentPassword.isBlank()) {
+            _errorMessage.value = "A password do aluno é obrigatória."
+            return
+        }
+
         viewModelScope.launch {
             val student = StudentEntity(
                 name = currentName,
                 email = currentEmail,
+                password = currentPassword,
                 maxDailySessions = 1
             )
             repository.insert(student)
@@ -98,6 +113,7 @@ class StudentViewModel(
     private fun clearForm() {
         _name.value = ""
         _email.value = ""
+        _password.value = ""
         clearErrorMessage()
     }
 

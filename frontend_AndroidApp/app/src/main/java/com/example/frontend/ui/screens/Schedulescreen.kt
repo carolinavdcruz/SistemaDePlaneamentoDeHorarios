@@ -28,11 +28,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.platform.LocalContext
+import com.example.frontend.data.remote.api.GoogleCalendarManager
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
+import com.google.api.services.calendar.CalendarScopes
 
 private val DAY_NAMES = mapOf(
     1 to "Monday", 2 to "Tuesday", 3 to "Wednesday",
-    4 to "Thursday",  5 to "Friday", 6 to "Saturday", 7 to "Sunday"
+    4 to "Thursday", 5 to "Friday", 6 to "Saturday", 7 to "Sunday"
 )
 
 // Button Create Schedule
@@ -44,20 +47,47 @@ fun GenerateScheduleButton(teacherId: Int) {
     val uiState by viewModel.uiState.collectAsState()
     val isLoading = uiState is ScheduleUiState.Loading
 
+    //val googleCalen = GoogleCalendarManager(LocalContext.current)
+
     // Google Sign-In launcher
     val signInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        android.util.Log.d("ScheduleScreen", "Google Sign-In resultCode=${result.resultCode}")
+
         if (result.resultCode == Activity.RESULT_OK) {
             try {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 val account = task.getResult(ApiException::class.java)
-                if (account != null) {
+
+                android.util.Log.d(
+                    "ScheduleScreen",
+                    "Google Sign-In OK, account=${account?.email}"
+                )
+
+                if (account != null && viewModel.hasCalendarPermission(context)) {
                     viewModel.acceptSchedule(context)
+                } else {
+                    viewModel.setUiError("Permissão Google Calendar não concedida.")
                 }
-            } catch (e: ApiException) { }
+
+            } catch (e: ApiException) {
+                android.util.Log.e(
+                    "ScheduleScreen",
+                    "Google Sign-In falhou: code=${e.statusCode}, message=${e.message}",
+                    e
+                )
+                viewModel.setUiError("Falha no login Google.")
+            }
+        } else {
+            android.util.Log.e(
+                "ScheduleScreen",
+                "Google Sign-In cancelado ou falhou. resultCode=${result.resultCode}"
+            )
+            viewModel.setUiError("Permissão Google Calendar não concedida.")
         }
     }
+
 
     LaunchedEffect(uiState) {
         if (uiState is ScheduleUiState.Error &&
@@ -67,7 +97,7 @@ fun GenerateScheduleButton(teacherId: Int) {
         }
     }
 
-    Column{
+    Column {
         ProposedScheduleCard(uiState = uiState)
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -79,14 +109,23 @@ fun GenerateScheduleButton(teacherId: Int) {
 
                 Button(
                     onClick = {
+                        val activity = context as Activity
                         val account = GoogleSignIn.getLastSignedInAccount(context)
-                        if (account != null) {
-                            viewModel.acceptSchedule(context)
-                        } else {
-                            signInLauncher.launch(viewModel.buildGoogleSignInIntent(context))
+
+                        when {
+                            account == null || !viewModel.hasCalendarPermission(context) -> {
+                                signInLauncher.launch(viewModel.buildGoogleSignInIntent(context))
+                            }
+
+                            else -> {
+                                viewModel.acceptSchedule(context)
+                            }
                         }
+
                     },
-                    modifier = Modifier.weight(1f).height(50.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(50.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = StatusActive),
                     shape = RoundedCornerShape(8.dp)
                 ) {
@@ -116,14 +155,24 @@ fun GenerateScheduleButton(teacherId: Int) {
         Button(
             onClick = { viewModel.generateSchedule(teacherId) },
             enabled = !isLoading,
-            modifier = Modifier.fillMaxWidth().height(50.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
             colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
             shape = RoundedCornerShape(8.dp)
         ) {
             if (isLoading) {
-                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
+                )
             } else {
-                Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(
+                    Icons.Default.Refresh,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
                 Spacer(Modifier.width(8.dp))
                 Text("Criar Horário", fontSize = 14.sp, fontWeight = FontWeight.Medium)
             }
@@ -157,14 +206,22 @@ fun ProposedScheduleCard(uiState: ScheduleUiState) {
                     else "Generate to see blocks"
                     ScheduleEmptyState(msg)
                 }
+
                 is ScheduleUiState.Loading -> {
-                    Box(modifier = Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
                         CircularProgressIndicator(color = AccentPurple)
                     }
                 }
+
                 is ScheduleUiState.Error -> {
                     Text("Erro: ${uiState.message}", color = Color.Red, fontSize = 13.sp)
                 }
+
                 is ScheduleUiState.Success -> {
                     Text(
                         "${uiState.sessions.size} sessão(ões) gerada(s)",
@@ -177,6 +234,7 @@ fun ProposedScheduleCard(uiState: ScheduleUiState) {
                         studentNames = uiState.studentName
                     )
                 }
+
                 is ScheduleUiState.Accepted -> {
                     ScheduleEmptyState("Horário aceite com sucesso!")
                 }
@@ -190,11 +248,18 @@ fun ProposedScheduleCard(uiState: ScheduleUiState) {
 private fun ScheduleEmptyState(message: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
     ) {
         Icon(Icons.Default.DateRange, "", tint = TextSecondary, modifier = Modifier.size(48.dp))
         Spacer(modifier = Modifier.height(12.dp))
-        Text("No active proposal", color = TextMain, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+        Text(
+            "No active proposal",
+            color = TextMain,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium
+        )
         Text(message, color = TextSecondary, fontSize = 12.sp)
     }
 }
@@ -209,7 +274,12 @@ fun SessionCardSmall(session: ScheduledSession) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.DateRange, null, tint = AccentPurple, modifier = Modifier.size(24.dp))
+            Icon(
+                Icons.Default.DateRange,
+                null,
+                tint = AccentPurple,
+                modifier = Modifier.size(24.dp)
+            )
             Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -218,7 +288,11 @@ fun SessionCardSmall(session: ScheduledSession) {
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp
                 )
-                Text("${session.startTime} – ${session.endTime}", color = TextSecondary, fontSize = 12.sp)
+                Text(
+                    "${session.startTime} – ${session.endTime}",
+                    color = TextSecondary,
+                    fontSize = 12.sp
+                )
             }
             Surface(color = AccentPurple.copy(alpha = 0.15f), shape = RoundedCornerShape(20.dp)) {
                 Text(
