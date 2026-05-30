@@ -28,6 +28,8 @@ media3Database = "1.9.3"
 firebaseCrashlyticsBuildtools = "3.0.6"
 uiVersion = "1.10.6"
 
+googleServices = "4.4.4"
+
 [libraries]
 androidx-activity-compose-v182 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -73,3 +75,6 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+

@@ -53,41 +53,41 @@ fun GenerateScheduleButton(teacherId: Int) {
     val signInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        android.util.Log.d("ScheduleScreen", "Google Sign-In resultCode=${result.resultCode}")
+        android.util.Log.d(
+            "ScheduleScreen",
+            "Google Sign-In resultCode=${result.resultCode}, data=${result.data}"
+        )
 
-        if (result.resultCode == Activity.RESULT_OK) {
-            try {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                val account = task.getResult(ApiException::class.java)
+        try {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            val account = task.getResult(ApiException::class.java)
 
-                android.util.Log.d(
-                    "ScheduleScreen",
-                    "Google Sign-In OK, account=${account?.email}"
-                )
+            android.util.Log.d(
+                "ScheduleScreen",
+                "Google Sign-In OK, account=${account.email}"
+            )
 
-                if (account != null && viewModel.hasCalendarPermission(context)) {
-                    viewModel.acceptSchedule(context)
-                } else {
-                    viewModel.setUiError("Permissão Google Calendar não concedida.")
-                }
-
-            } catch (e: ApiException) {
-                android.util.Log.e(
-                    "ScheduleScreen",
-                    "Google Sign-In falhou: code=${e.statusCode}, message=${e.message}",
-                    e
-                )
-                viewModel.setUiError("Falha no login Google.")
+            if (viewModel.hasCalendarPermission(context)) {
+                viewModel.acceptSchedule(context)
+            } else {
+                viewModel.setUiError("Permissão Google Calendar não concedida.")
             }
-        } else {
+        } catch (e: ApiException) {
             android.util.Log.e(
                 "ScheduleScreen",
-                "Google Sign-In cancelado ou falhou. resultCode=${result.resultCode}"
+                "Google Sign-In ApiException: code=${e.statusCode}, message=${e.message}",
+                e
             )
-            viewModel.setUiError("Permissão Google Calendar não concedida.")
+            viewModel.setUiError("Google Sign-In falhou. Código=${e.statusCode}")
+        } catch (e: Exception) {
+            android.util.Log.e(
+                "ScheduleScreen",
+                "Google Sign-In erro inesperado: ${e.message}",
+                e
+            )
+            viewModel.setUiError("Erro inesperado no login Google.")
         }
     }
-
 
     LaunchedEffect(uiState) {
         if (uiState is ScheduleUiState.Error &&
