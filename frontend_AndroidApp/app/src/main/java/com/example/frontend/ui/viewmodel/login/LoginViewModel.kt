@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val studentRepository: StudentRepository,
     private val teacherRepository: TeacherRepository,
     private val sessionManager: SessionManager
 ) : ViewModel() {
@@ -64,21 +63,15 @@ class LoginViewModel(
             val password = _password.value
 
             try {
-                val student = studentRepository.getByEmail(email)
-                if (student != null && student.password == password) {
-                    sessionManager.saveSession(student.id, OwnerType.STUDENT)
-                    _loginSuccess.value = true
-                    return@launch
-                }
+                val result = teacherRepository.login(email, password)
 
-                val teacher = teacherRepository.getByEmail(email)
-                if (teacher != null && teacher.password == password) {
-                    sessionManager.saveSession(teacher.id, OwnerType.TEACHER)
+                if (result != null) {
+                    val (userId, ownerType) = result
+                    sessionManager.saveSession(userId, ownerType)
                     _loginSuccess.value = true
-                    return@launch
+                } else {
+                    _errorMessage.value = "Email ou password incorretos."
                 }
-
-                _errorMessage.value = "Email ou password incorretos."
             } catch (e: Exception) {
                 _errorMessage.value = "Erro ao fazer login."
             } finally {

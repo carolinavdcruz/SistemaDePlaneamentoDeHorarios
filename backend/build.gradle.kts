@@ -31,6 +31,9 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.4.11")
     implementation("io.ktor:ktor-server-status-pages:2.3.7")
     testImplementation(kotlin("test"))
+
+    implementation("org.mindrot:jbcrypt:0.4")
+
 }
 
 kotlin {

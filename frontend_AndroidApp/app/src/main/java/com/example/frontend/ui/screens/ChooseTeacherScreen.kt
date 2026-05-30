@@ -52,6 +52,9 @@ fun ChooseTeacherScreen(
 ) {
     val teachers by viewModel.teachers.collectAsState()
     val selectedTeacherId by viewModel.selectedTeacherId.collectAsState()
+    val currentTeacherId by viewModel.currentTeacherId.collectAsState()
+    val currentTeacherName by viewModel.currentTeacherName.collectAsState()
+    val isChangingTeacher by viewModel.isChangingTeacher.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val assignSuccess by viewModel.assignSuccess.collectAsState()
@@ -89,12 +92,45 @@ fun ChooseTeacherScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Select one teacher to work with",
+                    text = if (currentTeacherId == null) {
+                        "Select one teacher to work with"
+                    } else if (isChangingTeacher) {
+                        "Choose a new teacher to replace your current one"
+                    } else {
+                        "You already have a teacher assigned"
+                    },
                     color = TextSecondary,
                     fontSize = 14.sp
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
+
+                if (currentTeacherId != null && !isChangingTeacher) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = CardBackground,
+                        shape = RoundedCornerShape(14.dp),
+                        border = BorderStroke(1.dp, AccentPurple)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Current teacher",
+                                color = AccentPurple,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = currentTeacherName ?: "Professor atribuido",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
 
                 LazyColumn(
                     modifier = Modifier.weight(1f),
@@ -105,7 +141,12 @@ fun ChooseTeacherScreen(
                         TeacherChoiceCard(
                             teacher = teacher,
                             isSelected = selectedTeacherId == teacher.id,
-                            onClick = { viewModel.onTeacherSelected(teacher.id) }
+                            enabled = currentTeacherId == null || isChangingTeacher,
+                            onClick = {
+                                if (currentTeacherId == null || isChangingTeacher) {
+                                    viewModel.onTeacherSelected(teacher.id)
+                                }
+                            }
                         )
                     }
                 }
@@ -119,15 +160,50 @@ fun ChooseTeacherScreen(
                     )
                 }
 
-                Button(
-                    onClick = { viewModel.assignTeacherToStudent() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Confirm Teacher", color = Color.White, fontWeight = FontWeight.Bold)
+                if (currentTeacherId != null && !isChangingTeacher) {
+                    Button(
+                        onClick = { viewModel.enableChangeMode() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Trocar Professor", color = Color.White, fontWeight = FontWeight.Bold)
+                    }
+                } else {
+                    Column {
+                        if (isChangingTeacher) {
+                            Button(
+                                onClick = { viewModel.cancelChangeMode() },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(52.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = CardBackground),
+                                shape = RoundedCornerShape(12.dp),
+                                border = BorderStroke(1.dp, InputBorder)
+                            ) {
+                                Text("Cancelar", color = Color.White, fontWeight = FontWeight.Bold)
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+                        }
+
+                        Button(
+                            onClick = { viewModel.assignTeacherToStudent() },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = if (isChangingTeacher) "Confirmar Novo Professor" else "Confirm Teacher",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -138,12 +214,13 @@ fun ChooseTeacherScreen(
 fun TeacherChoiceCard(
     teacher: TeacherEntity,
     isSelected: Boolean,
+    enabled: Boolean,
     onClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable(enabled = enabled) { onClick() },
         color = CardBackground,
         shape = RoundedCornerShape(14.dp),
         border = BorderStroke(
@@ -181,7 +258,7 @@ fun TeacherChoiceCard(
 
             RadioButton(
                 selected = isSelected,
-                onClick = onClick
+                onClick = if (enabled) onClick else null
             )
         }
     }

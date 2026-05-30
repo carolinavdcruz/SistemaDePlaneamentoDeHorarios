@@ -3,7 +3,9 @@ package com.example.frontend.data.repository
 import android.util.Log
 import com.example.frontend.data.local.dao.TeacherDao
 import com.example.frontend.data.local.entity.TeacherEntity
+import com.example.frontend.data.model.OwnerType
 import com.example.frontend.data.remote.api.TeacherApi
+import com.example.frontend.data.remote.dto.LoginRequest
 import com.example.frontend.data.remote.dto.TeacherRequest
 
 
@@ -28,7 +30,7 @@ class TeacherRepository(
                     id = remote.id,
                     name = remote.name,
                     email = remote.email,
-                    password = remote.password
+                    password = teacher.password
                 )
             )
             remote.id
@@ -58,7 +60,7 @@ class TeacherRepository(
                     id = it.id,
                     name = it.name,
                     email = it.email,
-                    password = it.password
+                    password = ""
                 )
             }
 
@@ -77,25 +79,25 @@ class TeacherRepository(
     }
 
     suspend fun getByEmail(email: String): TeacherEntity? {
+        return dao.getByEmail(email)
+    }
+
+    suspend fun login(email: String, password: String): Pair<Int, OwnerType>? {
         return try {
-            val remote = api.getAll()
-            val entities = remote.map {
-                TeacherEntity(
-                    id = it.id,
-                    name = it.name,
-                    email = it.email,
-                    password = it.password
+            val response = api.login(
+                LoginRequest(
+                    email = email,
+                    password = password
                 )
-            }
+            )
 
-            dao.deleteAll()
-            entities.forEach { dao.insert(it) }
-
-            dao.getByEmail(email)
+            val ownerType = OwnerType.valueOf(response.ownerType)
+            response.userId to ownerType
         } catch (e: Exception) {
-            Log.e(tag, "Erro ao procurar professor por email via API: ${e.message}")
-            dao.getByEmail(email)
+            Log.e(tag, "Erro ao fazer login via API: ${e.message}")
+            null
         }
     }
+
 
 }

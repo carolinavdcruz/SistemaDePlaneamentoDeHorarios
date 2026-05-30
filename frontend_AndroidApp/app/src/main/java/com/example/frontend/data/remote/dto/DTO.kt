@@ -15,7 +15,7 @@ data class StudentResponse(
     val id: Int,
     val name: String,
     val email: String,
-    val password: String,
+    //val password: String,
     val teacherId: Int?
 )
 
@@ -39,7 +39,7 @@ data class TeacherResponse(
     val id: Int,
     val name: String,
     val email: String,
-    val password: String
+    //val password: String
 )
 
 @Serializable
@@ -105,4 +105,16 @@ data class SessionRequest(
     val startTime: String,
     val endTime: String,
     val studentIds: List<Int>
+)
+
+@Serializable
+data class LoginRequest(
+    val email: String,
+    val password: String
+)
+
+@Serializable
+data class LoginResponse(
+    val userId: Int,
+    val ownerType: String
 )

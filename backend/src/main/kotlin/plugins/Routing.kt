@@ -17,6 +17,8 @@ import io.ktor.server.routing.routing
 import model.AssignTeacherRequest
 import model.AvailabilityRequest
 import model.AvailabilityResponse
+import model.LoginRequest
+import model.LoginResponse
 import model.OwnerType
 import model.Restrictions
 import model.RestrictionsRequest
@@ -37,6 +39,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import org.mindrot.jbcrypt.BCrypt
 import service.AvailabilityService
 import service.ScheduleService
 import java.time.LocalTime
@@ -63,14 +66,14 @@ fun Application.configureRouting() {
                 val id = TeacherTable.insert {
                     it[name] = request.name
                     it[email] = request.email
-                    it[password] = request.password
+                    it[password] = BCrypt.hashpw(request.password, BCrypt.gensalt())
                 } get TeacherTable.id
 
                 TeacherResponse(
                     id = id.value,
                     name = request.name,
                     email = request.email,
-                    password = request.password
+                    //password = request.password
                 )
             }
             call.respond(HttpStatusCode.Created, created)
@@ -85,7 +88,7 @@ fun Application.configureRouting() {
                         id = it[TeacherTable.id].value,
                         name = it[TeacherTable.name],
                         email = it[TeacherTable.email],
-                        password = it[TeacherTable.password]
+                        //password = it[TeacherTable.password]
                     )
                 }
             }
@@ -105,7 +108,7 @@ fun Application.configureRouting() {
                 val id = StudentTable.insert {
                     it[StudentTable.name] = request.name
                     it[StudentTable.email] = request.email
-                    it[StudentTable.password] = request.password
+                    it[StudentTable.password] = BCrypt.hashpw(request.password, BCrypt.gensalt())
                     it[StudentTable.teacherId] = request.teacherId
                 } get StudentTable.id
 
@@ -113,7 +116,7 @@ fun Application.configureRouting() {
                     id = id.value,
                     name = request.name,
                     email = request.email,
-                    password = request.password,
+                    //password = request.password,
                     teacherId = request.teacherId
                 )
             }
@@ -129,7 +132,7 @@ fun Application.configureRouting() {
                         id = it[StudentTable.id].value,
                         name = it[StudentTable.name],
                         email = it[StudentTable.email],
-                        password = it[StudentTable.password],
+                        //password = it[StudentTable.password],
                         teacherId = it[StudentTable.teacherId]?.value
                     )
                 }
@@ -190,7 +193,7 @@ fun Application.configureRouting() {
                             name = it[StudentTable.name],
                             email = it[StudentTable.email],
                             teacherId = it[StudentTable.teacherId]?.value,
-                            password = it[StudentTable.password]
+                            //password = it[StudentTable.password]
                         )
                     }
             }
@@ -242,15 +245,24 @@ fun Application.configureRouting() {
         // Devolve todas as disponibilidades de um professor ou aluno.
         get("/availability") {
             val ownerId = call.request.queryParameters["ownerId"]?.toIntOrNull()
-                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerId inválido"))
+                ?: return@get call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "ownerId inválido")
+                )
 
             val ownerTypeParam = call.request.queryParameters["ownerType"]
-                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerType em falta"))
+                ?: return@get call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "ownerType em falta")
+                )
 
             val ownerType = try {
                 OwnerType.valueOf(ownerTypeParam)
             } catch (e: IllegalArgumentException) {
-                return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerType inválido"))
+                return@get call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "ownerType inválido")
+                )
             }
 
             val result = transaction {
@@ -279,15 +291,24 @@ fun Application.configureRouting() {
         // Remove todas as disponibilidades de um professor ou aluno.
         delete("/availability") {
             val ownerId = call.request.queryParameters["ownerId"]?.toIntOrNull()
-                ?: return@delete call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerId inválido"))
+                ?: return@delete call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "ownerId inválido")
+                )
 
             val ownerTypeParam = call.request.queryParameters["ownerType"]
-                ?: return@delete call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerType em falta"))
+                ?: return@delete call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "ownerType em falta")
+                )
 
             val ownerType = try {
                 OwnerType.valueOf(ownerTypeParam)
             } catch (e: IllegalArgumentException) {
-                return@delete call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ownerType inválido"))
+                return@delete call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "ownerType inválido")
+                )
             }
 
             transaction {
@@ -298,12 +319,18 @@ fun Application.configureRouting() {
                 }
             }
 
-            call.respond(HttpStatusCode.OK, mapOf("message" to "Disponibilidade removida com sucesso"))
+            call.respond(
+                HttpStatusCode.OK,
+                mapOf("message" to "Disponibilidade removida com sucesso")
+            )
         }
 
         get("/restrictions/{teacherId}") {
             val teacherId = call.parameters["teacherId"]?.toIntOrNull()
-                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "teacherId inválido"))
+                ?: return@get call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "teacherId inválido")
+                )
 
             val restrictions = transaction {
                 RestrictionsTable
@@ -321,7 +348,10 @@ fun Application.configureRouting() {
             }
 
             if (restrictions == null) {
-                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Restrições não encontradas"))
+                call.respond(
+                    HttpStatusCode.NotFound,
+                    mapOf("error" to "Restrições não encontradas")
+                )
                 return@get
             }
 
@@ -330,7 +360,10 @@ fun Application.configureRouting() {
 
         put("/restrictions/{teacherId}") {
             val teacherId = call.parameters["teacherId"]?.toIntOrNull()
-                ?: return@put call.respond(HttpStatusCode.BadRequest, mapOf("error" to "teacherId inválido"))
+                ?: return@put call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "teacherId inválido")
+                )
 
             val request = call.receive<RestrictionsRequest>()
 
@@ -461,11 +494,54 @@ fun Application.configureRouting() {
             }
 
             if (response == null) {
-                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Restrições do professor não encontradas"))
+                call.respond(
+                    HttpStatusCode.NotFound,
+                    mapOf("error" to "Restrições do professor não encontradas")
+                )
                 return@post
             }
 
             call.respond(HttpStatusCode.OK, response)
         }
+
+        post("/login") {
+            val request = call.receive<LoginRequest>()
+
+            val result = transaction {
+                val student = StudentTable
+                    .select { StudentTable.email eq request.email }
+                    .singleOrNull()
+
+                if (student != null && BCrypt.checkpw(request.password, student[StudentTable.password])) {
+                    return@transaction LoginResponse(
+                        userId = student[StudentTable.id].value,
+                        ownerType = OwnerType.STUDENT
+                    )
+                }
+
+                val teacher = TeacherTable
+                    .select { TeacherTable.email eq request.email }
+                    .singleOrNull()
+
+                if (teacher != null && BCrypt.checkpw(request.password, teacher[TeacherTable.password])) {
+                    return@transaction LoginResponse(
+                        userId = teacher[TeacherTable.id].value,
+                        ownerType = OwnerType.TEACHER
+                    )
+                }
+
+                null
+            }
+
+            if (result == null) {
+                call.respond(
+                    HttpStatusCode.Unauthorized,
+                    mapOf("error" to "Email ou password incorretos")
+                )
+            } else {
+                call.respond(HttpStatusCode.OK, result)
+            }
+        }
+
     }
 }

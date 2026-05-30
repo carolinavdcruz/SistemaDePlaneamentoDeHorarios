@@ -97,7 +97,7 @@ object AppModule {
     }
 
     fun provideLoginViewModel(): LoginViewModel {
-        return LoginViewModel(studentRepository, teacherRepository, sessionManager)
+        return LoginViewModel(teacherRepository, sessionManager)
     }
 
     fun provideRegisterViewModel(): RegisterViewModel {

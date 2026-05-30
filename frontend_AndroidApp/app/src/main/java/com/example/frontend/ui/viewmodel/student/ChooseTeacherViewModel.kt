@@ -23,6 +23,15 @@ class ChooseTeacherViewModel(
     private val _selectedTeacherId = MutableStateFlow<Int?>(null)
     val selectedTeacherId: StateFlow<Int?> = _selectedTeacherId
 
+    private val _currentTeacherId = MutableStateFlow<Int?>(null)
+    val currentTeacherId: StateFlow<Int?> = _currentTeacherId
+
+    private val _currentTeacherName = MutableStateFlow<String?>(null)
+    val currentTeacherName: StateFlow<String?> = _currentTeacherName
+
+    private val _isChangingTeacher = MutableStateFlow(false)
+    val isChangingTeacher: StateFlow<Boolean> = _isChangingTeacher
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -36,7 +45,24 @@ class ChooseTeacherViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                _teachers.value = teacherRepository.getAll()
+                val teacherList = teacherRepository.getAll()
+                _teachers.value = teacherList
+
+                val studentId = sessionManager.getUserId()
+                val role = sessionManager.getUserRole()
+
+                if (studentId != -1 && role == OwnerType.STUDENT) {
+                    val student = studentRepository.getById(studentId)
+                    val assignedTeacherId = student?.teacherId
+
+                    _currentTeacherId.value = assignedTeacherId
+                    _selectedTeacherId.value = assignedTeacherId
+
+                    _currentTeacherName.value = assignedTeacherId?.let { teacherId ->
+                        teacherList.firstOrNull { it.id == teacherId }?.name
+                            ?: teacherRepository.getById(teacherId)?.name
+                    }
+                }
             } catch (e: Exception) {
                 _errorMessage.value = e.localizedMessage ?: "Erro ao carregar professores."
             } finally {
@@ -46,9 +72,11 @@ class ChooseTeacherViewModel(
     }
 
     fun onTeacherSelected(teacherId: Int) {
+        if (_currentTeacherId.value != null && !_isChangingTeacher.value) return
         _selectedTeacherId.value = teacherId
         clearErrorMessage()
     }
+
 
     fun assignTeacherToStudent() {
 
@@ -77,14 +105,29 @@ class ChooseTeacherViewModel(
 
             try {
                 studentRepository.assignTeacherToStudent(studentId, teacherId)
+                _currentTeacherId.value = teacherId
+                _currentTeacherName.value = _teachers.value.firstOrNull { it.id == teacherId }?.name
+                _isChangingTeacher.value = false
                 _assignSuccess.value = true
             } catch (e: Exception) {
                 _errorMessage.value = e.localizedMessage ?: "Erro ao associar professor ao aluno."
             } finally {
                 _isLoading.value = false
             }
+
         }
 
+    }
+
+    fun enableChangeMode() {
+        _isChangingTeacher.value = true
+        clearErrorMessage()
+    }
+
+    fun cancelChangeMode() {
+        _isChangingTeacher.value = false
+        _selectedTeacherId.value = _currentTeacherId.value
+        clearErrorMessage()
     }
 
     fun onAssignSuccessNavigated() {

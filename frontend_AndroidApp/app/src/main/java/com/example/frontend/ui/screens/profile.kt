@@ -137,48 +137,28 @@ fun ProfileScreen(navController: NavController) {
                     ProfileInfoItem(
                         icon = Icons.Default.Person,
                         label = "Cargo",
-                        value = uiState.role?.name ?: ""
-                    )
-                }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                        value = when (uiState.role) {
+                            com.example.frontend.data.model.OwnerType.STUDENT -> "Aluno"
+                            com.example.frontend.data.model.OwnerType.TEACHER -> "Professor"
+                            else -> ""
+                        }
 
-            // --- SETTINGS ---
-            Text(
-                "Settings",
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 12.dp)
-            )
+                    )
 
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = CardBackground,
-                shape = RoundedCornerShape(16.dp),
-                border = BorderStroke(1.dp, InputBorder)
-            ) {
-                Column {
-                    ProfileMenuItem(
-                        icon = Icons.Default.Settings,
-                        title = "Account Settings",
-                        onClick = { navController.navigate("settings_route") }
-                    )
-                    HorizontalDivider(
-                        color = InputBorder,
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                    ProfileMenuItem(icon = Icons.Default.Notifications, title = "Notifications")
-                    HorizontalDivider(
-                        color = InputBorder,
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                    ProfileMenuItem(icon = Icons.Default.Lock, title = "Privacy & Security")
+                    if (uiState.role == com.example.frontend.data.model.OwnerType.STUDENT) {
+                        HorizontalDivider(
+                            color = InputBorder,
+                            thickness = 0.5.dp,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                        ProfileInfoItem(
+                            icon = Icons.Default.Face,
+                            label = "Professor",
+                            value = uiState.teacherName ?: "Sem professor atribuido"
+                        )
+                    }
+
                 }
             }
 
@@ -218,22 +198,6 @@ fun ProfileInfoItem(icon: ImageVector, label: String, value: String) {
             Text(label, color = TextSecondary, fontSize = 12.sp)
             Text(value, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
         }
-    }
-}
-
-@Composable
-fun ProfileMenuItem(icon: ImageVector, title: String, onClick: () -> Unit = {}) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(icon, null, tint = AccentPurple, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(title, color = Color.White, fontSize = 14.sp, modifier = Modifier.weight(1f))
-        Icon(Icons.Default.KeyboardArrowRight, null, tint = TextSecondary, modifier = Modifier.size(16.dp))
     }
 }
 

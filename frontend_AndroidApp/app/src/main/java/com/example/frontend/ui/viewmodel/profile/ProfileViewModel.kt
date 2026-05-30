@@ -40,19 +40,32 @@ class ProfileViewModel(
 
             try {
                 when (role) {
+
                     OwnerType.STUDENT -> {
+
                         val student = studentRepository.getById(userId)
 
                         if (student != null) {
+
+                            val teacherName = student.teacherId?.let { teacherId ->
+                                teacherRepository.getById(teacherId)?.name
+                                    ?: run {
+                                        teacherRepository.getAll()
+                                        teacherRepository.getById(teacherId)?.name
+                                    }
+                            }
+
                             _uiState.update {
                                 it.copy(
                                     name = student.name,
                                     email = student.email,
                                     role = OwnerType.STUDENT,
+                                    teacherName = teacherName,
                                     maxDailySessions = student.maxDailySessions,
                                     isLoading = false
                                 )
                             }
+
                         } else {
                             _uiState.update {
                                 it.copy(
@@ -64,6 +77,7 @@ class ProfileViewModel(
                     }
 
                     OwnerType.TEACHER -> {
+
                         val teacher = teacherRepository.getById(userId)
 
                         if (teacher != null) {
@@ -72,9 +86,11 @@ class ProfileViewModel(
                                     name = teacher.name,
                                     email = teacher.email,
                                     role = OwnerType.TEACHER,
+                                    teacherName = null,
                                     isLoading = false
                                 )
                             }
+
                         } else {
                             _uiState.update {
                                 it.copy(

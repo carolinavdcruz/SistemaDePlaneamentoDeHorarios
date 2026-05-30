@@ -28,7 +28,7 @@ class StudentRepository(
                     teacherId = remote.teacherId,
                     name = remote.name,
                     email = remote.email,
-                    password = remote.password,
+                    password = student.password,
                     maxDailySessions = student.maxDailySessions
                 )
             )
@@ -56,27 +56,7 @@ class StudentRepository(
     }
 
     suspend fun getByEmail(email: String): StudentEntity? {
-        return try {
-            val remote = api.getAll()
-            val entities = remote.map {
-                StudentEntity(
-                    id = it.id,
-                    teacherId = it.teacherId,
-                    name = it.name,
-                    email = it.email,
-                    password = it.password,
-                    maxDailySessions = 1
-                )
-            }
-
-            dao.deleteAll()
-            entities.forEach { dao.insert(it) }
-
-            dao.getByEmail(email)
-        } catch (e: Exception) {
-            Log.e(tag, "Erro ao procurar aluno por email via API: ${e.message}")
-            dao.getByEmail(email)
-        }
+        return dao.getByEmail(email)
     }
 
     suspend fun getByTeacherId(teacherId: Int): List<StudentEntity> {
@@ -87,7 +67,7 @@ class StudentRepository(
                     id = it.id,
                     name = it.name,
                     email = it.email,
-                    password = it.password,
+                    password = "",
                     teacherId = it.teacherId,
                     maxDailySessions = 1
                 )
