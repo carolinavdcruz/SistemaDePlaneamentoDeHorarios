@@ -5,7 +5,6 @@ import com.example.frontend.data.repository.StudentRepository
 import com.example.frontend.data.remote.api.ScheduleApi
 import com.example.frontend.ui.viewmodel.student.StudentViewModel
 import com.example.frontend.data.repository.AvailabilityRepository
-import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
 import com.example.frontend.data.local.database.AppDatabase
 import com.example.frontend.data.local.database.DatabaseProvider
 import com.example.frontend.data.remote.api.AvailabilityApi
@@ -23,6 +22,7 @@ import com.example.frontend.ui.viewmodel.student.ChooseTeacherViewModel
 import com.example.frontend.ui.viewmodel.teacher.RestrictionsViewModel
 import com.example.frontend.data.remote.api.StudentApi
 import com.example.frontend.data.remote.api.TeacherApi
+import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
 
 
 object AppModule {

@@ -3,30 +3,46 @@ package com.example.frontend.ui.screens
 import android.app.TimePickerDialog
 import android.content.Context
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.AppModule
 import com.example.frontend.data.model.OwnerType
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
+import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
-
+import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.viewmodel.availability.TimeRangeInput
 
 @Composable
 fun AvailabilitySelector(
@@ -34,264 +50,296 @@ fun AvailabilitySelector(
     ownerType: OwnerType
 ) {
     val context = LocalContext.current
+    val viewModel = remember { AppModule.provideAvailabilityViewModel() }
 
-    // ViewModel (com AppModule)
-    val viewModel = remember {
-        AppModule.provideAvailabilityViewModel()
+    LaunchedEffect(ownerId, ownerType) {
+        viewModel.load(ownerId, ownerType)
     }
 
-    LaunchedEffect(ownerId, ownerType){
-        viewModel.load(ownerId,ownerType)
-    }
-
-    val availabilityList by viewModel.availabilityList.collectAsState()
-
-    // ESTADOS GLOBAIS (O Assistente de IA vai atualizar estes valores)
     val dayAvailabilities by viewModel.dayAvailabilities.collectAsState()
 
-    // Estados do Assistente de IA
-    //var selectedTab by remember { mutableStateOf("Text") }
-    //var aiPrompt by remember { mutableStateOf("") }
-
     Column(modifier = Modifier.fillMaxWidth()) {
-
-        // --- 1. SELETOR MANUAL ---
         Text(
-            "Manual Adjustment",
+            "Weekly Availability",
             color = Color.White,
-            fontSize = 16.sp
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            "Add one or more time blocks for each day",
+            color = TextSecondary,
+            fontSize = 13.sp
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             dayAvailabilities.forEach { dayAvailability ->
-                DayAvailabilityRow(
+                DayAvailabilityCard(
                     day = dayAvailability.day,
-                    isSelected = dayAvailability.isSelected,
-                    startTime = dayAvailability.startTime,
-                    endTime = dayAvailability.endTime,
-                    onToggleDay = { viewModel.toggleDay(dayAvailability.day) },
-                    onStartTimeClick = {
-                        showTimePicker(context, dayAvailability.startTime) {
-                            viewModel.setStartTime(dayAvailability.day, it)
+                    ranges = dayAvailability.ranges,
+                    onAddRange = { viewModel.addRange(dayAvailability.day) },
+                    onRemoveRange = { rangeId ->
+                        viewModel.removeRange(dayAvailability.day, rangeId)
+                    },
+                    onStartTimeClick = { rangeId, currentTime ->
+                        showTimePicker(context, currentTime) { newTime ->
+                            viewModel.setStartTime(dayAvailability.day, rangeId, newTime)
                         }
                     },
-                    onEndTimeClick = {
-                        showTimePicker(context, dayAvailability.endTime) {
-                            viewModel.setEndTime(dayAvailability.day, it)
+                    onEndTimeClick = { rangeId, currentTime ->
+                        showTimePicker(context, currentTime) { newTime ->
+                            viewModel.setEndTime(dayAvailability.day, rangeId, newTime)
                         }
                     }
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(22.dp))
 
-        // BOTÃO (GUARDA NA BD)
         Button(
             onClick = { viewModel.saveAvailability(ownerId, ownerType) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
         ) {
-            Text("Guardar Disponibilidade")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        availabilityList.forEach {
             Text(
-                text = "Dia: ${it.dayOfWeek} | ${it.startTime} - ${it.endTime}",
+                "Guardar Disponibilidade",
                 color = Color.White,
-                fontSize = 12.sp
+                fontWeight = FontWeight.Bold
             )
         }
 
-        /*
-// --- 2. ASSISTENTE DE IA (A PARTE DA IMAGEM) ---
-        Column(
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button(
+            onClick = { viewModel.clear(ownerId, ownerType) },
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFF2D2D3D))
-                .padding(16.dp)
+                .height(52.dp),
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = CardBackground),
+            border = BorderStroke(1.dp, InputBorder)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(
-                    color = AccentPurple.copy(alpha = 0.2f),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(Icons.Default.Done, null, tint = AccentPurple, modifier = Modifier.padding(8.dp))
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text("AI Availability Assistant", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                    Text("Describe your week naturally", color = TextSecondary, fontSize = 12.sp)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Seletor de Tabs (Simplificado)
-            Row(
-                modifier = Modifier.fillMaxWidth().height(40.dp).background(Color.Black.copy(0.2f), RoundedCornerShape(8.dp)).padding(4.dp)
-            ) {
-                listOf("Text", "Doc", "Audio").forEach { tab ->
-                    val isTabSelected = selectedTab == tab
-                    Box(
-                        modifier = Modifier.weight(1f).fillMaxHeight()
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(if (isTabSelected) AccentPurple else Color.Transparent)
-                            .clickable { selectedTab = tab },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(tab, color = if (isTabSelected) Color.White else TextSecondary, fontSize = 12.sp)
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Campo de Texto da IA
-            Surface(
-                modifier = Modifier.fillMaxWidth().height(80.dp),
-                color = Background,
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, InputBorder.copy(0.5f))
-            ) {
-                Box(modifier = Modifier.padding(12.dp)) {
-                    if (aiPrompt.isEmpty()) {
-                        Text("e.g. I'm available Mon and Fri 10am-2pm", color = TextSecondary.copy(0.5f), fontSize = 13.sp)
-                    }
-                    BasicTextField(
-                        value = aiPrompt,
-                        onValueChange = { aiPrompt = it },
-                        textStyle = TextStyle(color = Color.White, fontSize = 13.sp),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
- */
-
+            Text(
+                "Limpar",
+                color = Color.White,
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }
 
 @Composable
-fun DayAvailabilityRow(
+fun DayAvailabilityCard(
     day: String,
-    isSelected: Boolean,
+    ranges: List<TimeRangeInput>,
+    onAddRange: () -> Unit,
+    onRemoveRange: (String) -> Unit,
+    onStartTimeClick: (String, String) -> Unit,
+    onEndTimeClick: (String, String) -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = CardBackground,
+        shape = RoundedCornerShape(18.dp),
+        border = BorderStroke(1.dp, InputBorder)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    color = AccentPurple.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text(
+                        text = day,
+                        color = AccentPurple,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Button(
+                    onClick = onAddRange,
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AccentPurple.copy(alpha = 0.14f),
+                        contentColor = AccentPurple
+                    )
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.size(6.dp))
+                    Text("Add interval", fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            if (ranges.isEmpty()) {
+                Surface(
+                    color = Background.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, InputBorder.copy(alpha = 0.6f)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "No time blocks yet",
+                        color = TextSecondary,
+                        fontSize = 13.sp,
+                        modifier = Modifier.padding(14.dp)
+                    )
+                }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    ranges.forEach { range ->
+                        TimeRangeCard(
+                            startTime = range.startTime,
+                            endTime = range.endTime,
+                            onRemove = { onRemoveRange(range.id) },
+                            onStartTimeClick = { onStartTimeClick(range.id, range.startTime) },
+                            onEndTimeClick = { onEndTimeClick(range.id, range.endTime) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TimeRangeCard(
     startTime: String,
     endTime: String,
-    onToggleDay: () -> Unit,
+    onRemove: () -> Unit,
     onStartTimeClick: () -> Unit,
     onEndTimeClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = if (isSelected) Background.copy(alpha = 0.6f) else Background,
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(
-            width = 1.dp,
-            color = if (isSelected) AccentPurple else InputBorder
-        )
+        color = Background.copy(alpha = 0.72f),
+        shape = RoundedCornerShape(14.dp),
+        border = BorderStroke(1.dp, InputBorder)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(14.dp)) {
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable { onToggleDay() },
-                    color = if (isSelected) AccentPurple else Background,
-                    shape = CircleShape,
-                    border = BorderStroke(1.dp, InputBorder)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = day.first().toString(),
-                            color = Color.White
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.padding(6.dp))
-
                 Text(
-                    text = day,
+                    text = "Time block",
                     color = Color.White,
-                    fontSize = 15.sp
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
                 )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                IconButton(onClick = onRemove) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "Remove interval",
+                        tint = Color(0xFFFF6B6B)
+                    )
+                }
             }
 
-            if (isSelected) {
-                Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    TimeBox(
-                        time = startTime,
-                        modifier = Modifier.weight(1f),
-                        onClick = onStartTimeClick
-                    )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                TimeBox(
+                    label = "Start",
+                    time = startTime,
+                    modifier = Modifier.weight(1f),
+                    onClick = onStartTimeClick
+                )
 
-                    Spacer(modifier = Modifier.padding(4.dp))
+                Text(
+                    text = "→",
+                    color = TextSecondary,
+                    fontSize = 16.sp
+                )
 
-                    Text(
-                        text = "to",
-                        color = Color.White,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
-
-                    Spacer(modifier = Modifier.padding(4.dp))
-
-                    TimeBox(
-                        time = endTime,
-                        modifier = Modifier.weight(1f),
-                        onClick = onEndTimeClick
-                    )
-                }
+                TimeBox(
+                    label = "End",
+                    time = endTime,
+                    modifier = Modifier.weight(1f),
+                    onClick = onEndTimeClick
+                )
             }
         }
     }
 }
 
-private fun showTimePicker(context: Context, currentTime: String, onTimeSelected: (String) -> Unit) {
+@Composable
+fun TimeBox(
+    label: String,
+    time: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = modifier,
+        color = CardBackground,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, InputBorder),
+        onClick = onClick
+    ) {
+        Column(
+            modifier = Modifier.padding(vertical = 12.dp, horizontal = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = label,
+                color = TextSecondary,
+                fontSize = 11.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = time,
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+
+private fun showTimePicker(
+    context: Context,
+    currentTime: String,
+    onTimeSelected: (String) -> Unit
+) {
     val parts = currentTime.split(":")
     val hour = parts.getOrNull(0)?.toIntOrNull() ?: 9
     val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
 
-    TimePickerDialog(context, { _, selectedHour, selectedMinute ->
-        val formattedTime = String.format("%02d:%02d", selectedHour, selectedMinute)
-        onTimeSelected(formattedTime)
-    }, hour, minute, true).show()
-}
-
-@Composable
-fun TimeBox(time: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Surface(
-        modifier = modifier
-            .height(44.dp)
-            .clickable { onClick() },
-        color = Background,
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, InputBorder)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(time, color = Color.White, fontSize = 14.sp)
-            Icon(Icons.Default.DateRange, "", tint = AccentPurple, modifier = Modifier.size(16.dp))
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AvailabilitySelectorPreview() {
-    AvailabilitySelector(
-        ownerId = 1,
-        ownerType = OwnerType.TEACHER
-    )
+    TimePickerDialog(
+        context,
+        { _, selectedHour, selectedMinute ->
+            onTimeSelected(String.format("%02d:%02d", selectedHour, selectedMinute))
+        },
+        hour,
+        minute,
+        true
+    ).show()
 }

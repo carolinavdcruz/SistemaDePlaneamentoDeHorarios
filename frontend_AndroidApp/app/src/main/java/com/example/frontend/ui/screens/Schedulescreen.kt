@@ -25,9 +25,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import com.example.frontend.data.remote.api.GoogleCalendarManager
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
@@ -264,44 +266,120 @@ private fun ScheduleEmptyState(message: String) {
     }
 }
 
-// Individual session card
 @Composable
-fun SessionCardSmall(session: ScheduledSession) {
+fun StudentCard(name: String) {
     Surface(
-        color = CardBackground,
-        shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(1.dp, InputBorder),
-        modifier = Modifier.fillMaxWidth()
+        color = AccentPurple.copy(alpha = 0.20f),
+        shape = RoundedCornerShape(20.dp)
     ) {
-        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                Icons.Default.DateRange,
-                null,
-                tint = AccentPurple,
-                modifier = Modifier.size(24.dp)
+        Text(
+            text = name,
+            color = AccentPurple,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+        )
+    }
+}
+
+
+@Composable
+fun CalendarSessionCard(
+    session: ScheduledSession,
+    studentNames: Map<Int, String>
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = AccentPurple.copy(alpha = 0.14f),
+        shape = RoundedCornerShape(14.dp),
+        border = BorderStroke(1.dp, AccentPurple.copy(alpha = 0.45f))
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = "${session.startTime} - ${session.endTime}",
+                color = AccentPurple,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
             )
-            Spacer(Modifier.width(10.dp))
-            Column(modifier = Modifier.weight(1f)) {
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (session.studentIds.isEmpty()) {
                 Text(
-                    DAY_NAMES[session.dayOfWeek] ?: "Dia ${session.dayOfWeek}",
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp
-                )
-                Text(
-                    "${session.startTime} – ${session.endTime}",
+                    text = "No students assigned",
                     color = TextSecondary,
                     fontSize = 12.sp
                 )
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    session.studentIds.forEach { studentId ->
+                        StudentCard(
+                            name = studentNames[studentId] ?: "Student $studentId"
+                        )
+                    }
+                }
             }
-            Surface(color = AccentPurple.copy(alpha = 0.15f), shape = RoundedCornerShape(20.dp)) {
-                Text(
-                    "${session.studentIds.size} aluno(s)",
-                    color = AccentPurple,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                )
+        }
+    }
+}
+
+
+@Composable
+fun WeekDayColumn(
+    dayOfWeek: Int,
+    sessions: List<ScheduledSession>,
+    studentNames: Map<Int, String>
+) {
+    Surface(
+        modifier = Modifier.width(220.dp),
+        color = CardBackground,
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, InputBorder)
+    ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Text(
+                text = DAY_NAMES[dayOfWeek] ?: "Day $dayOfWeek",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = if (sessions.isEmpty()) "No sessions" else "${sessions.size} session(s)",
+                color = TextSecondary,
+                fontSize = 12.sp
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            if (sessions.isEmpty()) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Background.copy(alpha = 0.55f),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, InputBorder.copy(alpha = 0.7f))
+                ) {
+                    Text(
+                        text = "Free day",
+                        color = TextSecondary,
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 18.dp)
+                    )
+                }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    sessions.forEach { session ->
+                        CalendarSessionCard(
+                            session = session,
+                            studentNames = studentNames
+                        )
+                    }
+                }
             }
         }
     }
@@ -314,116 +392,21 @@ fun WeeklyScheduleView(
 ) {
     val grouped = sessions.groupBy { it.dayOfWeek }
     val orderedDays = (1..7).toList()
+    val scrollState = rememberScrollState()
 
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollState),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         orderedDays.forEach { day ->
-            DayScheduleCard(
+            WeekDayColumn(
                 dayOfWeek = day,
                 sessions = grouped[day].orEmpty().sortedBy { it.startTime },
                 studentNames = studentNames
             )
         }
-    }
-}
-
-@Composable
-fun DayScheduleCard(
-    dayOfWeek: Int,
-    sessions: List<ScheduledSession>,
-    studentNames: Map<Int, String>
-) {
-    Surface(
-        color = CardBackground,
-        shape = RoundedCornerShape(14.dp),
-        border = BorderStroke(1.dp, InputBorder),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = DAY_NAMES[dayOfWeek] ?: "Day $dayOfWeek",
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            if (sessions.isEmpty()) {
-                Text(
-                    text = "No sessions scheduled",
-                    color = TextSecondary,
-                    fontSize = 13.sp
-                )
-            } else {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    sessions.forEach { session ->
-                        SessionDetailCard(
-                            session = session,
-                            studentNames = studentNames
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SessionDetailCard(
-    session: ScheduledSession,
-    studentNames: Map<Int, String>
-) {
-    Surface(
-        color = Background,
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, InputBorder),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = "${session.startTime} - ${session.endTime}",
-                color = AccentPurple,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            if (session.studentIds.isEmpty()) {
-                Text(
-                    text = "No students assigned",
-                    color = TextSecondary,
-                    fontSize = 12.sp
-                )
-            } else {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    session.studentIds.forEach { studentId ->
-                        StudentChip(
-                            name = studentNames[studentId] ?: "Student $studentId"
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun StudentChip(name: String) {
-    Surface(
-        color = AccentPurple.copy(alpha = 0.15f),
-        shape = RoundedCornerShape(20.dp)
-    ) {
-        Text(
-            text = name,
-            color = AccentPurple,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
-        )
     }
 }
 
