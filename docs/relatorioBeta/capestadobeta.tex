@@ -1,5 +1,5 @@
 %
-% Capítulo 7
+% Capítulo 8
 %
 \chapter{Estado Atual da Beta e Próximos Passos} \label{cap:estadobeta}
 
@@ -19,12 +19,13 @@ Entre os principais elementos já concluídos destacam-se:
 \begin{itemize}
     \item aplicação Android com separação de fluxos entre professor e aluno;
     \item gestão de sessão e adaptação da interface ao perfil autenticado;
-    \item registo e consulta de professores e alunos;
-    \item associação e desassociação entre alunos e professor;
-    \item definição e persistência de disponibilidades;
+    \item registo e autenticação de professores e alunos;
+    \item associação, desassociação e troca de professor por parte do aluno;
+    \item definição e persistência de disponibilidades, incluindo múltiplos intervalos no mesmo dia;
     \item definição e persistência de restrições do professor;
     \item criação de propostas de horário;
     \item visualização organizada do horário semanal criado;
+    \item integração do horário aceite com o Google Calendar do professor;
     \item backend funcional com API REST;
     \item persistência remota em PostgreSQL;
     \item validação dos endpoints principais com Postman.
@@ -37,7 +38,7 @@ permitindo recolher a informação necessária, processá-la e apresentar ao uti
 
 Um dos principais avanços da versão beta foi a integração progressiva entre frontend e backend.
 A aplicação Android já comunica com a API para um conjunto importante de operações, nomeadamente na gestão de utilizadores,
-disponibilidades, restrições e criação de horários.
+autenticação, disponibilidades, restrições e criação de horários.
 Esta evolução permitiu validar a arquitetura distribuída da solução e reduzir a dependência de mecanismos exclusivamente locais.
 
 Apesar deste progresso, a integração ainda não pode ser considerada totalmente concluída em todos os fluxos.
@@ -52,27 +53,28 @@ Uma dessas limitações prende-se com a necessidade de consolidar plenamente a s
 A coexistência destas duas camadas de persistência, embora útil durante o desenvolvimento incremental, introduz complexidade adicional e requer uma definição mais clara do papel de cada uma na arquitetura final.
 
 Outra limitação atual diz respeito ao algoritmo de criação de horários.
-A abordagem implementada já é suficiente para validar os fluxos principais e produzir propostas coerentes em cenários representativos,
-mas poderá ainda ser refinada para responder melhor a casos mais complexos ou a critérios adicionais de qualidade na distribuição das sessões.
+A abordagem implementada já é suficiente para validar os fluxos principais e construir propostas coerentes em cenários representativos,
+mas poderá ainda ser refinada para responder melhor a casos mais complexos, a preferências adicionais ou a critérios mais exigentes de distribuição das sessões.
 
-Para além disso, existem funcionalidades previstas que ainda não se encontram concluídas, como a exploração de mecanismos adicionais de entrada de dados,
-a melhoria da cobertura de testes e o reforço da robustez geral do sistema em cenários de utilização mais variados.
+Para além disso, existem aspetos a melhorar ao nível do polimento da interface, da robustez de alguns fluxos e da cobertura de testes.
+Mantém-se também como linha possível de evolução a avaliação de mecanismos adicionais de entrada de dados, nomeadamente com apoio de modelos multimodais para interpretação de texto, imagem e áudio, conforme descrito no capítulo dedicado a esse estudo.
 
 \section{Próximos Passos}
 
 Tendo em conta o estado atual do projeto, os próximos passos mais relevantes passam por consolidar a solução já implementada e preparar a transição para a versão final.
 Entre as prioridades identificadas destacam-se:
 \begin{itemize}
-    \item concluir a integração total entre frontend e backend;
-    \item reduzir as dependências híbridas entre persistência local e remota;
+    \item consolidar a integração entre frontend e backend nos fluxos ainda híbridos;
+    \item reduzir as dependências entre persistência local e remota;
     \item reforçar a coerência e sincronização dos dados do sistema;
     \item melhorar a robustez da criação de horários;
     \item aprofundar os testes funcionais e de integração;
-    \item melhorar a apresentação final da solução e da demonstração.
+    \item continuar o polimento da interface e da apresentação final da solução;
+    \item avaliar a viabilidade de funcionalidades baseadas em modelos multimodais para apoio ao registo de disponibilidades.
 \end{itemize}
 
-Adicionalmente, prevê-se a exploração de funcionalidades mais avançadas, como mecanismos de apoio à extração automática de disponibilidades a partir de inputs externos,
-caso tal se revele viável dentro do calendário do projeto.
+Adicionalmente, prevê-se a continuação do estudo exploratório de funcionalidades mais avançadas, como mecanismos de apoio à interpretação automática de disponibilidades a partir de inputs externos,
+incluindo texto, imagem e áudio, caso tal se revele viável dentro do calendário do projeto.
 Esta linha de evolução poderá acrescentar valor significativo à solução, mas deverá ser enquadrada de forma realista face ao estado atual de desenvolvimento.
 
 \section{Balanço da Versão Beta}
@@ -81,5 +83,5 @@ De uma forma geral, a versão beta permitiu demonstrar que o projeto já possui 
 fundamentais do problema, desde a recolha de dados até à criação e apresentação de propostas de horário. A arquitetura adotada mostrou-se adequada à evolução do projeto e
 os resultados obtidos nesta fase constituem um indicador positivo para a continuação do trabalho.
 
-A partir deste ponto, o foco deixa de estar apenas na implementação de novas funcionalidades e passa também pela consolidação, integração e refinamento do que já foi desenvolvido.
+A partir deste ponto, o foco deixa de estar apenas na implementação de novas funcionalidades e passa também pela consolidação, integração, validação e refinamento do que já foi desenvolvido.
 Este balanço é particularmente importante, pois permite encarar a versão final não como o início da solução, mas como uma etapa de maturação e aperfeiçoamento de uma base já operacional.

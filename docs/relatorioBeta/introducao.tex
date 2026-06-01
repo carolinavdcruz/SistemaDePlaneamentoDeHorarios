@@ -18,8 +18,8 @@ dificuldade de conciliar todos os alunos de forma equilibrada e sustentável. Es
 forma clara a necessidade de uma solução que apoiasse este processo de forma mais eficiente e estruturada.
 
 Neste contexto, surgiu a proposta do projeto \textit{Sistema de Planeamento de Horários}, cujo objetivo consiste no
-desenvolvimento de uma solução capaz de apoiar a gestão e criação automática de horários entre professores e alunos.
-A solução permite recolher disponibilidades, definir restrições de agendamento e criar propostas de horário de forma
+desenvolvimento de uma solução capaz de apoiar a gestão de horários entre professores e alunos.
+A solução permite recolher disponibilidades, definir restrições de agendamento e construir propostas de horário de forma
 estruturada, reduzindo o esforço manual associado a este processo e tornando a gestão de sessões mais clara e eficiente.
 
 %
@@ -39,12 +39,13 @@ O objetivo central do projeto consiste, assim, em disponibilizar um sistema que 
     \item associar alunos a um professor;
     \item recolher as disponibilidades semanais de professores e alunos;
     \item definir restrições relevantes para o agendamento;
-    \item criar automaticamente propostas de horário;
-    \item apresentar o horário resultante de forma legível, organizada, dinamica e facilitada.
+    \item construir propostas de horário;
+    \item apresentar o horário resultante de forma legível, organizada e acessível.
 \end{itemize}
 
-Numa perspetiva mais ampla, o projeto pretende também servir como base para a evolução de funcionalidades futuras, como integração
-com sistemas externos, persistência remota mais completa e eventual suporte a extração automática de informação a partir de documentos ou imagens.
+Numa perspetiva mais ampla, o projeto pretende também servir como base para a evolução de funcionalidades futuras, como
+integração com sistemas externos, reforço da persistência remota e eventual suporte à interpretação automática de informação
+a partir de texto, imagem ou áudio.
 
 %
 % Secção 1.2
@@ -56,16 +57,16 @@ e por um backend com API REST, responsável pela persistência e disponibilizaç
 a linguagem Kotlin com Jetpack Compose para a construção da interface, enquanto no backend foi adotado Ktor para a implementação da API,
 em conjunto com PostgreSQL para persistência de dados.
 
-A aplicação distingue dois tipos principais de utilizador através de uma classe "Owner Type" desenvolvida por nós: professor e aluno.
-Cada um destes perfis tem acesso a um conjunto próprio de funcionalidades.
-O professor pode definir a sua disponibilidade, configurar restrições associadas ao planeamento e consultar os alunos que lhe estão associados.
-O aluno pode escolher um professor e definir a sua própria disponibilidade.
-A partir destes dados, o sistema pode criar uma proposta de horário semanal compatível com as disponibilidades registadas e com as restrições configuradas.
-Por sua vez o professor irá avaliar o resultado final e, caso seja necessário, poderá requesitar uma nova proposta de horário.
-Ao ser aceite a proposta de horário, o sistema irá registálo no Google Calendar do professor, utilizando a API do Google Calendar, e irá disponibilizar o horário especifico de cada aluno no seu email pessoal.
+A aplicação distingue dois tipos principais de utilizador, professor e aluno, através de uma classe \textit{OwnerType} desenvolvida
+no âmbito do projeto. Cada um destes perfis tem acesso a um conjunto próprio de funcionalidades.
+O professor pode definir a sua disponibilidade, configurar restrições associadas ao planeamento, consultar os alunos que lhe estão associados
+e construir propostas de horário. O aluno pode escolher um professor e definir a sua própria disponibilidade.
+A partir destes dados, o sistema constrói uma proposta de horário semanal compatível com as disponibilidades registadas e com as restrições configuradas.
+Após a aceitação da proposta pelo professor, o horário pode ser integrado no seu Google Calendar, permitindo uma utilização mais próxima
+de um contexto real.
 
-Na versão beta do projeto, foi dada especial atenção à validação dos fluxos principais do sistema, à integração entre frontend e backend, e à implementação
-de uma primeira abordagem para a criação automática de horários. Esta fase permite demonstrar a viabilidade técnica da solução e serve como base para melhorias e refinamentos futuros.
+Na versão beta do projeto, foi dada especial atenção à validação dos fluxos principais do sistema, à integração entre frontend e backend
+e à implementação de uma primeira abordagem para a construção de horários.
 
 %
 % Secção 1.3
@@ -76,4 +77,5 @@ O presente relatório encontra-se organizado da seguinte forma. No Capítulo~\re
 No Capítulo~\ref{cap:arquitetura} é descrita a organização global do sistema, incluindo os principais componentes e a sua interação.
 Seguidamente, são apresentados os detalhes de implementação mais relevantes, tanto ao nível do frontend como do backend, bem como os principais aspetos da API e da persistência de dados.
 Posteriormente, é descrita a estratégia de testes e validação aplicada ao sistema.
-Por fim, é feito um balanço do estado atual da versão beta, identificando as funcionalidades já concluídas, as limitações atuais e os próximos passos previstos para a evolução do projeto.
+É também apresentado um estudo exploratório sobre a utilização de modelos multimodais para interpretação de disponibilidades a partir de diferentes tipos de input.
+Por fim, é feito um balanço do estado atual da versão beta, identificando as funcionalidades já concluídas, as limitações atuais, os próximos passos previstos para a evolução do projeto e as conclusões principais do trabalho realizado.

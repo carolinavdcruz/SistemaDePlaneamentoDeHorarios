@@ -7,49 +7,49 @@ A level-1 auxiliary file: caparquitetura.aux
 A level-1 auxiliary file: capimplementacao.aux
 A level-1 auxiliary file: capbackend.aux
 A level-1 auxiliary file: captestes.aux
+A level-1 auxiliary file: capLLMs.aux
 A level-1 auxiliary file: capestadobeta.aux
+A level-1 auxiliary file: capconclusoes.aux
 The style file: unsrt.bst
-I found no \citation commands---while reading file relatorio.aux
 Database file #1: referencias.bib
-You've used 0 entries,
+You've used 12 entries,
             1791 wiz_defined-function locations,
-            452 strings with 3643 characters,
-and the built_in function-call counts, 18 in all, are:
-= -- 0
-> -- 0
+            499 strings with 4682 characters,
+and the built_in function-call counts, 1732 in all, are:
+= -- 132
+> -- 78
 < -- 0
-+ -- 0
-- -- 0
-* -- 2
-:= -- 7
-add.period$ -- 0
-call.type$ -- 0
-change.case$ -- 0
++ -- 33
+- -- 21
+* -- 44
+:= -- 289
+add.period$ -- 37
+call.type$ -- 12
+change.case$ -- 12
 chr.to.int$ -- 0
-cite$ -- 0
-duplicate$ -- 0
-empty$ -- 1
-format.name$ -- 0
-if$ -- 1
+cite$ -- 12
+duplicate$ -- 76
+empty$ -- 212
+format.name$ -- 21
+if$ -- 393
 int.to.chr$ -- 0
-int.to.str$ -- 0
-missing$ -- 0
-newline$ -- 3
-num.names$ -- 0
-pop$ -- 0
+int.to.str$ -- 12
+missing$ -- 4
+newline$ -- 63
+num.names$ -- 12
+pop$ -- 71
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 1
+skip$ -- 35
 stack$ -- 0
 substring$ -- 0
-swap$ -- 0
+swap$ -- 13
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 0
-while$ -- 0
-width$ -- 0
-write$ -- 2
-(There was 1 error message)
+while$ -- 12
+width$ -- 14
+write$ -- 123

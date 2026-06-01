@@ -16,8 +16,8 @@ Estes testes tiveram como objetivo garantir que os blocos mais sensíveis da ló
 
 Entre os componentes testados destacam-se:
 \begin{itemize}
-    \item o processador de intervalos temporais, responsável por dividir disponibilidades em blocos utilizáveis pelo algoritmo;
-    \item o criação de horários, responsável por construir propostas de sessões com base nas disponibilidades e restrições.
+    \item processador de intervalos temporais, responsável por dividir disponibilidades em blocos utilizáveis pelo algoritmo;
+    \item mecanismo de criação de horários, responsável por construir propostas de sessões com base nas disponibilidades e restrições.
 \end{itemize}
 
 No caso do processamento de intervalos temporais, os testes permitiram verificar aspetos como:
@@ -48,12 +48,13 @@ Os testes realizados no Postman abrangeram, entre outros, os seguintes cenários
     \item verificação de disponibilidade do servidor;
     \item criação de professores;
     \item criação de alunos;
+    \item autenticação de utilizadores;
     \item consulta de listas de professores e alunos;
     \item associação de alunos a professores;
     \item consulta dos alunos associados a um professor;
     \item registo e consulta de disponibilidades;
     \item registo e consulta de restrições;
-    \item  criação de propostas de horário.
+    \item criação de propostas de horário.
 \end{itemize}
 
 Através destes testes foi possível confirmar que a API se encontrava funcional e que os principais fluxos do domínio estavam corretamente representados no backend.
@@ -68,15 +69,18 @@ Entre os fluxos testados destacam-se:
 \begin{itemize}
     \item autenticação e gestão de sessão;
     \item distinção de comportamento entre professor e aluno;
-    \item seleção de professor por parte do aluno;
+    \item seleção e troca de professor por parte do aluno;
     \item visualização de alunos associados ao professor;
-    \item definição de disponibilidades;
+    \item definição de disponibilidades, incluindo múltiplos intervalos por dia;
     \item definição de restrições;
-    \item  criação e apresentação do horário.
+    \item criação e apresentação do horário;
+    \item aceitação do horário e integração com Google Calendar.
 \end{itemize}
 
 A validação funcional da aplicação foi importante para garantir que a interface suportava corretamente os comportamentos previstos pelo domínio
 do problema e que a informação apresentada ao utilizador era consistente com o estado armazenado localmente e, quando aplicável, com a informação obtida do backend.
+Foi também validada a integração com o Google Calendar no contexto do professor.
+Após a aceitação de uma proposta de horário, verificou-se que as sessões podiam ser registadas com sucesso no calendário do utilizador autenticado, confirmando o funcionamento do fluxo de autenticação Google e da utilização da respetiva API.
 
 \section{Validação da Criação de Horários}
 
@@ -90,6 +94,7 @@ Os testes incidiram sobre aspetos como:
     \item criação de sessões compatíveis com a disponibilidade do professor;
     \item alocação de alunos apenas a sessões em que se encontram disponíveis;
     \item respeito pelos limites de participantes por sessão;
+    \item respeito pelo número máximo de sessões por aluno no mesmo dia;
     \item distribuição de alunos por diferentes blocos quando aplicável.
 \end{itemize}
 
@@ -100,7 +105,7 @@ Embora a abordagem atual ainda possa ser melhorada, os resultados obtidos mostra
 
 Um aspeto relevante da fase de testes foi a validação progressiva da integração entre frontend e backend. Em vez de tentar validar toda a solução apenas no final,
 as funcionalidades foram sendo testadas à medida que a comunicação remota era introduzida.
-Esta estratégia permitiu identificar mais cedo inconsistências em endpoints, modelos de dados e fluxos de sincronização.
+Esta estratégia permitiu identificar mais cedo inconsistências em endpoints, modelos de dados, fluxos de autenticação e mecanismos de sincronização.
 
 A coexistência de persistência local e persistência remota exigiu também atenção adicional, uma vez que parte da validação teve de assegurar que os dados obtidos da API
 se mantinham consistentes com o estado visível na aplicação.
@@ -109,8 +114,8 @@ Esta abordagem incremental revelou-se útil para consolidar a versão beta e pre
 \section{Síntese dos Resultados Obtidos}
 
 Os testes realizados permitiram concluir que a versão beta do sistema já apresenta um nível de funcionalidade significativo. O backend encontra-se operacional,
-os principais endpoints foram validados com sucesso, a aplicação Android executa os fluxos centrais do sistema e a criação de horários produz resultados coerentes em cenários representativos.
+os principais endpoints foram validados com sucesso, a aplicação Android executa os fluxos centrais do sistema, a autenticação se encontra funcional e a criação de horários produz resultados coerentes em cenários representativos.
 
-Apesar de persistirem aspetos a refinar, nomeadamente ao nível da integração total entre componentes e da evolução futura do algoritmo, a validação efetuada demonstra que a solução
+Apesar de persistirem aspetos a refinar, nomeadamente ao nível da integração total entre componentes, da evolução futura do algoritmo e do polimento de algumas componentes da interface, a validação efetuada demonstra que a solução
 já consegue suportar os casos de uso mais importantes do projeto.
 Este resultado constitui um indicador positivo para a continuação do desenvolvimento até à versão final.

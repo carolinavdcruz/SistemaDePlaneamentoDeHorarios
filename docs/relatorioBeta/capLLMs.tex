@@ -1,0 +1,97 @@
+%
+% Capítulo 7
+%
+\chapter{Estudo Exploratório com Large Language Models (LLMs) para Interpretação de Disponibilidades} \label{cap:llms}
+
+No âmbito do projeto, foi desenvolvido um estudo com o objetivo de avaliar a viabilidade de utilização de modelos locais e multimodais para interpretar disponibilidades de professores e alunos a partir de diferentes tipos de input.
+A motivação para este estudo surgiu da possibilidade de, no futuro, permitir à aplicação receber informação em formatos menos estruturados, como texto livre, imagens, \textit{screenshots}, fotografias manuscritas ou áudio, transformando esses dados em informação útil para o sistema.
+
+A ideia central consistiu em analisar se seria possível utilizar estes modelos como apoio ao registo de disponibilidades, reduzindo a necessidade de inserção exclusivamente manual e estruturada por parte do utilizador.
+Até ao momento, o estudo foi dividido em três frentes principais:
+\begin{itemize}
+    \item extração de texto a partir de imagens;
+    \item interpretação de disponibilidades em texto e imagem;
+    \item preparação da pipeline necessária para futura análise de áudio.
+\end{itemize}
+
+\section{Modelos e Ferramentas Avaliados}
+
+Durante esta fase foram considerados diferentes modelos e ferramentas, com papéis distintos no processamento dos dados:
+\begin{itemize}
+    \item \textit{llava}~\cite{llava}, utilizado numa fase inicial como modelo multimodal geral;
+    \item \textit{glm-ocr:q8\_0}, avaliado como solução local dedicada a OCR;
+    \item \textit{qwen2.5vl:3b}~\cite{qwen25-vl}, utilizado como modelo multimodal para interpretação de imagem e texto;
+    \item \textit{ffmpeg}, instalado como ferramenta de apoio à preparação de ficheiros áudio;
+    \item \textit{Whisper}~\cite{whisper}, considerado para uma futura etapa de transcrição automática de áudio.
+\end{itemize}
+
+Entre os modelos testados, o \textit{llava} teve um papel mais exploratório e não foi mantido como solução principal.
+O \textit{glm-ocr:q8\_0} foi inicialmente escolhido por ser leve, local e vocacionado para OCR.
+Já o \textit{qwen2.5vl:3b} destacou-se como o candidato mais promissor para interpretação de inputs visuais e textuais.
+
+\section{Resultados Obtidos com OCR e Multimodalidade}
+
+Os primeiros testes com o modelo \textit{glm-ocr:q8\_0} mostraram resultados positivos em cenários simples de texto digital limpo.
+Em imagens com informação estruturada, o modelo conseguiu ler corretamente nomes e blocos de disponibilidade.
+Também apresentou um comportamento aceitável em \textit{screenshots} e texto digital simples.
+
+No entanto, o modelo revelou limitações significativas quando foi necessário estruturar a informação ou lidar com dados menos controlados.
+Em tentativas de conversão para JSON, produziu saídas inválidas, alterou informação e traduziu dias da semana para inglês.
+Em fotografias manuscritas, o comportamento foi ainda menos robusto, tendo sido observadas alterações de horários, adição de linhas inexistentes e introdução de informação não presente na imagem.
+Concluiu-se, por isso, que o \textit{glm-ocr:q8\_0} pode ser útil como OCR simples, mas não constitui uma solução suficientemente fiável para servir de base única à funcionalidade pretendida.
+
+Posteriormente, foram realizados testes com o modelo \textit{qwen2.5vl:3b}, que apresentou um desempenho claramente superior, sobretudo em situações mais próximas de uso real.
+Nos testes com fotografias manuscritas, o modelo não se revelou perfeito, mas demonstrou um comportamento mais estável, evitando inventar dias ou horários inexistentes e preservando melhor a estrutura original da informação.
+Apesar de alguns erros ortográficos em palavras isoladas, os resultados foram globalmente mais consistentes.
+
+Para além das fotografias manuscritas, o \textit{qwen2.5vl:3b} foi também testado com imagens simples, \textit{screenshots} e texto livre, tendo mostrado capacidade para:
+\begin{itemize}
+    \item ler corretamente texto digital simples;
+    \item interpretar disponibilidades descritas em linguagem natural;
+    \item identificar indisponibilidades e preferências;
+    \item preservar a informação temporal essencial para posterior utilização no sistema.
+\end{itemize}
+
+Com base nos resultados observados, o \textit{qwen2.5vl:3b} constitui, até ao momento, o melhor candidato para suportar uma futura funcionalidade de interpretação de disponibilidades a partir de texto e imagem.
+
+\section{Estado Atual da Componente de Áudio}
+
+A componente de áudio ainda não foi validada de forma completa nesta fase do projeto.
+Foi preparado um ficheiro de teste e instalada a ferramenta \textit{ffmpeg} para apoio ao tratamento deste tipo de input.
+No entanto, a etapa de transcrição automática ainda não foi concluída, mantendo-se o \textit{Whisper} como a solução mais provável para evolução futura.
+
+Dado que o \textit{qwen2.5vl:3b} não interpreta áudio diretamente, a arquitetura prevista e pensada para este caso passa por uma pipeline em duas etapas:
+\begin{itemize}
+    \item transcrição do áudio para texto com um modelo de reconhecimento de fala;
+    \item interpretação desse texto com o modelo multimodal selecionado.
+\end{itemize}
+
+Assim, a abordagem atualmente considerada para este tipo de input corresponde a:
+\begin{center}
+    \textit{audio} $\rightarrow$ \textit{Whisper} $\rightarrow$ texto transcrito $\rightarrow$ \textit{qwen2.5vl:3b}
+\end{center}
+
+\section{Proposta de Integração no Projeto}
+
+Embora esta componente ainda não se encontre integrada na versão beta da aplicação, o estudo realizado já permite delinear uma proposta de arquitetura para evolução futura do sistema.
+
+A solução mais promissora identificada até ao momento assenta nos seguintes fluxos:
+\begin{itemize}
+    \item texto direto $\rightarrow$ \textit{qwen2.5vl:3b};
+    \item imagem simples $\rightarrow$ \textit{qwen2.5vl:3b};
+    \item \textit{screenshot} $\rightarrow$ \textit{qwen2.5vl:3b};
+    \item fotografia manuscrita $\rightarrow$ \textit{qwen2.5vl:3b} com validação humana;
+    \item áudio $\rightarrow$ \textit{Whisper} + \textit{qwen2.5vl:3b}.
+\end{itemize}
+
+Esta abordagem permitiria acrescentar à aplicação uma forma mais flexível de recolha de disponibilidades, especialmente útil em contextos em que o utilizador dispõe da informação em formatos menos estruturados.
+Ao mesmo tempo, os resultados obtidos mostram que esta integração deverá ser feita com cuidado, prevendo sempre mecanismos de validação e confirmação por parte do utilizador, sobretudo em casos de manuscrito ou áudio.
+
+\section{Síntese do Estudo}
+
+O estudo realizado permitiu concluir que, até ao momento, não foi identificado um único modelo capaz de tratar de forma totalmente fiável todos os tipos de input considerados.
+Ainda assim, foi possível identificar uma abordagem tecnicamente promissora para evolução futura da solução,
+com destaque para o \textit{qwen2.5vl:3b} como principal candidato para imagem e texto, e para o \textit{Whisper} como etapa complementar no caso do áudio.
+
+Desta forma, esta linha de trabalho não constitui ainda uma funcionalidade concluída da versão beta,
+mas representa uma direção de evolução concreta e fundamentada para o projeto, alinhada com o objetivo de tornar o registo de disponibilidades mais natural, acessível e adaptável a diferentes formatos de entrada.

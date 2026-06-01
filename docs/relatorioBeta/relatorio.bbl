@@ -1,3 +1,65 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{10}
+
+\bibitem{llava}
+Haotian Liu, Chunyuan Li, Yuheng Li, and Yong~Jae Lee.
+\newblock Visual instruction tuning.
+\newblock {\em arXiv preprint arXiv:2304.08485}, 2023.
+
+\bibitem{qwen25-vl}
+{Qwen Team}.
+\newblock Qwen2.5-vl technical report.
+\newblock {\em arXiv preprint arXiv:2502.13923}, 2025.
+
+\bibitem{whisper}
+Alec Radford, Jong~Wook Kim, Tao Xu, Greg Brockman, Christine McLeavey, and
+  Ilya Sutskever.
+\newblock Robust speech recognition via large-scale weak supervision.
+\newblock {\em arXiv preprint arXiv:2212.04356}, 2022.
+
+\bibitem{kotlin-docs}
+{JetBrains}.
+\newblock Kotlin documentation, 2026.
+\newblock [Online; acedido em 1-Junho-2026].
+
+\bibitem{android-architecture}
+{Android Developers}.
+\newblock Guide to app architecture, 2026.
+\newblock [Online; acedido em 1-Junho-2026].
+
+\bibitem{jetpack-compose}
+{Android Developers}.
+\newblock Jetpack compose documentation, 2026.
+\newblock [Online; acedido em 1-Junho-2026].
+
+\bibitem{room-docs}
+{Android Developers}.
+\newblock Save data in a local database using room, 2026.
+\newblock [Online; acedido em 1-Junho-2026].
+
+\bibitem{ktor-docs}
+{JetBrains}.
+\newblock Ktor documentation, 2026.
+\newblock [Online; acedido em 1-Junho-2026].
+
+\bibitem{postgresql-docs}
+{PostgreSQL Global Development Group}.
+\newblock Postgresql documentation, 2026.
+\newblock [Online; acedido em 1-Junho-2026].
+
+\bibitem{google-calendar-api}
+{Google for Developers}.
+\newblock Google calendar api overview, 2026.
+\newblock [Online; acedido em 1-Junho-2026].
+
+\bibitem{bcrypt-paper}
+Niels Provos and David Mazi{\`e}res.
+\newblock A future-adaptable password scheme.
+\newblock In {\em 1999 USENIX Annual Technical Conference}. USENIX Association,
+  1999.
+
+\bibitem{asimov-multimodal}
+{Asimov Academy}.
+\newblock Llms multimodais, 2024.
+\newblock [Online; acedido em 1-Junho-2026].
 
 \end{thebibliography}

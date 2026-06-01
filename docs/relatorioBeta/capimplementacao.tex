@@ -34,10 +34,11 @@ Esta separação é essencial porque professores e alunos desempenham papéis di
 
 Na solução implementada:
 \begin{itemize}
-    \item o professor pode definir a sua disponibilidade, configurar restrições e consultar os alunos associados;
-    \item o aluno pode escolher um professor e registar a sua disponibilidade;
+    \item o professor pode definir a sua disponibilidade, configurar restrições, consultar os alunos associados e criar propostas de horário;
+    \item o aluno pode escolher um professor, consultar o professor associado e registar a sua disponibilidade;
     \item a navegação da aplicação adapta-se ao perfil autenticado, apresentando diferentes opções no \textit{dashboard}.
 \end{itemize}
+
 
 A gestão de sessão local foi integrada no frontend, permitindo preservar informação sobre o utilizador autenticado e suportar a adaptação dos fluxos
 da aplicação ao papel desempenhado. Esta distinção entre perfis foi também refletida no modelo de dados e na lógica dos ecrãs principais.
@@ -47,16 +48,19 @@ da aplicação ao papel desempenhado. Esta distinção entre perfis foi também 
 A funcionalidade de gestão de disponibilidades representa uma parte fundamental da solução, pois constitui a base sobre a qual são construídas as propostas de horário.
 Tanto professores como alunos podem registar a sua disponibilidade semanal, indicando os dias e intervalos horários em que se encontram disponíveis.
 
-Numa fase inicial da implementação, a disponibilidade foi modelada de forma mais simples, com um único intervalo comum aos dias selecionados.
-Contudo, verificou-se que esta abordagem não representava adequadamente situações reais, em que diferentes dias podem ter janelas horárias distintas.
-Por esse motivo, a funcionalidade foi evoluída para suportar disponibilidade por dia, permitindo que cada dia da semana possua horários próprios.
+Numa fase inicial da implementação, a disponibilidade foi modelada de forma mais simples, com um único intervalo associado a cada dia.
+Contudo, verificou-se que esta abordagem não representava adequadamente situações reais, em que um mesmo dia pode incluir múltiplos blocos horários separados.
+Por esse motivo, a funcionalidade foi evoluída para suportar múltiplos intervalos por dia, permitindo representar cenários como, por exemplo,
+disponibilidade durante a manhã e novamente durante a tarde no mesmo dia da semana.
 
 Esta evolução teve impacto direto na interface e na lógica da aplicação, permitindo:
 \begin{itemize}
-    \item selecionar dias individualmente;
-    \item definir horas de início e fim específicas para cada dia;
+    \item acrescentar vários intervalos no mesmo dia;
+    \item definir horas de início e fim específicas para cada bloco;
+    \item remover intervalos de forma individual;
     \item persistir e recuperar corretamente essa informação.
 \end{itemize}
+
 
 A gestão de disponibilidades foi implementada de forma a suportar persistência local e, progressivamente, comunicação com o backend, permitindo que os dados
 fiquem disponíveis para posterior utilização na criação de horários.
@@ -90,8 +94,10 @@ Esta decisão foi refletida:
     \item nos ecrãs de seleção e visualização de alunos.
 \end{itemize}
 
-Na aplicação, o aluno pode selecionar um professor a partir da lista de professores disponíveis. Por sua vez, o professor pode consultar os alunos que lhe estão associados.
-Foi também introduzida a possibilidade de desassociar um aluno, removendo a ligação ao professor sem eliminar o registo do aluno do sistema.
+Na aplicação, o aluno pode selecionar um professor a partir da lista de professores disponíveis. Quando já existe um professor associado,
+a interface passa a evidenciar essa associação e apenas permite a sua alteração através de uma ação explícita de troca.
+Por sua vez, o professor pode consultar os alunos que lhe estão associados. Foi também introduzida a possibilidade de desassociar um aluno,
+removendo a ligação ao professor sem eliminar o registo do aluno do sistema.
 
 Esta funcionalidade é essencial para garantir que a criação do horário é feita apenas com base nos alunos relevantes para cada professor,
 tornando o problema mais bem definido e mais próximo do contexto de utilização previsto.
@@ -113,12 +119,12 @@ O processo de construção das sessões considera, entre outros aspetos:
 \end{itemize}
 
 A versão beta implementa uma primeira abordagem funcional a este problema, suficiente para demonstrar o comportamento do sistema e validar o fluxo completo de criação de horários.
-Embora o algoritmo atual ainda possa ser refinado em versões futuras, já permite produzir propostas coerentes para cenários representativos do domínio do projeto.
+Embora o algoritmo atual ainda possa ser refinado em versões futuras, já permite construir propostas coerentes para cenários representativos do domínio do projeto.
 
 \section{Visualização do Horário Criado}
 
-Após a criação das sessões, a aplicação apresenta o horário criado de forma organizada e legível.
-Em vez de mostrar apenas uma lista simples de resultados, foi construída uma visualização semanal agrupada por dia,
+Após a criação das sessões, a aplicação apresenta o horário de forma organizada e legível.
+Em vez de mostrar apenas uma lista simples de resultados, foi construída uma visualização semanal com organização por dia,
 onde cada sessão aparece com o respetivo intervalo horário e a lista de alunos atribuídos.
 
 Esta representação permite ao utilizador compreender facilmente:
@@ -130,7 +136,7 @@ Esta representação permite ao utilizador compreender facilmente:
 \end{itemize}
 
 A implementação desta visualização constitui uma componente importante da versão beta, pois transforma o resultado do algoritmo
-num artefacto diretamente compreensível e utilizável pelo utilizador final.
+numa representação diretamente compreensível e utilizável pelo utilizador final.
 
 \section{Integração Progressiva com o Backend}
 
@@ -140,7 +146,7 @@ a API REST e interagir com o PostgreSQL.
 
 Este processo de integração foi realizado de forma progressiva, permitindo validar cada funcionalidade antes da passagem completa para a componente remota.
 Como resultado, a versão beta já demonstra um nível significativo de comunicação entre a aplicação Android e o backend, particularmente nos fluxos de utilizadores,
-disponibilidades, restrições e criação de horário.
+autenticação, disponibilidades, restrições e criação de horários.
 
 A implementação atual representa, assim, uma base funcional robusta sobre a qual será possível continuar a consolidar a solução até à versão final,
 reduzindo gradualmente a dependência de mecanismos locais auxiliares e reforçando o papel do backend como componente central do sistema.

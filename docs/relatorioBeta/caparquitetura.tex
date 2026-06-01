@@ -25,10 +25,12 @@ Em termos funcionais, a arquitetura pode ser vista como composta pelos seguintes
 \begin{itemize}
     \item aplicação Android, que apresenta os ecrãs e gere a interação com o utilizador;
     \item camada de lógica no frontend, responsável por coordenar o estado da interface e os fluxos de utilização;
-    \item API REST no backend, que centraliza as operações de leitura, escrita e consulta de dados;
+    \item API REST no backend, que centraliza as operações de leitura, escrita, autenticação e consulta de dados;
     \item base de dados PostgreSQL, que armazena a informação persistente do sistema;
-    \item armazenamento local com Room, utilizado como suporte local no dispositivo Android.
+    \item armazenamento local com Room, utilizado como suporte local no dispositivo Android;
+    \item integração com Google Calendar, utilizada para registar no calendário do professor os horários aceites.
 \end{itemize}
+
 
 Esta organização permite que a aplicação continue a evoluir de forma modular, com fronteiras relativamente claras entre
 apresentação, lógica de negócio, comunicação remota e persistência.
@@ -47,9 +49,11 @@ A aplicação encontra-se organizada em várias camadas, com destaque para:
     \item entidades locais em Room, que suportam persistência local no dispositivo.
 \end{itemize}
 
-Do ponto de vista funcional, a aplicação distingue dois perfis de utilizador: professor e aluno. Cada perfil possui ecrãs e ações específicas.
-O professor pode gerir a sua disponibilidade, definir restrições e consultar os alunos associados. O aluno pode escolher um professor e registar
-a sua disponibilidade. Esta separação por papéis foi integrada tanto na navegação da aplicação como na própria lógica dos \textit{ViewModels}.
+Do ponto de vista funcional, a aplicação distingue dois perfis de utilizador: professor e aluno.
+Cada perfil possui ecrãs e ações específicas.
+O professor pode gerir a sua disponibilidade, definir restrições, consultar os alunos associados e criar propostas de horário.
+O aluno pode escolher um professor e registar a sua disponibilidade.
+Esta separação por papéis foi integrada tanto na navegação da aplicação como na própria lógica dos \textit{ViewModels}.
 
 \section{Arquitetura do Backend}
 
@@ -58,11 +62,12 @@ A API implementada segue o estilo REST e expõe endpoints para operações como:
 
 \begin {itemize}
     \item criação e consulta de professores e alunos;
+    \item autenticação de utilizadores;
     \item associação de alunos a professores;
     \item registo e consulta de disponibilidades;
     \item registo e consulta de restrições;
     \item criação de propostas de horário.
-\end{itemize}
+\end {itemize}
 
 A estrutura interna do backend encontra-se organizada em componentes como:
 \begin{itemize}
@@ -90,8 +95,9 @@ Na base de dados central são armazenadas entidades essenciais ao domínio do pr
 \end{itemize}
 
 A utilização de Room no frontend permite preservar alguma informação localmente, o que facilita o funcionamento de certas operações
-e reduz dependência imediata da comunicação remota em todos os momentos. No entanto, o objetivo global da arquitetura é que a API
-e a base de dados remota assumam progressivamente o papel de fonte principal de verdade do sistema.
+e reduz a dependência imediata da comunicação remota em todos os momentos. No entanto, a arquitetura tem evoluído no sentido de
+atribuir à API e à base de dados remota um papel cada vez mais central, nomeadamente nos fluxos de autenticação e nas operações
+principais do domínio.
 
 \section{Comunicação entre Frontend e Backend}
 
@@ -102,6 +108,7 @@ representação simples e facilmente interpretável por ambas as partes.
 Esta comunicação suporta já um conjunto importante de operações, incluindo:
 \begin{itemize}
     \item criação de professores e alunos;
+    \item autenticação de utilizadores;
     \item consulta de listas de utilizadores;
     \item associação de alunos a professores;
     \item registo e consulta de disponibilidades;
@@ -121,5 +128,6 @@ e remota reflete a evolução incremental do projeto, permitindo apoiar o desenv
 API e a base de dados central.
 
 Embora a arquitetura atual já permita demonstrar de forma consistente o funcionamento da solução, existem ainda aspetos a consolidar,
-nomeadamente o reforço da sincronização entre dados locais e remotos e a clarificação do papel de cada camada em alguns fluxos específicos.
-Ainda assim, a base estrutural da solução encontra-se definida e suficientemente sólida para suportar a continuação do desenvolvimento até à versão final.
+nomeadamente o reforço da sincronização entre dados locais e remotos, a evolução da componente de disponibilidade e o refinamento da
+apresentação dos horários. Ainda assim, a base estrutural da solução encontra-se definida e suficientemente sólida para suportar a
+continuação do desenvolvimento até à versão final.

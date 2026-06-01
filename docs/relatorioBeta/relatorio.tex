@@ -90,22 +90,21 @@
     \chapter*{Resumo}
     O presente relatório descreve o desenvolvimento da versão beta do projeto \textit{Sistema de Planeamento de Horários},
     realizado no âmbito da unidade curricular de Projecto e Seminário da Licenciatura em Engenharia Informática e de Computadores.
-    O objetivo principal do projeto consiste na criação de uma solução que apoie a gestão e criação automática de horários entre
-    professores e alunos, tendo em conta disponibilidades semanais, restrições de agendamento e associações entre utilizadores.
 
-    A solução desenvolvida assenta numa aplicação Android implementada em Kotlin com Jetpack Compose e num backend em Ktor com API REST,
-    suportado por persistência remota em PostgreSQL. Ao longo desta fase foram implementadas funcionalidades centrais como:
-    \begin{itemize}
-        \item o registo e consulta de professores e alunos,
-        \item a definição de disponibilidades e restrições de horário,
-        \item a associação entre alunos e professores,
-        \item a criação automática de propostas de horário com base nas disponibilidades e restrições definidas.
-    \end{itemize}
+    O projeto surgiu da necessidade de simplificar a organização de horários entre professores e alunos,
+    num contexto em que esta tarefa é frequentemente realizada de forma manual, demorada e sujeita a reajustes constantes.
+    A solução proposta tem como objetivo apoiar esse processo através do registo de utilizadores, da recolha de disponibilidades,
+    da definição de restrições e da construção de propostas de horário de forma mais estruturada.
 
-    A versão beta permitiu validar a arquitetura global da solução, a comunicação entre frontend e backend e o funcionamento dos fluxos
-    principais do sistema. Foram igualmente realizados testes unitários, testes funcionais da aplicação e validação dos endpoints da API
-    com recurso ao Postman. Os resultados obtidos demonstram a viabilidade técnica da solução e estabelecem uma base consistente para a
-    continuação do desenvolvimento até à versão final.
+    Na versão beta foi desenvolvida uma aplicação móvel articulada com uma componente de backend e persistência remota,
+    permitindo suportar os principais fluxos do sistema.
+    Entre as funcionalidades já implementadas destacam-se a autenticação de utilizadores, a associação entre alunos e professores,
+    a definição de disponibilidades com múltiplos intervalos por dia, a configuração de restrições de agendamento,
+    a construção de propostas de horário e a integração do horário aceite com o Google Calendar do professor.
+
+    Esta fase permitiu validar a arquitetura global da solução, a comunicação entre os seus componentes e o funcionamento dos fluxos principais da aplicação.
+    Foram realizados testes unitários, testes funcionais e validação dos principais serviços do sistema.
+    Os resultados obtidos demonstram a viabilidade da solução e estabelecem uma base consistente para a continuação do desenvolvimento até à versão final.
 
 %{\bf Palavras-chave:} planeamento de horários; Android; Kotlin; Ktor; PostgreSQL; API REST.
 
@@ -113,8 +112,23 @@
 % Página sobre utilização de IA
     \cleardoublepage
     \chapter*{Utilização de Inteligência Artificial}
-    Neste trabalho foram utilizadas ferramentas de inteligência artificial generativa como apoio à análise, revisão técnica, esclarecimento de dúvidas e apoio à redação de documentação.
-    Estas ferramentas foram utilizadas como suporte ao desenvolvimento, não substituindo a implementação, validação e compreensão técnica por parte das autoras.
+
+    No desenvolvimento deste projeto foram utilizadas ferramentas de inteligência artificial como apoio complementar em diferentes fases do trabalho,
+    nomeadamente no esclarecimento de dúvidas, no apoio à organização da documentação, na revisão de texto e na avaliação de possíveis ferramentas e abordagens a utilizar.
+
+    Em particular, foram utilizados o ChatGPT, o ambiente Codex e o Claude, como suporte em tarefas como:
+    \begin{itemize}
+        \item esclarecimento de dúvidas sobre implementação em Kotlin, Jetpack Compose, Ktor e integração entre frontend e backend;
+        \item revisão e reformulação de texto para melhorar a clareza do relatório;
+        \item apoio à identificação de incoerências entre o estado atual da aplicação e a documentação produzida;
+        \item apoio exploratório na análise de possíveis abordagens para evolução funcional do sistema.
+    \end{itemize}
+
+    Para além disso, no âmbito de uma linha exploratória do projeto, foram também analisadas possibilidades de utilização de modelos locais e multimodais para interpretação de disponibilidades a partir de texto, imagem e, futuramente, áudio.
+    Esta componente foi desenvolvida como estudo complementar e não como funcionalidade concluída da versão beta.
+
+    A utilização destas ferramentas teve sempre um papel de apoio.
+    As decisões de projeto, a implementação final, a validação do comportamento da aplicação e a redação final do relatório permaneceram sob responsabilidade das autoras, tendo sido sempre efetuada revisão humana sobre os conteúdos produzidos com o apoio de inteligência artificial.
 
 % Criação do índice de conteúdos
     \cleardoublepage
@@ -143,9 +157,16 @@
     \include{captestes}
 
 % Capitulo 7
+    \include{capLLMs}
+
+% Capitulo 8
     \include{capestadobeta}
 
+% Capitulo 9
+    \include{capconclusoes}
+
 % Referências
+    \nocite{kotlin-docs,android-architecture,jetpack-compose,room-docs,ktor-docs,postgresql-docs,google-calendar-api,bcrypt-paper,qwen25-vl,whisper,llava,asimov-multimodal}
     \bibliographystyle{unsrt}
     \bibliography{referencias}
     \addcontentsline{toc}{chapter}{Refer\^{e}ncias}

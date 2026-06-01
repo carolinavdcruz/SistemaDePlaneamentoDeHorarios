@@ -52,8 +52,10 @@ Na versão beta, foram modeladas estruturas que permitem armazenar:
     \item alunos;
     \item associação entre alunos e professor;
     \item disponibilidades;
-    \item restrições associadas ao professor.
+    \item restrições associadas ao professor;
+    \item credenciais necessárias à autenticação dos utilizadores.
 \end{itemize}
+
 
 A informação é persistida em PostgreSQL, permitindo manter um repositório central do estado do sistema.
 Esta abordagem representa um passo importante relativamente às fases iniciais do projeto, em que a aplicação
@@ -64,25 +66,33 @@ No caso das disponibilidades, o backend armazena os intervalos registados por pr
 posteriormente para a criação de propostas de horário. No caso das restrições, os dados configurados pelo professor são também persistidos,
 permitindo que a criação de horários seja baseada em regras efetivamente armazenadas e reutilizáveis.
 
+No contexto da autenticação, foi também introduzido o uso de \textit{hashing} de palavras-passe com recurso a BCrypt.
+Desta forma, as credenciais deixaram de ser armazenadas em texto simples, reforçando a segurança da solução relativamente às abordagens iniciais.
+
 \section{API REST Implementada}
 
 A API desenvolvida no backend foi desenhada para suportar os fluxos principais do sistema. Os endpoints existentes permitem realizar operações
-de registo, consulta, associação de utilizadores, gestão de disponibilidades, gestão de restrições e criação de horários.
+de registo, autenticação, consulta, associação de utilizadores, gestão de disponibilidades, gestão de restrições e criação de horários.
 
 Entre os principais endpoints implementados incluem-se:
 \begin{itemize}
     \item verificação de disponibilidade do servidor;
     \item criação e consulta de professores;
     \item criação e consulta de alunos;
+    \item autenticação de utilizadores;
     \item associação e desassociação de alunos a professores;
-    \item consulta de alunos de um professor;
+    \item consulta dos alunos de um professor;
     \item criação, remoção e consulta de disponibilidades;
     \item criação e consulta de restrições;
     \item criação de propostas de horário.
 \end{itemize}
 
+
 A utilização de uma API REST permitiu estabelecer um contrato claro entre o frontend e o backend, facilitando a integração progressiva da aplicação Android com a componente remota.
 O formato JSON foi adotado como mecanismo de serialização dos dados, permitindo representar os pedidos e respostas de forma simples e consistente.
+Durante a evolução da versão beta, foi também introduzido um endpoint específico de autenticação, permitindo validar no backend as credenciais dos utilizadores.
+Esta alteração representou um passo importante na arquitetura da solução, uma vez que a validação do login deixou de depender da comparação local de dados no frontend,
+passando a ser tratada de forma centralizada na API.
 
 \section{Criação de Horários no Backend}
 
@@ -109,6 +119,7 @@ Este processo foi importante para confirmar que os contratos da API estavam corr
 Durante os testes foram validados fluxos como:
 \begin{itemize}
     \item criação de professores e alunos;
+    \item autenticação de utilizadores;
     \item consulta de listas de utilizadores;
     \item associação entre aluno e professor;
     \item registo e consulta de disponibilidades;
@@ -122,7 +133,7 @@ Este passo revelou-se particularmente útil para testar a coerência das respost
 \section{Integração com a Aplicação Android}
 
 Após a validação inicial dos endpoints, a integração com o frontend foi sendo realizada de forma progressiva.
-A aplicação Android passou a consumir a API para operações relacionadas com utilizadores, disponibilidades, restrições e, mais recentemente, criação de horários.
+A aplicação Android passou a consumir a API para operações relacionadas com utilizadores, autenticação, disponibilidades, restrições e, mais recentemente, criação de horários.
 
 Esta integração permitiu aproximar a solução da sua arquitetura final, em que o backend assume o papel de componente central na gestão dos dados e da lógica principal do sistema.
 Apesar de ainda existirem aspetos híbridos entre persistência local e remota, a evolução observada nesta fase demonstra que a base da comunicação cliente-servidor já se encontra estabelecida e funcional.
@@ -131,7 +142,7 @@ Apesar de ainda existirem aspetos híbridos entre persistência local e remota, 
 
 Na versão beta, o backend já se encontra suficientemente estruturado para suportar os principais fluxos do projeto.
 A API implementada encontra-se funcional, a ligação à base de dados PostgreSQL foi estabelecida com sucesso e os principais
-endpoints já foram validados de forma independente e em conjunto com a aplicação móvel.
+endpoints, incluindo os de autenticação e criação de horários, já foram validados de forma independente e em conjunto com a aplicação móvel.
 
 Este estado representa um marco importante no desenvolvimento da solução, pois demonstra que o projeto já não depende apenas de lógica local no frontend.
 O backend passou a constituir uma parte ativa e central do sistema, permitindo sustentar a evolução futura da solução para uma arquitetura mais consistente,
