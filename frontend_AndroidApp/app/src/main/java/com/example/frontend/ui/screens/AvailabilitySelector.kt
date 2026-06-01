@@ -4,7 +4,6 @@ import android.app.TimePickerDialog
 import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -30,7 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,6 +40,8 @@ import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.theme.White
+import com.example.frontend.ui.theme.lightOrange
 import com.example.frontend.ui.viewmodel.availability.TimeRangeInput
 
 @Composable
@@ -61,7 +61,7 @@ fun AvailabilitySelector(
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             "Weekly Availability",
-            color = Color.White,
+            color = White,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
@@ -111,7 +111,7 @@ fun AvailabilitySelector(
         ) {
             Text(
                 "Guardar Disponibilidade",
-                color = Color.White,
+                color = White,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -129,7 +129,7 @@ fun AvailabilitySelector(
         ) {
             Text(
                 "Limpar",
-                color = Color.White,
+                color = White,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -244,7 +244,7 @@ fun TimeRangeCard(
             ) {
                 Text(
                     text = "Time block",
-                    color = Color.White,
+                    color = White,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -255,7 +255,7 @@ fun TimeRangeCard(
                     Icon(
                         Icons.Default.Close,
                         contentDescription = "Remove interval",
-                        tint = Color(0xFFFF6B6B)
+                        tint = lightOrange
                     )
                 }
             }
@@ -316,7 +316,7 @@ fun TimeBox(
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = time,
-                color = Color.White,
+                color = White,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold
             )

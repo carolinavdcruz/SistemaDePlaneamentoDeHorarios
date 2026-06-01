@@ -43,6 +43,7 @@ import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.theme.White
 
 /*
 @Composable
@@ -122,7 +123,7 @@ fun MobileParameterInput(
     placeholder: String
 ) {
     Column {
-        Text(label, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 6.dp))
+        Text(label, color = White, fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 6.dp))
         Surface(
             modifier = Modifier.fillMaxWidth().height(48.dp),
             color = Background,
@@ -136,7 +137,7 @@ fun MobileParameterInput(
                 BasicTextField(
                     value = value,
                     onValueChange = onValueChange,
-                    textStyle = TextStyle(color = Color.White, fontSize = 14.sp),
+                    textStyle = TextStyle(color = White, fontSize = 14.sp),
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true

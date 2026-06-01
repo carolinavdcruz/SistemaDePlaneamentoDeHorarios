@@ -43,6 +43,7 @@ import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.frontend.ui.theme.White
 import com.example.frontend.ui.viewmodel.student.ChooseTeacherViewModel
 
 @Composable
@@ -84,7 +85,7 @@ fun ChooseTeacherScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = "Choose Your Teacher",
-                    color = Color.White,
+                    color = White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -122,7 +123,7 @@ fun ChooseTeacherScreen(
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
                                 text = currentTeacherName ?: "Professor atribuido",
-                                color = Color.White,
+                                color = White,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -169,7 +170,7 @@ fun ChooseTeacherScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Trocar Professor", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("Trocar Professor", color = White, fontWeight = FontWeight.Bold)
                     }
                 } else {
                     Column {
@@ -183,7 +184,7 @@ fun ChooseTeacherScreen(
                                 shape = RoundedCornerShape(12.dp),
                                 border = BorderStroke(1.dp, InputBorder)
                             ) {
-                                Text("Cancelar", color = Color.White, fontWeight = FontWeight.Bold)
+                                Text("Cancelar", color = White, fontWeight = FontWeight.Bold)
                             }
 
                             Spacer(modifier = Modifier.height(12.dp))
@@ -199,7 +200,7 @@ fun ChooseTeacherScreen(
                         ) {
                             Text(
                                 text = if (isChangingTeacher) "Confirmar Novo Professor" else "Confirm Teacher",
-                                color = Color.White,
+                                color = White,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -245,7 +246,7 @@ fun TeacherChoiceCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = teacher.name,
-                    color = Color.White,
+                    color = White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )

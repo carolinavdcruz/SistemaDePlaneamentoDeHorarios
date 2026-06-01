@@ -56,7 +56,7 @@ fun ProfileScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Profile", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text("Profile", color = White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Background)
             )
@@ -81,7 +81,7 @@ fun ProfileScreen(navController: NavController) {
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- AVATAR ---
+            // AVATAR
             Box(contentAlignment = Alignment.BottomEnd) {
                 Surface(
                     modifier = Modifier.size(100.dp),
@@ -103,7 +103,7 @@ fun ProfileScreen(navController: NavController) {
                 ) {
                     Icon(
                         Icons.Default.Edit, "",
-                        tint = Color.White,
+                        tint = White,
                         modifier = Modifier.padding(8.dp)
                     )
                 }
@@ -111,12 +111,12 @@ fun ProfileScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(uiState.name, color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text(uiState.name, color = White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
             Text(uiState.role?.name ?: "", color = AccentPurple, fontSize = 14.sp)
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // --- INFO CARDS ---
+            // INFO CARDS
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 color = CardBackground,
@@ -171,14 +171,14 @@ fun ProfileScreen(navController: NavController) {
                     .height(52.dp)
                     .padding(bottom = 16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF4D4D).copy(alpha = 0.1f)
+                    containerColor = RedOut.copy(alpha = 0.1f)
                 ),
                 shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, Color(0xFFFF4D4D).copy(alpha = 0.5f))
+                border = BorderStroke(1.dp, RedOut.copy(alpha = 0.5f))
             ) {
-                Icon(Icons.AutoMirrored.Filled.ExitToApp, "", tint = Color(0xFFFF4D4D))
+                Icon(Icons.AutoMirrored.Filled.ExitToApp, "", tint = RedOut)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Logout", color = Color(0xFFFF4D4D), fontWeight = FontWeight.Bold)
+                Text("Logout", color = RedOut, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -196,7 +196,7 @@ fun ProfileInfoItem(icon: ImageVector, label: String, value: String) {
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(label, color = TextSecondary, fontSize = 12.sp)
-            Text(value, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            Text(value, color = White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
         }
     }
 }

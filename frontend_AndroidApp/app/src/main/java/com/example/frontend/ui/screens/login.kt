@@ -41,6 +41,7 @@ import com.example.frontend.ui.theme.InputBackground
 import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextMain
 import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.theme.White
 import com.example.frontend.ui.viewmodel.login.LoginViewModel
 
 @Composable
@@ -64,7 +65,7 @@ fun LoginScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // --- LOGO E TÍTULO ---
+            // LOGO E TÍTULO
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -79,7 +80,7 @@ fun LoginScreen(
                     Icon(
                         imageVector = Icons.Default.DateRange,
                         contentDescription = "Schedule Icon",
-                        tint = Color.White,
+                        tint = White,
                         modifier = Modifier.padding(10.dp)
                     )
                 }
@@ -87,7 +88,7 @@ fun LoginScreen(
                 // Texto do Título
                 Text(
                     text = "SPH",
-                    color = Color.White,
+                    color = White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -167,7 +168,7 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // --- BOTÃO LOGIN ---
+                    // BOTÃO LOGIN
                     Button(
                         onClick = {
                             if (viewModel.validateLogin()) {
@@ -184,7 +185,7 @@ fun LoginScreen(
                     ) {
                         Text(
                             text = "Login",
-                            color = Color.White,
+                            color = White,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp
                         )
@@ -192,7 +193,7 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // --- TEXTO "DON'T HAVE AN ACCOUNT?" ---
+                    // TEXTO "DON'T HAVE AN ACCOUNT?"
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
@@ -241,7 +242,7 @@ fun LoginInputField(
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            textStyle = LocalTextStyle.current.copy(color = Color.White, fontSize = 16.sp),
+            textStyle = LocalTextStyle.current.copy(color = White, fontSize = 16.sp),
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType,
                 imeAction = imeAction,

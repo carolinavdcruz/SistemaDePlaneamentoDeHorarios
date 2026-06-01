@@ -1,6 +1,7 @@
 package com.example.frontend.ui.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -19,30 +20,35 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.frontend.R
+import com.example.frontend.ui.theme.Black
+import com.example.frontend.ui.theme.White
+import com.example.frontend.ui.theme.botBody
+import com.example.frontend.ui.theme.darkPurple
+import com.example.frontend.ui.theme.deepPurple
+import com.example.frontend.ui.theme.grey
+import com.example.frontend.ui.theme.lightPurple
 import kotlin.math.roundToInt
 
 @Composable
 fun HomeScreen(onStartClick: () -> Unit) {
-    // Cores baseadas na imagem
-    val deepPurple = Color(0xFF1A0B3F)
-    val lightPurple = Color(0xFF9D88FF)
-    val botBody = Color(0xFFF3F3F3)
+
 
     // Estado para o gesto de puxar para cima
     var offsetY by remember { mutableStateOf(0f) }
     val draggableState = rememberDraggableState { delta ->
-        // Só permite arrastar para cima (valores negativos)
         if (offsetY + delta <= 0) {
             offsetY += delta
         }
     }
 
-    // Gatilho para navegação quando atingir um limite (ex: -300px)
     LaunchedEffect(offsetY) {
         if (offsetY < -400f) {
             onStartClick()
@@ -54,7 +60,7 @@ fun HomeScreen(onStartClick: () -> Unit) {
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(deepPurple, Color(0xFF311B92))
+                    colors = listOf(deepPurple, darkPurple)
                 )
             )
             .padding(24.dp)
@@ -80,29 +86,33 @@ fun HomeScreen(onStartClick: () -> Unit) {
             )
         }
 
-        // Placeholder para o Robô (Aqui você usaria Image ou um Canvas)
+        // Placeholder
         Box(
             modifier = Modifier
-                .size(280.dp)
+                .size(300.dp)
                 .align(Alignment.Center),
             contentAlignment = Alignment.Center
         ) {
-            // Representação simplificada do Robô
             Surface(
                 color = botBody,
                 shape = RoundedCornerShape(40.dp),
                 modifier = Modifier.size(180.dp, 150.dp)
             ) {
-                // Adicione olhos e detalhes aqui
+                Image(
+                    painter = painterResource(id = R.drawable.gt),
+                    contentDescription = "Robô SPH",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
             }
 
             // Balão de fala
             Surface(
-                color = Color(0xFF424242).copy(alpha = 0.8f),
+                color = grey.copy(alpha = 0.8f),
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .offset(y = (-20).dp)
+                    .offset(y = (5).dp)
             ) {
                 Text(
                     text = "Need our help\nnow?",
@@ -113,7 +123,7 @@ fun HomeScreen(onStartClick: () -> Unit) {
             }
         }
 
-        // Botão "Get Started" com gesto de Swipe Up
+        // Botão "Get Started"
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -123,13 +133,12 @@ fun HomeScreen(onStartClick: () -> Unit) {
                     state = draggableState,
                     orientation = Orientation.Vertical,
                     onDragStopped = {
-                        // Reseta a posição se não arrastar o suficiente
                         if (offsetY >= -400f) offsetY = 0f
                     }
                 )
         ) {
             Surface(
-                color = Color.Black.copy(alpha = 0.5f),
+                color = Black.copy(alpha = 0.5f),
                 shape = RoundedCornerShape(50.dp),
                 border = BorderStroke(1.dp, Color.Gray),
                 modifier = Modifier
@@ -143,7 +152,6 @@ fun HomeScreen(onStartClick: () -> Unit) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Círculo roxo com a seta
                     Surface(
                         color = lightPurple,
                         shape = CircleShape,
@@ -152,19 +160,18 @@ fun HomeScreen(onStartClick: () -> Unit) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowUp,
                             contentDescription = "Swipe up",
-                            tint = Color.White,
+                            tint = White,
                             modifier = Modifier.padding(12.dp)
                         )
                     }
 
                     Text(
                         text = "Slide up to Start",
-                        color = Color.White,
+                        color = White,
                         fontWeight = FontWeight.Medium,
                         fontSize = 18.sp
                     )
 
-                    // Círculo roxo com a seta
                     Surface(
                         color = lightPurple,
                         shape = CircleShape,
@@ -173,7 +180,7 @@ fun HomeScreen(onStartClick: () -> Unit) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowUp,
                             contentDescription = "Swipe up",
-                            tint = Color.White,
+                            tint = White,
                             modifier = Modifier.padding(12.dp)
                         )
                     }

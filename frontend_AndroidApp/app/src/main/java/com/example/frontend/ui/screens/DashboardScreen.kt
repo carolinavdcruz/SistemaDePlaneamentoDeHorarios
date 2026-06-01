@@ -29,10 +29,11 @@ import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.StatusActive
 import com.example.frontend.ui.theme.TextMain
 import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.theme.White
 import com.example.frontend.ui.viewmodel.schedule.ScheduleUiState
 
 
-// --- CLASSE DE DADOS ---
+// CLASSE DE DADOS
 data class BottomNavItem(
     val title: String,
     val selectedIcon: ImageVector,
@@ -81,7 +82,7 @@ fun DashboardScreen(
                     NavigationBarItem(
                         selected = selectedItemIndex == index,
                         onClick = { selectedItemIndex = index },
-                        label = { Text(item.title, color = if (selectedItemIndex == index) Color.White else TextSecondary) },
+                        label = { Text(item.title, color = if (selectedItemIndex == index) White else TextSecondary) },
                         icon = {
                             Icon(
                                 imageVector = if (selectedItemIndex == index) item.selectedIcon else item.unselectedIcon,
@@ -152,7 +153,7 @@ fun DashboardHeader() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            Text("Workspace", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text("Workspace", color = White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
             Text("Overview of your schedule", color = TextSecondary, fontSize = 12.sp)
         }
         Surface(
@@ -179,7 +180,7 @@ fun ProposedScheduleCardMobile() {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(20.dp)) {
             // Texto do Header
-            Text("Proposed Weekly Schedule", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth())
+            Text("Proposed Weekly Schedule", color = White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth())
 
             Spacer(modifier = Modifier.height(30.dp))
 

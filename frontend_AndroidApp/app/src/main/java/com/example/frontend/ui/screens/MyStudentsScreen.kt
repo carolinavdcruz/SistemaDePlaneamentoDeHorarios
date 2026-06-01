@@ -12,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,6 +22,8 @@ import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.theme.White
+import com.example.frontend.ui.theme.lightRed
 
 @Composable
 fun MyStudentsScreen(
@@ -50,7 +51,7 @@ fun MyStudentsScreen(
             item {
                 Text(
                     text = "My Students",
-                    color = Color.White,
+                    color = White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -74,7 +75,7 @@ fun MyStudentsScreen(
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text(
                                 text = "No students yet",
-                                color = Color.White,
+                                color = White,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -134,7 +135,7 @@ fun StudentCard(name: String, email: String, onUnassign: () -> Unit) {
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Column {
-                    Text(name, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                    Text(name, color = White, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                     Text(email, color = TextSecondary, fontSize = 13.sp)
                 }
             }
@@ -143,7 +144,7 @@ fun StudentCard(name: String, email: String, onUnassign: () -> Unit) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Remove My Student",
-                    tint = Color(0xFFEF5350) // Vermelho suave para deletar
+                    tint = lightRed
                 )
             }
         }

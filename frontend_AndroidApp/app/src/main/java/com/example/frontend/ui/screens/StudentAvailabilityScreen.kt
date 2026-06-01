@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import com.example.frontend.data.model.OwnerType
 import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.theme.White
 
 @Composable
 fun StudentAvailabilityScreen(
@@ -31,7 +32,7 @@ fun StudentAvailabilityScreen(
     ) {
         Text(
             text = "My Availability",
-            color = Color.White,
+            color = White,
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold
         )

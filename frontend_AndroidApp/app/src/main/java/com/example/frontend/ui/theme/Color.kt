@@ -20,3 +20,29 @@ val InputBorder = Color(0xFF352F46) // Borda do campo de texto
 
 val StatusActive = Color(0xFF4CAF50) // Verde para "Connected"
 val BrainPurple = Color(0xFFD4B9FE) // Cor mais suave para o assistente
+
+//colors for home
+val deepPurple = Color(0xFF1A0B3F)
+val lightPurple = Color(0xFF9D88FF)
+val botBody = Color(0xFFF3F3F3)
+
+val darkPurple = Color(0xFF311B92)
+val grey = Color(0xFF424242)
+
+val Black = Color(0xFF000000)
+val White = Color(0xFFFFFFFF)
+
+//profile
+val RedOut = Color(0xFFFF4D4D)
+
+//register
+val Transparent = Color(0x00000000)
+
+//availability
+val lightOrange = Color(0xFFFF6B6B)
+
+//Students Screen
+val lightRed = Color(0xFFEF5350)
+
+//Schedulescreen
+val Red = Color(0xFFFF0000)

@@ -22,7 +22,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +30,8 @@ import com.example.frontend.data.model.OwnerType
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
+import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.theme.White
 import com.example.frontend.ui.viewmodel.teacher.RestrictionsViewModel
 
 @Composable
@@ -71,14 +72,14 @@ fun TeacherAvailabilityAndRestrictionsScreen(
     ) {
         Text(
             text = "Availability & Restrictions",
-            color = Color.White,
+            color = White,
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold
         )
 
         Text(
             text = "Define your weekly availability and scheduling rules",
-            color = com.example.frontend.ui.theme.TextSecondary,
+            color = TextSecondary,
             fontSize = 14.sp
         )
 
@@ -91,7 +92,7 @@ fun TeacherAvailabilityAndRestrictionsScreen(
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
                     text = "Scheduling Rules",
-                    color = Color.White,
+                    color = White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -163,7 +164,7 @@ fun TeacherAvailabilityAndRestrictionsScreen(
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
                     text = "Your Availability",
-                    color = Color.White,
+                    color = White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -190,7 +191,7 @@ fun TeacherAvailabilityAndRestrictionsScreen(
             Spacer(modifier = Modifier.height(0.dp))
             Text(
                 text = if (isLoading) "Saving..." else "Save Parameters",
-                color = Color.White,
+                color = White,
                 fontWeight = FontWeight.Bold
             )
         }

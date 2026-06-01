@@ -28,6 +28,8 @@ import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
+import com.example.frontend.ui.theme.Transparent
+import com.example.frontend.ui.theme.White
 import com.example.frontend.ui.viewmodel.register.RegisterViewModel
 
 @Composable
@@ -59,7 +61,7 @@ fun RegisterScreen(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            // --- LOGO (Mesmo da anterior) ---
+            //  LOGO (Mesmo da anterior)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(bottom = 40.dp)
@@ -69,13 +71,13 @@ fun RegisterScreen(
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.size(40.dp)
                 ) {
-                    Icon(Icons.Default.DateRange, "", tint = Color.White, modifier = Modifier.padding(8.dp))
+                    Icon(Icons.Default.DateRange, "", tint = White, modifier = Modifier.padding(8.dp))
                 }
-                Text(" SPH", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Text(" SPH", color = White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Text(" FOR YOU", color = AccentPurple, fontSize = 24.sp, fontWeight = FontWeight.Bold)
             }
 
-            // --- CARD DE REGISTRO ---
+            // CARD DE REGISTRO
             Surface(
                 color = CardBackground,
                 shape = RoundedCornerShape(16.dp),
@@ -83,10 +85,10 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(28.dp)) {
-                    Text("Join SPH", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Text("Join SPH", color = White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
                     Text("Create your account to start optimizing your time", color = TextSecondary, fontSize = 14.sp, modifier = Modifier.padding(top = 4.dp, bottom = 24.dp))
 
-                    Text("I am a...", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 12.dp))
+                    Text("I am a...", color = White, fontSize = 16.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 12.dp))
 
                     // --- ROLE SELECTOR (Student / Teacher) ---
                     Row(
@@ -161,7 +163,7 @@ fun RegisterScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Create Account", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("Create Account", color = White, fontWeight = FontWeight.Bold)
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -191,7 +193,7 @@ fun RoleCard(
         modifier = modifier
             .height(100.dp)
             .clickable { onClick() },
-        color = Color.Transparent,
+        color = Transparent,
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(borderWidth, borderColor)
     ) {
@@ -202,13 +204,13 @@ fun RoleCard(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (isSelected) Color.White else TextSecondary,
+                tint = if (isSelected) White else TextSecondary,
                 modifier = Modifier.size(28.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = label,
-                color = if (isSelected) Color.White else TextSecondary,
+                color = if (isSelected) White else TextSecondary,
                 fontSize = 14.sp,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
             )
