@@ -1,65 +1,44 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\documentclass[
-]{article}
+\documentclass[]{article}
 \usepackage{xcolor}
 \usepackage{amsmath,amssymb}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\setcounter{secnumdepth}{-\maxdimen}
 \usepackage{iftex}
 \ifPDFTeX
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
-\usepackage{unicode-math} % this also loads fontspec
+\usepackage{textcomp}
+\else
+\usepackage{unicode-math}
 \defaultfontfeatures{Scale=MatchLowercase}
 \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
 \usepackage{lmodern}
-\ifPDFTeX\else
-% xetex/luatex font selection
-\fi
-% Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\IfFileExists{microtype.sty}{% use microtype if available
+\IfFileExists{microtype.sty}{
     \usepackage[]{microtype}
-    \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+    \UseMicrotypeSet[protrusion]{basicmath}
 }{}
 \makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-    \IfFileExists{parskip.sty}{%
+\@ifundefined{KOMAClassName}{
+    \IfFileExists{parskip.sty}{
         \usepackage{parskip}
-    }{% else
+    }{
         \setlength{\parindent}{0pt}
         \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
+}{
     \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{graphicx}
-\makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-    \sbox\pandoc@box{#1}%
-    \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-    \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-    \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-    \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-    \else\usebox{\pandoc@box}%
-    \fi%
-}
-% Set default figure placement to htbp
-\def\fps@figure{htbp}
-\makeatother
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\providecommand{\tightlist}{%
-    \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \usepackage{bookmark}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{}
 \urlstyle{same}
 \hypersetup{
     hidelinks,
-    pdfcreator={LaTeX via pandoc}}
+    pdfcreator={LaTeX via pandoc}
+}
 
 \author{}
 \date{}
@@ -69,10 +48,9 @@
     \begin{titlepage}
         \centering
 
-        \includegraphics[width=1\textwidth]{./media/image1.png}
+        \includegraphics[width=0.8\textwidth]{../relatorioBeta/figures/logoISELnew2.png}
 
         \vspace{1.5cm}
-
 
         {\LARGE \textbf{Sistema de Planeamento de Horários}}\\[0.3cm]
         {\large \textbf{- SPH}}
@@ -94,122 +72,183 @@
         \vfill
 
         Junho de 2026
-
     \end{titlepage}
 
     \newpage
 
-    \subsection{Guia de Utilização e Verificação do Projeto}
+    \section{Objetivo do Documento}
 
-    \subsection{Pré-Instalação dos Componentes Necessários}
+    O presente documento tem como objetivo descrever a forma de instalação, configuração, execução e verificação do projeto \textit{Sistema de Planeamento de Horários}, permitindo ao arguente testar os principais fluxos funcionais da aplicação.
 
-    Antes de se proceder à instalação e execução do projeto, é necessário garantir que todos os componentes de software requeridos se encontram corretamente instalados e configurados no sistema.
+    \section{Repositório do Projeto}
 
-    \subsubsection{Configuração do Backend}
-
-    Em primeiro lugar, deve estar instalado o \textit{Java Development Kit (JDK)}, na versão 21 ou superior. Recomenda-se a verificação da versão instalada através do comando garantindo a compatibilidade com as dependências utilizadas no projeto.
-    \begin{quote}
-        {java --version}
-    \end{quote}
-
-    \subsubsection{Configuração da Aplicação Android}
-
-    Para a execução da aplicação, é necessária a instalação do Android Studio, incluindo os respetivos componentes: \textit{Android SDK, Android Emulator e Platform Tools}.
-    Estes componentes permitem compilar, executar e testar a aplicação Android, quer através de um dispositivo físico, quer através de um emulador configurado localmente.
-    Se for selecionado um dispositivo virtual deverá ser criado com as caracteristicas seguintes para uma melhor experiência:
+    O projeto encontra-se disponível no seguinte repositório:
 
     \begin{quote}
-        {Pixel 6 }
-        { Android API 34 ou versão equivalente}
+        \url{https://github.com/carolinavdcruz/SistemaDePlaneamentoDeHorarios.git}
     \end{quote}
 
-    \subsubsection{Configuração da Base de Dados}
+    Para obter uma cópia local do projeto, poderá ser utilizado o comando:
 
-    O sistema utiliza uma base de dados PostgreSQL para armazenamento persistente da informação. Assim, deverá estar instalada uma versão do \textit{PostgreSQL }15 ou superior à versão utilizada durante o desenvolvimento do projeto. Com o comando seguinte poderá se verificar a versão:
-    \begin{quote}
-        {psql --version}
-    \end{quote}
+    \begin{verbatim}
+git clone https://github.com/carolinavdcruz/SistemaDePlaneamentoDeHorarios.git
+    \end{verbatim}
 
-    Após a instalação, deverá ser criada uma instância da base de dados e executados os \textit{scripts SQL} disponibilizados no repositório para criação da estrutura de dados necessária ao funcionamento da aplicação.
-    \begin{quote}
-        {baseDados/schema.sql}
+    \section{Requisitos de Software}
 
-        {baseDados/data.sql}
-    \end{quote}
-    Relativamente à gestão de dependências e compilação do backend, o projeto utiliza Gradle. No entanto, não é necessária uma instalação manual desta ferramenta, uma vez que o projeto inclui o Gradle Wrapper, responsável por descarregar automaticamente a versão adequada durante o processo de compilação e execução.
+    Para executar corretamente o projeto, é necessário garantir a instalação dos seguintes componentes:
 
-    Concluída a configuração do ambiente, recomenda-se a verificação final de todos os requisitos instalados.
+    \begin{itemize}
+        \item Java Development Kit (JDK), versão 21 ou superior;
+        \item Android Studio, com Android SDK, Emulator e Platform Tools;
+        \item PostgreSQL, com uma base de dados local acessível;
+        \item Gradle Wrapper incluído no projeto, não sendo necessária instalação manual de Gradle.
+    \end{itemize}
 
+    A verificação das versões instaladas pode ser feita, por exemplo, com os seguintes comandos:
 
-    \subsection{Arquitetura Geral}
+    \begin{verbatim}
+java --version
+psql --version
+    \end{verbatim}
+
+    Para a execução da aplicação Android, recomenda-se a utilização de um emulador com configuração semelhante a:
+
+    \begin{itemize}
+        \item dispositivo: Pixel 6;
+        \item versão Android: API 34 ou equivalente.
+    \end{itemize}
+
+    \section{Configuração da Base de Dados}
+
+    O backend encontra-se configurado para utilizar uma base de dados PostgreSQL local com os seguintes parâmetros:
+
+    \begin{itemize}
+        \item base de dados: \texttt{sph}
+        \item utilizador: \texttt{postgres}
+        \item palavra-passe: \texttt{postgres}
+        \item porto: \texttt{5432}
+    \end{itemize}
+
+    Assim, antes de arrancar o backend, deverá ser criada uma base de dados com o nome \texttt{sph} no PostgreSQL local.
+
+    A estrutura de tabelas necessária ao funcionamento do sistema é criada automaticamente pelo backend no arranque através da camada de persistência da aplicação, pelo que não é necessária a execução manual de \textit{scripts SQL} para utilização da versão beta.
+
+    \section{Execução do Backend}
+
+    Após a criação da base de dados, o backend pode ser iniciado a partir da pasta \texttt{backend} com o comando:
+
+    \begin{verbatim}
+./gradlew run
+    \end{verbatim}
+
+    O servidor ficará disponível localmente no porto \texttt{8080}.
+
+    \section{Execução da Aplicação Android}
+
+    A aplicação Android deve ser aberta no Android Studio a partir da pasta:
+
+    \begin{verbatim}
+frontend_AndroidApp
+    \end{verbatim}
+
+    Depois disso, deverá ser iniciado um emulador Android ou ligado um dispositivo físico compatível, seguindo-se a execução normal da aplicação a partir do Android Studio.
+
+    Durante o desenvolvimento, a aplicação encontra-se configurada para comunicar com o backend local através do endereço apropriado ao emulador Android.
+
+    Para que a aplicação funcione corretamente, o backend deverá já encontrar-se em execução no momento em que a app é iniciada.
+
+    \section{Integração com Google Calendar}
+
+    A versão beta inclui integração com o Google Calendar no contexto do professor. Após a aceitação de uma proposta de horário, a aplicação permite autenticar o utilizador com uma conta Google e registar automaticamente as sessões no respetivo calendário.
+
+    Para esta funcionalidade, deverá estar presente no projeto Android o ficheiro de configuração Google incluído na aplicação, bem como uma conta Google válida para autenticação no dispositivo ou emulador. A inserção das sessões no calendário é efetuada apenas após a aceitação da proposta de horário pelo professor.
+
+    A integração com o Google Calendar é opcional para a navegação geral da aplicação, mas faz parte dos fluxos principais que podem ser demonstrados na apresentação.
+
+    \section{Fluxo Geral do Sistema}
+
+    A arquitetura geral da solução pode ser resumida da seguinte forma:
 
     \begin{center}
         Android App $\rightarrow$ API REST (Ktor) $\rightarrow$ PostgreSQL
     \end{center}
 
-    \textbf{Fluxo principal:}
+    O funcionamento principal do sistema segue estes passos:
+
     \begin{enumerate}
-        \item O utilizador interage com a aplicação Android.
-        \item A aplicação comunica com o Backend através da API REST.
-        \item O Backend processa os pedidos.
-        \item Os dados são armazenados e consultados na base de dados PostgreSQL.
+        \item o utilizador interage com a aplicação Android;
+        \item a aplicação comunica com o backend através da API REST;
+        \item o backend processa os pedidos e aplica a lógica necessária;
+        \item os dados são persistidos e consultados na base de dados PostgreSQL;
+        \item no caso do professor, o horário aceite pode ainda ser integrado no Google Calendar.
     \end{enumerate}
 
-    \subsection{Repositório do Projeto}
+    \section{Funcionalidades a Verificar}
 
-    \textbf{Repositório:} [https://github.com/carolinavdcruz/SistemaDePlaneamentoDeHorarios.git]
-
-    Para ter acesso ao projeto:
-    \begin{verbatim}
-git clone <https://github.com/carolinavdcruz/SistemaDePlaneamentoDeHorarios.git>
-    \end{verbatim}
-    ou utilizar o ficheiro ZIP.
-
-
-    \subsection{Funcionalidades a Verificar}
+    Durante a avaliação da versão beta, recomenda-se a verificação das seguintes funcionalidades:
 
     \begin{itemize}
-        \item Login
-        \item Registo
-        \item Gestão de perfis
-        \item Inserção, edição e remoção de disponibilidades
-        \item Geração automática de horários
-        \item Persistência de dados em PostgreSQL
+        \item registo de professores e alunos;
+        \item autenticação de utilizadores;
+        \item gestão de sessão e adaptação da interface ao perfil autenticado;
+        \item associação de aluno a professor e respetiva troca;
+        \item definição de disponibilidades, incluindo múltiplos intervalos por dia;
+        \item definição de restrições do professor;
+        \item construção de propostas de horário;
+        \item visualização do horário semanal;
+        \item aceitação do horário;
+        \item integração com Google Calendar;
+        \item persistência remota em PostgreSQL.
     \end{itemize}
 
-    \subsection{Casos de Teste Recomendados ao Arguente}
+    \section{Casos de Teste Recomendados ao Arguente}
 
-    \textbf{Caso 1 – Login}
+    \subsection*{Caso 1 -- Registo e Login}
+
     \begin{enumerate}
-        \item Abrir aplicação.
-        \item Inserir credenciais válidas.
-        \item Confirmar acesso.
+        \item registar um professor ou aluno na aplicação;
+        \item efetuar login com credenciais válidas;
+        \item confirmar o acesso ao fluxo correspondente ao perfil autenticado.
     \end{enumerate}
 
-    \textbf{Caso 2 – Inserção de Disponibilidade}
+    \subsection*{Caso 2 -- Associação entre Aluno e Professor}
+
     \begin{enumerate}
-        \item Adicionar uma nova disponibilidade.
-        \item Guardar.
+        \item autenticar um aluno;
+        \item selecionar um professor da lista disponível;
+        \item confirmar que o professor associado passa a estar visível no perfil do aluno.
     \end{enumerate}
 
-    \textbf{Caso 3 – Criação de Horário}
+    \subsection*{Caso 3 -- Definição de Disponibilidades}
+
     \begin{enumerate}
-        \item Executar criação de horário.
-        \item Confirmar criação sem conflitos.
+        \item inserir disponibilidade para professor ou aluno;
+        \item adicionar mais do que um intervalo no mesmo dia;
+        \item guardar e confirmar a persistência dos dados.
     \end{enumerate}
 
-    \textbf{Caso 4 – Persistência}
+    \subsection*{Caso 4 -- Definição de Restrições e Construção de Horário}
+
     \begin{enumerate}
-        \item Reiniciar aplicação.
-        \item Confirmar manutenção dos dados.
+        \item autenticar um professor;
+        \item definir restrições de agendamento;
+        \item construir uma proposta de horário;
+        \item confirmar a apresentação organizada das sessões criadas.
     \end{enumerate}
 
-    \subsection{Informação Adicional}
+    \subsection*{Caso 5 -- Aceitação do Horário e Google Calendar}
 
-    A documentação complementar encontra-se na pasta \texttt{docs/}, incluindo arquitetura, diário de desenvolvimento, relatório e notas técnicas.
+    \begin{enumerate}
+        \item aceitar uma proposta de horário criada;
+        \item autenticar uma conta Google, se necessário;
+        \item confirmar que as sessões são adicionadas ao Google Calendar do professor.
+    \end{enumerate}
 
+    \section{Observações Finais}
 
+    A documentação complementar do projeto encontra-se disponível na pasta \texttt{docs/}, incluindo o relatório beta, notas técnicas, apontamentos de arquitetura e material de apoio ao desenvolvimento.
+
+    Caso seja necessário testar a aplicação a partir de um estado limpo, recomenda-se remover ou recriar a base de dados \texttt{sph} antes de iniciar novamente o backend, permitindo que as tabelas sejam criadas de novo automaticamente.
 
 \end{document}
-
-
