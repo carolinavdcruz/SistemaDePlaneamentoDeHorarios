@@ -1,0 +1,215 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+\usepackage{unicode-math} % this also loads fontspec
+\defaultfontfeatures{Scale=MatchLowercase}
+\defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+% xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+    \usepackage[]{microtype}
+    \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+    \IfFileExists{parskip.sty}{%
+        \usepackage{parskip}
+    }{% else
+        \setlength{\parindent}{0pt}
+        \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+    \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+    \sbox\pandoc@box{#1}%
+    \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+    \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+    \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+    \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+    \else\usebox{\pandoc@box}%
+    \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+    \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+    hidelinks,
+    pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+    \begin{titlepage}
+        \centering
+
+        \includegraphics[width=1\textwidth]{./media/image1.png}
+
+        \vspace{1.5cm}
+
+
+        {\LARGE \textbf{Sistema de Planeamento de Horários}}\\[0.3cm]
+        {\large \textbf{- SPH}}
+
+        \vspace{2cm}
+
+        \textbf{Composição do Grupo:}
+
+        \vspace{0.3cm}
+
+        Carolina Cruz\\
+        Constança Costa
+
+        \vspace{1cm}
+
+        \textbf{Orientador:}\\
+        Prof. Paulo Pereira
+
+        \vfill
+
+        Junho de 2026
+
+    \end{titlepage}
+
+    \newpage
+
+    \subsection{Guia de Utilização e Verificação do Projeto}
+
+    \subsection{Pré-Instalação dos Componentes Necessários}
+
+    Antes de se proceder à instalação e execução do projeto, é necessário garantir que todos os componentes de software requeridos se encontram corretamente instalados e configurados no sistema.
+
+    \subsubsection{Configuração do Backend}
+
+    Em primeiro lugar, deve estar instalado o \textit{Java Development Kit (JDK)}, na versão 21 ou superior. Recomenda-se a verificação da versão instalada através do comando garantindo a compatibilidade com as dependências utilizadas no projeto.
+    \begin{quote}
+        {java --version}
+    \end{quote}
+
+    \subsubsection{Configuração da Aplicação Android}
+
+    Para a execução da aplicação, é necessária a instalação do Android Studio, incluindo os respetivos componentes: \textit{Android SDK, Android Emulator e Platform Tools}.
+    Estes componentes permitem compilar, executar e testar a aplicação Android, quer através de um dispositivo físico, quer através de um emulador configurado localmente.
+    Se for selecionado um dispositivo virtual deverá ser criado com as caracteristicas seguintes para uma melhor experiência:
+
+    \begin{quote}
+        {Pixel 6 }
+        { Android API 34 ou versão equivalente}
+    \end{quote}
+
+    \subsubsection{Configuração da Base de Dados}
+
+    O sistema utiliza uma base de dados PostgreSQL para armazenamento persistente da informação. Assim, deverá estar instalada uma versão do \textit{PostgreSQL }15 ou superior à versão utilizada durante o desenvolvimento do projeto. Com o comando seguinte poderá se verificar a versão:
+    \begin{quote}
+        {psql --version}
+    \end{quote}
+
+    Após a instalação, deverá ser criada uma instância da base de dados e executados os \textit{scripts SQL} disponibilizados no repositório para criação da estrutura de dados necessária ao funcionamento da aplicação.
+    \begin{quote}
+        {baseDados/schema.sql}
+
+        {baseDados/data.sql}
+    \end{quote}
+    Relativamente à gestão de dependências e compilação do backend, o projeto utiliza Gradle. No entanto, não é necessária uma instalação manual desta ferramenta, uma vez que o projeto inclui o Gradle Wrapper, responsável por descarregar automaticamente a versão adequada durante o processo de compilação e execução.
+
+    Concluída a configuração do ambiente, recomenda-se a verificação final de todos os requisitos instalados.
+
+
+    \subsection{Arquitetura Geral}
+
+    \begin{center}
+        Android App $\rightarrow$ API REST (Ktor) $\rightarrow$ PostgreSQL
+    \end{center}
+
+    \textbf{Fluxo principal:}
+    \begin{enumerate}
+        \item O utilizador interage com a aplicação Android.
+        \item A aplicação comunica com o Backend através da API REST.
+        \item O Backend processa os pedidos.
+        \item Os dados são armazenados e consultados na base de dados PostgreSQL.
+    \end{enumerate}
+
+    \subsection{Repositório do Projeto}
+
+    \textbf{Repositório:} [https://github.com/carolinavdcruz/SistemaDePlaneamentoDeHorarios.git]
+
+    Para ter acesso ao projeto:
+    \begin{verbatim}
+git clone <https://github.com/carolinavdcruz/SistemaDePlaneamentoDeHorarios.git>
+    \end{verbatim}
+    ou utilizar o ficheiro ZIP.
+
+
+    \subsection{Funcionalidades a Verificar}
+
+    \begin{itemize}
+        \item Login
+        \item Registo
+        \item Gestão de perfis
+        \item Inserção, edição e remoção de disponibilidades
+        \item Geração automática de horários
+        \item Persistência de dados em PostgreSQL
+    \end{itemize}
+
+    \subsection{Casos de Teste Recomendados ao Arguente}
+
+    \textbf{Caso 1 – Login}
+    \begin{enumerate}
+        \item Abrir aplicação.
+        \item Inserir credenciais válidas.
+        \item Confirmar acesso.
+    \end{enumerate}
+
+    \textbf{Caso 2 – Inserção de Disponibilidade}
+    \begin{enumerate}
+        \item Adicionar uma nova disponibilidade.
+        \item Guardar.
+    \end{enumerate}
+
+    \textbf{Caso 3 – Criação de Horário}
+    \begin{enumerate}
+        \item Executar criação de horário.
+        \item Confirmar criação sem conflitos.
+    \end{enumerate}
+
+    \textbf{Caso 4 – Persistência}
+    \begin{enumerate}
+        \item Reiniciar aplicação.
+        \item Confirmar manutenção dos dados.
+    \end{enumerate}
+
+    \subsection{Informação Adicional}
+
+    A documentação complementar encontra-se na pasta \texttt{docs/}, incluindo arquitetura, diário de desenvolvimento, relatório e notas técnicas.
+
+
+
+\end{document}
+
+
