@@ -4,13 +4,9 @@
 \chapter{Estado Atual da Beta e Próximos Passos} \label{cap:estadobeta}
 
 A versão beta do projeto representa uma fase intermédia de consolidação funcional da solução,
-em que os principais fluxos do sistema já se encontram implementados e testados, embora ainda
-existam aspetos a melhorar e integrar totalmente.
-Esta fase foi essencial para validar a viabilidade técnica da arquitetura adotada, confirmar o
-funcionamento dos componentes principais e estabelecer uma base sólida para a continuação do desenvolvimento.
+em que os principais fluxos do sistema já se encontram implementados e testados, embora ainda existam aspetos a melhorar e integrar totalmente.
 
-A solução já não se encontra limitada a um protótipo exclusivamente local. Com a introdução do backend em Ktor,
-a integração com PostgreSQL e a utilização de uma API REST funcional, o sistema passou a assumir uma estrutura mais próxima da versão final pretendida.
+A solução já não se encontra limitada a um protótipo exclusivamente local. Com a introdução do backend em Ktor, a integração com PostgreSQL e a utilização de uma API REST funcional, o sistema passou a assumir uma estrutura mais próxima da versão final pretendida.
 
 \section{Funcionalidades Concluídas na Versão Beta}
 
@@ -31,8 +27,7 @@ Entre os principais elementos já concluídos destacam-se:
     \item validação dos endpoints principais com Postman.
 \end{itemize}
 
-Estes resultados demonstram que a versão beta já suporta os casos de uso mais importantes do projeto,
-permitindo recolher a informação necessária, processá-la e apresentar ao utilizador uma proposta concreta de horário.
+Estes resultados demonstram que a versão beta já suporta os casos de uso mais importantes do projeto, permitindo recolher a informação necessária, processá-la e apresentar ao utilizador uma proposta concreta de horário.
 
 \section{Estado da Integração do Sistema}
 
@@ -48,7 +43,7 @@ constituindo um avanço significativo face às fases iniciais do projeto.
 
 \section{Limitações Atuais}
 
-Embora a versão beta demonstre a viabilidade da solução, existem ainda limitações que deverão ser tratadas até à entrega final.
+Embora a versão beta demonstre a viabilidade da solução, existem ainda limitações que deverão ser resolvidas até à entrega final.
 Uma dessas limitações prende-se com a necessidade de consolidar plenamente a sincronização entre os dados locais armazenados em Room e os dados persistidos no backend.
 A coexistência destas duas camadas de persistência, embora útil durante o desenvolvimento incremental, introduz complexidade adicional e requer uma definição mais clara do papel de cada uma na arquitetura final.
 
@@ -73,15 +68,13 @@ Entre as prioridades identificadas destacam-se:
     \item avaliar a viabilidade de funcionalidades baseadas em modelos multimodais para apoio ao registo de disponibilidades.
 \end{itemize}
 
-Adicionalmente, prevê-se a continuação do estudo exploratório de funcionalidades mais avançadas, como mecanismos de apoio à interpretação automática de disponibilidades a partir de inputs externos,
-incluindo texto, imagem e áudio, caso tal se revele viável dentro do calendário do projeto.
+Adicionalmente, prevê-se a continuação do estudo exploratório de funcionalidades mais avançadas caso tal se revele viável dentro do calendário do projeto.
 Esta linha de evolução poderá acrescentar valor significativo à solução, mas deverá ser enquadrada de forma realista face ao estado atual de desenvolvimento.
 
 \section{Balanço da Versão Beta}
 
 De uma forma geral, a versão beta permitiu demonstrar que o projeto já possui uma base funcional consistente e tecnicamente viável. O sistema consegue suportar os fluxos
-fundamentais do problema, desde a recolha de dados até à criação e apresentação de propostas de horário. A arquitetura adotada mostrou-se adequada à evolução do projeto e
-os resultados obtidos nesta fase constituem um indicador positivo para a continuação do trabalho.
+fundamentais do problema, desde a recolha de dados até à criação e apresentação de propostas de horário. A arquitetura adotada mostrou-se adequada à evolução do projeto e os resultados obtidos nesta fase constituem um indicador positivo para a continuação do trabalho.
 
 A partir deste ponto, o foco deixa de estar apenas na implementação de novas funcionalidades e passa também pela consolidação, integração, validação e refinamento do que já foi desenvolvido.
 Este balanço é particularmente importante, pois permite encarar a versão final não como o início da solução, mas como uma etapa de maturação e aperfeiçoamento de uma base já operacional.

@@ -2,53 +2,32 @@
 % Capítulo 2
 %
 \chapter{Enquadramento} \label{cap:enquadramento}
+O planeamento e a organização de horários configuram um desafio clássico de otimização em múltiplos contextos, tais como ambientes educativos, centros de formação e serviços partilhados. A compatibilização de matrizes horárias e restrições operacionais torna-se um processo complexo à medida que o número de participantes escala, exigindo soluções capazes de acomodar preferências individuais, respeitar limites temporais estritos e assegurar uma distribuição homogénea das sessões ao longo da semana.
 
-O problema da organização de horários encontra-se presente em múltiplos contextos, nomeadamente em ambientes educativos,
-centros de formação e serviços em que um responsável necessita de gerir sessões com vários participantes.
-Nestes cenários, a compatibilização de disponibilidades e restrições é frequentemente um processo complexo, sobretudo quando existe necessidade
-de acomodar vários alunos, respeitar limites temporais e assegurar uma distribuição adequada das sessões ao longo da semana.
-
-No caso particular deste projeto, o foco recai sobre a construção de uma solução orientada à relação entre professor e alunos, em que o professor define
-a sua disponibilidade e restrições, os alunos indicam os seus períodos disponíveis e o sistema cria automaticamente propostas de horário compatíveis com a informação recolhida.
-Este enquadramento combina aspetos de gestão de dados, interação utilizador-sistema e lógica de planeamento, tornando o problema simultaneamente prático e tecnicamente relevante.
+No âmbito deste projeto, o foco incide sobre a relação bilateral entre docente e discentes. O sistema proposto permite ao professor parametrizar as suas disponibilidades e regras de negócio, enquanto os alunos apenas submetem as suas disponibilidades. A partir destes dados, a plataforma cria de forma autónoma propostas de horário compatíveis.
+Este domínio combina aspetos de gestão de dados, interação utilizador-sistema e lógica de planeamento, tornando o problema simultaneamente prático e tecnicamente relevante.
 
 \section{Problema e Contexto de Aplicação}
 
-A construção manual de horários tende a envolver sucessivas trocas de informação entre os intervenientes, registos informais
-e verificação manual de compatibilidades. Este método, embora viável em contextos muito reduzidos, torna-se pouco eficiente
-quando o número de alunos aumenta ou quando as disponibilidades variam de forma significativa. Além disso, a gestão manual
-não facilita a aplicação consistente de regras como a duração das sessões, o número máximo de alunos por sessão ou o número
-máximo de sessões permitidas por dia.
+O método tradicional e manual de construção de horários assenta em sucessivas trocas de mensagens entre os intervenientes, registos informais e validação empírica de conflitos. Esta abordagem descentralizada perde eficiência quando o volume de alunos aumenta ou perante a volatilidade das agendas. Adicionalmente, a gestão puramente manual dificulta a aplicação rigorosa e sistemática de regras operacionais essenciais, tais como a duração fixa dos blocos, a lotação máxima por sessão e o teto máximo de carga horária diária permitida.
 
-O projeto desenvolvido procura responder a este problema através de uma solução digital que apoia a recolha e organização de
-informação relevante para o agendamento. Em vez de depender exclusivamente da intervenção manual do utilizador para encontrar
-combinações possíveis, o sistema recolhe dados estruturados e utiliza-os para construir propostas de horário automaticamente.
-Esta abordagem permite reduzir o esforço necessário para planear sessões, diminuir erros de compatibilidade e tornar mais clara
-a gestão do tempo disponível do professor.
+A solução desenvolvida responde a estas limitações através de um ecossistema digital que centraliza a recolha e a estruturação dos dados de agendamento. Em vez de delegar no utilizador o esforço de encontrar combinações viáveis, o sistema processa a informação armazenada para calcular propostas otimizadas. Esta automatização reduz o erro humano por sobreposição, elimina a redundância na comunicação e maximiza a previsibilidade e aproveitamento do tempo útil do professor.
 
-O contexto de aplicação da solução é suficientemente abrangente para poder ser adaptado a vários cenários de ensino ou acompanhamento
-individual e em grupo. Embora a implementação atual esteja focada numa relação entre professor e alunos, o modelo adotado poderá futuramente
-ser estendido a outros contextos em que exista necessidade de coordenar horários entre um responsável e vários participantes.
+Embora a implementação atual valide este modelo de dados através do fluxo relacional professor-aluno, o contexto de aplicação e a arquitetura desenvolvida são suficientemente abrangentes para permitir a sua extensão. A matriz lógica adotada serve de base para qualquer cenário de acompanhamento individual ou em grupo em que exista a necessidade de coordenar agendas entre um gestor de recursos e múltiplos participantes.
 
 \section{Trabalho Relacionado e Soluções Semelhantes}
 
-O problema abordado neste projeto insere-se na área mais ampla de \textit{scheduling} e planeamento de recursos, em que se procura distribuir
-entidades, atividades e intervalos temporais de forma compatível com um conjunto de restrições. Em termos conceptuais, trata-se de um problema
-em que é necessário representar disponibilidades, aplicar regras de negócio e encontrar combinações válidas entre vários intervenientes.
-Este tipo de problema surge em várias áreas, como planeamento académico, gestão de turnos, marcação de reuniões e organização de sessões de formação.
+O problema abordado insere-se na área de \textit{scheduling} e planeamento de recursos com satisfação de restrições (\textit{Constraint Satisfaction Problems} - CSP). Do ponto de vista conceptual, este domínio exige a modelação de matrizes de disponibilidade, a codificação estruturada de regras de negócio e a execução de algoritmos de emparelhamento (\textit{matching}) entre múltiplos intervenientes. Trata-se de um desafio transversal com forte relevância em sistemas de planeamento académico, gestão de turnos operacionais e alocação dinâmica de recursos organizacionais.
 
-Existem atualmente diversas ferramentas digitais que apoiam a marcação de horários, sobretudo em cenários de agendamento individual. Muitas dessas
-soluções permitem selecionar intervalos disponíveis, marcar sessões e enviar confirmações aos participantes. Contudo, nem sempre oferecem mecanismos
-ajustados a cenários em que um professor trabalha com vários alunos, em que é necessário cruzar múltiplas disponibilidades e respeitar restrições
-específicas associadas à organização de sessões.
+No mercado atual, o ecossistema de soluções digitais de agendamento pode ser dividido em duas categorias principais, ambas apresentando limitações face aos requisitos deste projeto:
 
-Em paralelo, aplicações de calendário amplamente utilizadas, como soluções de gestão de agenda e serviços de calendário online, facilitam a visualização
-e o registo de eventos, mas não resolvem diretamente o problema de construir automaticamente um horário com base em informação distribuída por vários utilizadores
-e restrições próprias do domínio. Assim, embora sejam úteis como ferramentas complementares, não substituem uma solução pensada especificamente para este contexto.
+\begin{itemize}
+    \item \textbf{Sistemas de Agendamento Linear e Individual (e.g., Calendly, Doodle):} Focam-se na marcação de eventos isolados ou fluxos um-para-um, permitindo a seleção de intervalos e o envio automático de confirmações. Contudo, carecem de lógica agregadora para matching, falhando na consolidação global de horários semanais recorrentes;
+    \item \textbf{Plataformas de Calendário e Agenda Eletrónica (e.g., Google Calendar, Microsoft Outlook):} Funcionam com eficácia como repositórios de eventos e ferramentas de partilha visual. Todavia, a sua arquitetura é essencialmente passiva, não integrando motores algorítmicos capazes de processar dados distribuídos e restrições paramétricas do domínio para inferir uma matriz horária otimizada.
+\end{itemize}
 
-A solução desenvolvida neste projeto posiciona-se, por isso, como uma plataforma orientada a um caso de uso mais específico, combinando funcionalidades de gestão
-de utilizadores, recolha de disponibilidades, definição de restrições e criação de propostas de horário. Em vez de atuar apenas como repositório de eventos,
-o sistema procura apoiar de forma ativa o processo de planeamento, servindo como base para uma automatização progressiva da criação de horários.
+A solução desenvolvida posiciona-se de forma intermédia e especializada face a estas alternativas. Em vez de atuar como um mero repositório estático de eventos, o sistema assume um papel ativo no processo de planeamento. A plataforma combina a gestão relacional de utilizadores, a ingestão descentralizada de disponibilidades e a orquestração de restrições parametrizáveis, estabelecendo uma infraestrutura robusta para a automatização progressiva e inteligente da criação de horários académicos.
+
 
 \section{Justificação da Solução Proposta}
 

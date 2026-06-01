@@ -30,29 +30,27 @@ O \textit{glm-ocr:q8\_0} foi inicialmente escolhido por ser leve, local e vocaci
 Já o \textit{qwen2.5vl:3b} destacou-se como o candidato mais promissor para interpretação de inputs visuais e textuais.
 
 \section{Resultados Obtidos com OCR e Multimodalidade}
+Os testes experimentais focaram-se na capacidade de extração de dados e na robustez de estruturação de ambos os modelos perante diferentes níveis de ruído no input.
 
-Os primeiros testes com o modelo \textit{glm-ocr:q8\_0} mostraram resultados positivos em cenários simples de texto digital limpo.
-Em imagens com informação estruturada, o modelo conseguiu ler corretamente nomes e blocos de disponibilidade.
-Também apresentou um comportamento aceitável em \textit{screenshots} e texto digital simples.
-
-No entanto, o modelo revelou limitações significativas quando foi necessário estruturar a informação ou lidar com dados menos controlados.
-Em tentativas de conversão para JSON, produziu saídas inválidas, alterou informação e traduziu dias da semana para inglês.
-Em fotografias manuscritas, o comportamento foi ainda menos robusto, tendo sido observadas alterações de horários, adição de linhas inexistentes e introdução de informação não presente na imagem.
-Concluiu-se, por isso, que o \textit{glm-ocr:q8\_0} pode ser útil como OCR simples, mas não constitui uma solução suficientemente fiável para servir de base única à funcionalidade pretendida.
-
-Posteriormente, foram realizados testes com o modelo \textit{qwen2.5vl:3b}, que apresentou um desempenho claramente superior, sobretudo em situações mais próximas de uso real.
-Nos testes com fotografias manuscritas, o modelo não se revelou perfeito, mas demonstrou um comportamento mais estável, evitando inventar dias ou horários inexistentes e preservando melhor a estrutura original da informação.
-Apesar de alguns erros ortográficos em palavras isoladas, os resultados foram globalmente mais consistentes.
-
-Para além das fotografias manuscritas, o \textit{qwen2.5vl:3b} foi também testado com imagens simples, \textit{screenshots} e texto livre, tendo mostrado capacidade para:
+\subsection{Avaliação do GLM-OCR (q8\_0)}
+O modelo demonstrou eficácia restrita a cenários controlados, exibindo as seguintes caraterísticas:
 \begin{itemize}
-    \item ler corretamente texto digital simples;
-    \item interpretar disponibilidades descritas em linguagem natural;
-    \item identificar indisponibilidades e preferências;
-    \item preservar a informação temporal essencial para posterior utilização no sistema.
+    \item \textbf{Pontos Fortes:} Desempenho positivo na leitura de texto digital limpo, tabelas estruturadas e \textit{screenshots}.
+    \item \textbf{Limitações Sémanticas:} Incapacidade de estruturar dados em formatos estritos (como JSON válido) e tendência para traduzir os dias da semana para inglês.
+    \item \textbf{Falhas em Manuscritos:} Elevada taxa de erro em fotografias de escrita manual, introduzindo linhas inexistentes e alterando horários originais.
+\end{itemize}
+Concluiu-se que o \textit{GLM-OCR} serve apenas como ferramenta de OCR simples, sendo inviável para a ingestão autónoma do sistema.
+
+\subsection{Avaliação do Qwen2.5-VL (3b)}
+O \textit{Qwen2.5-VL} apresentou um desempenho marcadamente superior, validando a abordagem \textit{vision-language} em cenários reais:
+\begin{itemize}
+    \item \textbf{Robustez Contextual:} Elevada estabilidade em registos manuscritas, preservando os intervalos temporais factuais sem inventar informação, apesar de pequenos erros ortográficos isolados.
+    \item \textbf{Versatilidade de Inputs:} Extração bem-sucedida a partir de texto livre, imagens e \textit{screenshots}.
+    \item \textbf{Interpretação Semântica:} Capacidade de compreender disponibilidades descritas em linguagem natural, mapear preferências e isolar indisponibilidades.
 \end{itemize}
 
-Com base nos resultados observados, o \textit{qwen2.5vl:3b} constitui, até ao momento, o melhor candidato para suportar uma futura funcionalidade de interpretação de disponibilidades a partir de texto e imagem.
+Face aos resultados obtidos, o \textit{Qwen2.5-VL (3b)} fixou-se como a solução ideal para suportar a futura componente de interpretação inteligente de disponibilidades.
+
 
 \section{Estado Atual da Componente de Áudio}
 
@@ -84,14 +82,13 @@ A solução mais promissora identificada até ao momento assenta nos seguintes f
     \item áudio $\rightarrow$ \textit{Whisper} + \textit{qwen2.5vl:3b}.
 \end{itemize}
 
-Esta abordagem permitiria acrescentar à aplicação uma forma mais flexível de recolha de disponibilidades, especialmente útil em contextos em que o utilizador dispõe da informação em formatos menos estruturados.
+Esta abordagem permitiria acrescentar à aplicação uma forma mais flexível de recolha de disponibilidades, especialmente útil em contextos que o utilizador dispõe da informação em formatos menos estruturados.
 Ao mesmo tempo, os resultados obtidos mostram que esta integração deverá ser feita com cuidado, prevendo sempre mecanismos de validação e confirmação por parte do utilizador, sobretudo em casos de manuscrito ou áudio.
 
 \section{Síntese do Estudo}
 
 O estudo realizado permitiu concluir que, até ao momento, não foi identificado um único modelo capaz de tratar de forma totalmente fiável todos os tipos de input considerados.
-Ainda assim, foi possível identificar uma abordagem tecnicamente promissora para evolução futura da solução,
-com destaque para o \textit{qwen2.5vl:3b} como principal candidato para imagem e texto, e para o \textit{Whisper} como etapa complementar no caso do áudio.
+Ainda assim, foi possível identificar uma abordagem tecnicamente promissora para evolução futura da solução, com destaque para o \textit{qwen2.5vl:3b} como principal candidato para imagem e texto, e para o \textit{Whisper} como etapa complementar no caso do áudio.
 
 Desta forma, esta linha de trabalho não constitui ainda uma funcionalidade concluída da versão beta,
 mas representa uma direção de evolução concreta e fundamentada para o projeto, alinhada com o objetivo de tornar o registo de disponibilidades mais natural, acessível e adaptável a diferentes formatos de entrada.

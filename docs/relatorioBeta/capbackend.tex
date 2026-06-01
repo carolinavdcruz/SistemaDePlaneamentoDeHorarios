@@ -71,28 +71,43 @@ Desta forma, as credenciais deixaram de ser armazenadas em texto simples, refor�
 
 \section{API REST Implementada}
 
-A API desenvolvida no backend foi desenhada para suportar os fluxos principais do sistema. Os endpoints existentes permitem realizar operações
-de registo, autenticação, consulta, associação de utilizadores, gestão de disponibilidades, gestão de restrições e criação de horários.
-
-Entre os principais endpoints implementados incluem-se:
-\begin{itemize}
-    \item verificação de disponibilidade do servidor;
-    \item criação e consulta de professores;
-    \item criação e consulta de alunos;
-    \item autenticação de utilizadores;
-    \item associação e desassociação de alunos a professores;
-    \item consulta dos alunos de um professor;
-    \item criação, remoção e consulta de disponibilidades;
-    \item criação e consulta de restrições;
-    \item criação de propostas de horário.
-\end{itemize}
-
-
-A utilização de uma API REST permitiu estabelecer um contrato claro entre o frontend e o backend, facilitando a integração progressiva da aplicação Android com a componente remota.
+A API desenvolvida no backend foi desenhada para suportar os fluxos principais do sistema.
 O formato JSON foi adotado como mecanismo de serialização dos dados, permitindo representar os pedidos e respostas de forma simples e consistente.
-Durante a evolução da versão beta, foi também introduzido um endpoint específico de autenticação, permitindo validar no backend as credenciais dos utilizadores.
-Esta alteração representou um passo importante na arquitetura da solução, uma vez que a validação do login deixou de depender da comparação local de dados no frontend,
-passando a ser tratada de forma centralizada na API.
+Durante a evolução da versão beta, foi também introduzido um endpoint específico de autenticação, permitindo validar no backend as credenciais dos utilizadores. Desta forma, a validação do login deixou de depender da comparação local de dados no frontend, passando a ser tratada de forma centralizada na API.
+
+
+\begin{table}[htbp]
+    \centering
+    \footnotesize
+    \caption{Rotas e endpoints da API REST implementados no backend Ktor.}
+    \label{tab:api_endpoints}
+
+    \newcolumntype{D}{>{\hsize=1.5\hsize\raggedright\arraybackslash}X}
+    \newcolumntype{E}{>{\hsize=0.5\hsize\raggedright\arraybackslash}X}
+
+    \renewcommand{\arraystretch}{1.1}
+
+    \begin{tabularx}{\textwidth}{llDE}
+\toprule
+\textbf{Método} & \textbf{Endpoint} & \textbf{Descrição} & \textbf{Entidades / Tabelas} \\ \midrule
+\textbf{GET}    & \texttt{/health} & Validação do estado operacional do servidor. & Sistema \\ \hline
+\textbf{POST}   & \texttt{/teachers} & Registo de professor com cifra BCrypt. & \texttt{TeacherTable} \\
+\textbf{GET}    & \texttt{/teachers} & Listagem global de professores. & \texttt{TeacherTable} \\ \hline
+\textbf{POST}   & \texttt{/students} & Registo de aluno (com/sem professor). & \texttt{StudentTable} \\
+\textbf{GET}    & \texttt{/students} & Listagem global de alunos. & \texttt{StudentTable} \\
+\textbf{POST}   & \texttt{/students/assign-teacher} & Associa um professor a um aluno. & \texttt{StudentTable} \\
+\textbf{POST}   & \texttt{/students/unassign-teacher/\{id\}} & Remove o vínculo de um aluno com o professor. & \texttt{StudentTable} \\
+\textbf{GET}    & \texttt{/students/by-teacher/\{id\}} & Filtra alunos por ID do professor. & \texttt{StudentTable} \\ \hline
+\textbf{POST}   & \texttt{/availability} & Cria intervalo de disponibilidade semanal. & \texttt{AvailabilityTable} \\
+\textbf{GET}    & \texttt{/availability} & Consulta disponibilidades por utilizador. & \texttt{AvailabilityTable} \\
+\textbf{DELETE} & \texttt{/availability} & Remoção em lote de disponibilidades. & \texttt{AvailabilityTable} \\ \hline
+\textbf{GET}    & \texttt{/restrictions/\{id\}} & Consulta regras de agendamento do professor. & \texttt{RestrictionsTable} \\
+\textbf{PUT}    & \texttt{/restrictions/\{id\}} & Atualiza/insere restrições do professor. & \texttt{RestrictionsTable} \\ \hline
+\textbf{POST}   & \texttt{/schedule/create} & Executa o algoritmo de geração de horários. & \texttt{ScheduleService} \\ \hline
+\textbf{POST}   & \texttt{/login} & Autentica utilizadores e valida credenciais. & \texttt{Teacher / Student} \\ \bottomrule
+    \end{tabularx}
+\end{table}
+
 
 \section{Criação de Horários no Backend}
 
@@ -105,11 +120,10 @@ A partir da informação armazenada, o backend:
     \item obtém as disponibilidades dos alunos associados;
     \item carrega as restrições definidas;
     \item divide os intervalos em blocos temporais adequados;
-    \item  cria sessões compatíveis com os dados disponíveis.
+    \item cria sessões compatíveis com os dados disponíveis.
 \end{itemize}
 
-Esta lógica permite que a proposta de horário seja construída de forma coerente e reutilizável, garantindo que diferentes clientes possam consumir
-o mesmo comportamento central sem necessidade de replicar o algoritmo localmente.
+Esta lógica permite que a proposta seja construída de forma coerente e reutilizável, garantindo que diferentes clientes possam consumir o mesmo comportamento central sem a necessidade de replicar o algoritmo localmente.
 
 \section{Validação com Postman}
 

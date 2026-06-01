@@ -68,18 +68,19 @@ fiquem disponíveis para posterior utilização na criação de horários.
 \section{Gestão de Restrições}
 
 Para além das disponibilidades, o sistema implementa um conjunto de restrições que orientam a construção do horário do professor.
-Estas restrições representam regras de negócio relevantes para o problema e são definidas a partir do perfil do professor.
+Estas restrições representam regras de negócio relevantes para o problema e são definidas exclusivamente a partir do perfil do professor.
 
-Na implementação atual, o professor pode configurar:
+A interface expõe campos de validação numérica para os seguintes parâmetros centrais:
 \begin{itemize}
-    \item número máximo de horas diárias;
-    \item duração de cada sessão;
-    \item número máximo de alunos por sessão;
-    \item número máximo de sessões por aluno por dia.
+    \item Carga horária máxima diária;
+    \item Duração de cada sessão;
+    \item Lotação máxima de alunos por sessão;
+    \item Limite de sessões diárias por aluno.
 \end{itemize}
 
 A introdução desta funcionalidade permitiu passar de uma simples compatibilização de horários para um problema de planeamento mais próximo do caso de uso real.
 As restrições são persistidas e utilizadas posteriormente pelo mecanismo de criação de horários, desempenhando um papel central na validação das sessões propostas.
+
 
 \section{Associação entre Alunos e Professores}
 
@@ -141,12 +142,8 @@ numa representação diretamente compreensível e utilizável pelo utilizador fi
 \section{Integração Progressiva com o Backend}
 
 Ao longo da implementação, foi também sendo reforçada a integração entre o frontend e o backend.
-Algumas operações começaram por ser validadas localmente, recorrendo à persistência em Room, e foram posteriormente adaptadas para consumir
-a API REST e interagir com o PostgreSQL.
+Algumas operações começaram por ser validadas localmente, recorrendo à persistência em Room, e foram posteriormente adaptadas para consumir a API REST e interagir com o PostgreSQL.
 
 Este processo de integração foi realizado de forma progressiva, permitindo validar cada funcionalidade antes da passagem completa para a componente remota.
-Como resultado, a versão beta já demonstra um nível significativo de comunicação entre a aplicação Android e o backend, particularmente nos fluxos de utilizadores,
-autenticação, disponibilidades, restrições e criação de horários.
 
-A implementação atual representa, assim, uma base funcional robusta sobre a qual será possível continuar a consolidar a solução até à versão final,
-reduzindo gradualmente a dependência de mecanismos locais auxiliares e reforçando o papel do backend como componente central do sistema.
+A implementação atual representa, assim, uma base funcional robusta sobre a qual será possível continuar a consolidar a solução até à versão final, reduzindo gradualmente a dependência de mecanismos locais auxiliares e reforçando o papel do backend como componente central do sistema.
