@@ -21,8 +21,11 @@ import com.example.frontend.ui.viewmodel.schedule.ScheduleViewModel
 import com.example.frontend.ui.viewmodel.student.ChooseTeacherViewModel
 import com.example.frontend.ui.viewmodel.teacher.RestrictionsViewModel
 import com.example.frontend.data.remote.api.StudentApi
+import com.example.frontend.data.remote.api.StudentRestrictionsApi
 import com.example.frontend.data.remote.api.TeacherApi
+import com.example.frontend.data.repository.StudentRestrictionsRepository
 import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
+import com.example.frontend.ui.viewmodel.student.StudentRestrictionsViewModel
 
 
 object AppModule {
@@ -61,6 +64,10 @@ object AppModule {
         StudentRepository(db().studentDao(), studentApi)
     }
 
+    private val studentRestrictionsRepository by lazy {
+        StudentRestrictionsRepository(studentRestrictionsApi)
+    }
+
     private val availabilityRepository by lazy {
         AvailabilityRepository(db().availabilityDao(), availabilityApi)
     }
@@ -71,6 +78,10 @@ object AppModule {
 
     private val timeSlotRepository by lazy {
         TimeSlotRepository(db().timeSlotDao())
+    }
+
+    private val studentRestrictionsApi by lazy {
+        StudentRestrictionsApi()
     }
 
     private val availabilityApi by lazy {
@@ -91,9 +102,9 @@ object AppModule {
 
     fun provideAvailabilityViewModel(): AvailabilityViewModel {
         return AvailabilityViewModel(
-            availabilityRepository
+            availabilityRepository,
+            studentRestrictionsRepository
         )
-
     }
 
     fun provideLoginViewModel(): LoginViewModel {
@@ -114,6 +125,10 @@ object AppModule {
 
     fun provideRestrictionsViewModel(): RestrictionsViewModel {
         return RestrictionsViewModel(restrictionsRepository)
+    }
+
+    fun provideStudentRestrictionsViewModel(): StudentRestrictionsViewModel {
+        return StudentRestrictionsViewModel(studentRestrictionsRepository)
     }
 
     fun provideScheduleViewModel(): ScheduleViewModel {

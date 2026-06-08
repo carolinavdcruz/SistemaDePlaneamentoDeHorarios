@@ -98,7 +98,7 @@ class RegisterViewModel (
                                 name = currentName,
                                 email = currentEmail,
                                 password = _password.value,
-                                maxDailySessions = 0
+                                maxDailySessions = 1,
                             )
                         )
                         sessionManager.saveSession(userId = savedId, role = OwnerType.STUDENT)

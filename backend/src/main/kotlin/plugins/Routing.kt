@@ -2,6 +2,7 @@ package plugins
 
 import database.tables.AvailabilityTable
 import database.tables.RestrictionsTable
+import database.tables.StudentRestrictionsTable
 import database.tables.StudentTable
 import database.tables.TeacherTable
 import io.ktor.http.HttpStatusCode
@@ -29,6 +30,8 @@ import model.Session
 import model.Student
 import model.StudentRequest
 import model.StudentResponse
+import model.StudentRestrictionsRequest
+import model.StudentRestrictionsResponse
 import model.TeacherRequest
 import model.TeacherResponse
 import model.TimeSlot
@@ -117,7 +120,7 @@ fun Application.configureRouting() {
                     name = request.name,
                     email = request.email,
                     //password = request.password,
-                    teacherId = request.teacherId
+                    teacherId = request.teacherId,
                 )
             }
             call.respond(HttpStatusCode.Created, created)
@@ -133,7 +136,7 @@ fun Application.configureRouting() {
                         name = it[StudentTable.name],
                         email = it[StudentTable.email],
                         //password = it[StudentTable.password],
-                        teacherId = it[StudentTable.teacherId]?.value
+                        teacherId = it[StudentTable.teacherId]?.value,
                     )
                 }
             }
@@ -391,6 +394,66 @@ fun Application.configureRouting() {
             call.respond(HttpStatusCode.OK, mapOf("message" to "Restrições guardadas com sucesso"))
         }
 
+        get("/studentRestrictions/{studentId}") {
+            val studentId = call.parameters["studentId"]?.toIntOrNull()
+                ?: return@get call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "studentId inválido")
+                )
+
+            val restrictions = transaction {
+                StudentRestrictionsTable
+                    .select { StudentRestrictionsTable.studentId eq studentId }
+                    .singleOrNull()
+                    ?.let {
+                        StudentRestrictionsResponse(
+                            studentId = it[StudentRestrictionsTable.studentId].value,
+                            weeklyHours = it[StudentRestrictionsTable.weeklyHours]
+                        )
+                    }
+            }
+
+            if (restrictions == null) {
+                call.respond(
+                    HttpStatusCode.NotFound,
+                    mapOf("error" to "Restrições do aluno não encontradas")
+                )
+                return@get
+            }
+
+            call.respond(HttpStatusCode.OK, restrictions)
+        }
+
+        put("/studentRestrictions/{studentId}") {
+            val studentId = call.parameters["studentId"]?.toIntOrNull()
+                ?: return@put call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "studentId inválido")
+                )
+
+            val request = call.receive<StudentRestrictionsRequest>()
+
+            val updatedRows = transaction {
+                StudentRestrictionsTable.update({ StudentRestrictionsTable.studentId eq studentId }) {
+                    it[weeklyHours] = request.weeklyHours
+                }
+            }
+
+            if (updatedRows == 0) {
+                transaction {
+                    StudentRestrictionsTable.insert {
+                        it[StudentRestrictionsTable.studentId] = studentId
+                        it[weeklyHours] = request.weeklyHours
+                    }
+                }
+            }
+
+            call.respond(
+                HttpStatusCode.OK,
+                mapOf("message" to "Restrições do aluno guardadas com sucesso")
+            )
+        }
+
         // POST /schedule/create
         // Cria horário para o professor com base nas disponibilidades
         post("/schedule/create") {
@@ -444,7 +507,7 @@ fun Application.configureRouting() {
                             name = it[StudentTable.name],
                             email = it[StudentTable.email],
                             teacherId = it[StudentTable.teacherId]?.value,
-                            maxDailySessions = it[StudentTable.maxDailySessions]
+                            maxDailySessions = it[StudentTable.maxDailySessions],
                         )
                     }
 
@@ -477,11 +540,21 @@ fun Application.configureRouting() {
                     student.id to slots
                 }
 
+                val studentWeeklyHours = students.associate { student ->
+                    val weeklyHours = StudentRestrictionsTable
+                        .select { StudentRestrictionsTable.studentId eq student.id }
+                        .singleOrNull()
+                        ?.get(StudentRestrictionsTable.weeklyHours)
+                        ?: 3
+
+                    student.id to weeklyHours
+                }
+
                 ScheduleService.create(
-                    teacherId = teacherId,
                     teacherSlots = teacherSlots,
                     students = students,
                     studentAvailabilities = studentAvailabilities,
+                    studentWeeklyHours = studentWeeklyHours,
                     restrictions = restrictions
                 ).map { session ->
                     ScheduleSessionResponse(

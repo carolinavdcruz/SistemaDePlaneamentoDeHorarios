@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import database.tables.AvailabilityTable
 import database.tables.RestrictionsTable
+import database.tables.StudentRestrictionsTable
 import database.tables.StudentTable
 import database.tables.TeacherTable
 import database.tables.TimeSlotTable
@@ -28,7 +29,8 @@ object DatabaseFactory {
                 StudentTable,
                 AvailabilityTable,
                 RestrictionsTable,
-                TimeSlotTable
+                TimeSlotTable,
+                StudentRestrictionsTable
             )
         }
     }

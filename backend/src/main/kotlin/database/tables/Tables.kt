@@ -42,3 +42,8 @@ object RestrictionsTable : IntIdTable("restrictions") {
     val maxParticipantsPerSession = integer("max_participants_per_session")
     val maxSessionsPerStudentPerDay = integer("max_sessions_per_student_per_day")
 }
+
+object StudentRestrictionsTable : IntIdTable("studentRestrictions") {
+    val studentId = reference("student_id", StudentTable)
+    val weeklyHours = integer("weekly_hours")
+}

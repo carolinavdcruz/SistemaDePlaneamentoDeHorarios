@@ -42,15 +42,17 @@ import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
 import com.example.frontend.ui.theme.White
 import com.example.frontend.ui.theme.lightOrange
+import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
 import com.example.frontend.ui.viewmodel.availability.TimeRangeInput
 
 @Composable
 fun AvailabilitySelector(
     ownerId: Int,
-    ownerType: OwnerType
+    ownerType: OwnerType,
+    viewModel: AvailabilityViewModel = remember { AppModule.provideAvailabilityViewModel() }
 ) {
+
     val context = LocalContext.current
-    val viewModel = remember { AppModule.provideAvailabilityViewModel() }
 
     LaunchedEffect(ownerId, ownerType) {
         viewModel.load(ownerId, ownerType)

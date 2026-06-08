@@ -41,7 +41,7 @@ data class StudentRequest(
     val name: String,
     val email: String,
     val password: String,
-    val teacherId: Int? = null
+    val teacherId: Int? = null,
 )
 
 @Serializable
@@ -50,7 +50,19 @@ data class StudentResponse(
     val name: String,
     val email: String,
     //val password: String,
-    val teacherId: Int?
+    val teacherId: Int?,
+)
+
+@Serializable
+data class StudentRestrictionsRequest (
+    val studentId: Int,
+    val weeklyHours: Int
+)
+
+@Serializable
+data class StudentRestrictionsResponse (
+    val studentId: Int,
+    val weeklyHours: Int
 )
 
 @Serializable

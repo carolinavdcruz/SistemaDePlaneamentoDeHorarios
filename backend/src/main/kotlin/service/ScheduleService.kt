@@ -8,16 +8,18 @@ import model.TimeSlot
 object ScheduleService {
 
     fun create(
-        teacherId: Int,
         teacherSlots: List<TimeSlot>,
         students: List<Student>,
         studentAvailabilities: Map<Int, List<TimeSlot>>,
+        studentWeeklyHours: Map<Int, Int>,
         restrictions: Restrictions
     ): List<Session> {
 
         val sessions = mutableListOf<Session>()
         val studentSessionsPerDay = mutableMapOf<Int, MutableMap<Int, Int>>()
         val teacherMinutesPerDay = mutableMapOf<Int, Int>()
+        val studentWeeklyMinutes = mutableMapOf<Int, Int>()
+
 
         // aluno com menos disponibilidade é atribuído primeiro
         val sortedStudents = students.sortedBy { student ->
@@ -51,9 +53,17 @@ object ScheduleService {
                 val countToday = studentDayMap.getOrDefault(slot.dayOfWeek, 0)
                 if (countToday >= restrictions.maxSessionsPerStudentPerDay) continue
 
+                val weeklyHours = studentWeeklyHours[student.id] ?: 3
+                val weeklyMinutes = weeklyHours * 60
+                val weeklyMinutesAlreadyUsed = studentWeeklyMinutes.getOrDefault(student.id, 0)
+
+                if (weeklyMinutesAlreadyUsed + restrictions.sessionDurationMinutes > weeklyMinutes) continue
+
                 // atribui
                 enrolled.add(student.id)
                 studentDayMap[slot.dayOfWeek] = countToday + 1
+                studentWeeklyMinutes[student.id] = weeklyMinutesAlreadyUsed + restrictions.sessionDurationMinutes
+
             }
 
             if (enrolled.isNotEmpty()) {

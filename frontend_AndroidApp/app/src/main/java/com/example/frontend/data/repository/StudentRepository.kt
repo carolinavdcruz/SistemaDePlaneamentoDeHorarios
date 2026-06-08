@@ -19,7 +19,8 @@ class StudentRepository(
                 StudentRequest(
                     name = student.name,
                     email = student.email,
-                    password = student.password
+                    password = student.password,
+                    teacherId = student.teacherId,
                 )
             )
             dao.insert(
@@ -29,7 +30,7 @@ class StudentRepository(
                     name = remote.name,
                     email = remote.email,
                     password = student.password,
-                    maxDailySessions = student.maxDailySessions
+                    maxDailySessions = student.maxDailySessions,
                 )
             )
             return remote.id
@@ -69,7 +70,7 @@ class StudentRepository(
                     email = it.email,
                     password = "",
                     teacherId = it.teacherId,
-                    maxDailySessions = 1
+                    maxDailySessions = 1,
                 )
             }
             dao.deleteByTeacherId(teacherId)

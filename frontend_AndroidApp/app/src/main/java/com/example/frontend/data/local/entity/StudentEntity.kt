@@ -10,5 +10,5 @@ data class StudentEntity(
     val name: String,
     val email: String,
     val password: String,
-    val maxDailySessions: Int
+    val maxDailySessions: Int,
 )

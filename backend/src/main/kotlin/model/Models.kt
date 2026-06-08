@@ -14,7 +14,7 @@ data class Student(
     val name: String,
     val email: String,
     val teacherId: Int? = null,
-    val maxDailySessions: Int = 1
+    val maxDailySessions: Int = 1,
 )
 
 data class Teacher(
@@ -43,4 +43,9 @@ data class Restrictions(
     val maxDailyHours: Int = 3,
     val maxParticipantsPerSession: Int = 5,
     val maxSessionsPerStudentPerDay: Int = 1
+)
+
+data class StudentRestrictions(
+    val studentId: Int,
+    val weeklyHours: Int
 )
