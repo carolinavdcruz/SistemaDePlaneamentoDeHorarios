@@ -98,24 +98,10 @@ fun HomeScreen(onStartClick: () -> Unit) {
                 .align(Alignment.Center),
             contentAlignment = Alignment.Center
         ) {
-            /*Surface(
-                color = botBody,
-                shape = RoundedCornerShape(40.dp),
-                modifier = Modifier.size(180.dp, 150.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.gt),
-                    contentDescription = "Robô SPH",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
-             */
             Surface(
-                color = Color.Transparent,
+                color = Color.White,
                 shape = RoundedCornerShape(40.dp),
-                modifier = Modifier.size(180.dp, 150.dp)
+                modifier = Modifier.size(200.dp)
             ) {
                 val context = LocalContext.current
                 AsyncImage(
@@ -125,10 +111,11 @@ fun HomeScreen(onStartClick: () -> Unit) {
                     contentDescription = "Robô SPH",
                     modifier = Modifier
                         .fillMaxSize()
-                        .wrapContentSize(Alignment.CenterStart, unbounded = true)
-                        .fillMaxWidth(1.5f), // duplica a largura para "esticar" para a direita
+                        .wrapContentSize(align = Alignment.CenterStart, unbounded = true)
+                        .size(700.dp)  // força o GIF a ocupar 500dp, fazendo crop extremo
+                        .offset(x = (-45).dp, y = (-30).dp),
                     contentScale = ContentScale.Crop,
-                    alignment =  Alignment.CenterEnd
+                    alignment = Alignment.Center
                 )
             }
 
