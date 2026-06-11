@@ -141,7 +141,7 @@ Para o aluno, foi organizada uma experiência centrada em:
 ### GMAIL
 
     test@example.com
-td@gmail.com
+td@example.com
 
 ### Pass
 

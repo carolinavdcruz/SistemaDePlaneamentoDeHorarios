@@ -1,86 +1,79 @@
+-- Apagar tabelas existentes
+DROP TABLE IF EXISTS "studentRestrictions" CASCADE;
+DROP TABLE IF EXISTS restrictions CASCADE;
+DROP TABLE IF EXISTS availability CASCADE;
+DROP TABLE IF EXISTS timeslots CASCADE;
+DROP TABLE IF EXISTS student CASCADE;
+DROP TABLE IF EXISTS teacher CASCADE;
 
--- USERS
-
+-- ==========================
+-- Teacher
+-- ==========================
 CREATE TABLE teacher (
-    id INTEGER PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
-    max_daily_hours INTEGER DEFAULT 3,
-    session_duration_minutes INTEGER DEFAULT 60,
-    max_participants_per_session INTEGER DEFAULT 5
+    password VARCHAR(255) NOT NULL
 );
 
--- PARTICIPANTS
-
+-- ==========================
+-- Student
+-- ==========================
 CREATE TABLE student (
-    id INTEGER PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
-    max_daily_sessions INTEGER DEFAULT 1,
-    teacher_id INTEGER,
+    password VARCHAR(255) NOT NULL,
+    teacher_id INTEGER REFERENCES teacher(id),
+    max_daily_sessions INTEGER DEFAULT 1
 );
 
--- AVAILABILITY
-CREATE TABLE availability (
-    id INTEGER PRIMARY KEY,
-    teacher_id INTEGER,
-    student_id INTEGER,
-
-    day_of_week INTEGER CHECK (day_of_week BETWEEN 1 AND 7),
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-
-    FOREIGN KEY (teacher_id) REFERENCES teacher(id),
-    FOREIGN KEY (student_id) REFERENCES student(id),
-
-    CHECK (
-        (teacher_id IS NOT NULL AND student_id IS NULL) OR
-        (teacher_id IS NULL AND student_id IS NOT NULL)
-    )
-);
-
--- TIMESLOTS
-
+-- ==========================
+-- Time Slots
+-- ==========================
 CREATE TABLE timeslots (
-    id INTEGER PRIMARY KEY,
-    day_of_week INTEGER CHECK (day_of_week BETWEEN 1 AND 7),
+    id SERIAL PRIMARY KEY,
+    day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 1 AND 7),
     start_time TIME NOT NULL,
     end_time TIME NOT NULL
 );
 
--- SCHEDULE
-
-CREATE TYPE schedule_status AS ENUM (
-    'CREATED',
-    'ACCEPTED',
-    'REJECTED'
-);
-
-CREATE TABLE schedules (
-    id INTEGER PRIMARY KEY,
-    teacher_id INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status schedule_status DEFAULT 'CREATED',
-
-    FOREIGN KEY (teacher_id) REFERENCES teacher(id)
-);
-
--- SESSIONS
-
-CREATE TABLE sessions (
-    id INTEGER PRIMARY KEY,
-    schedule_id INTEGER NOT NULL,
-    timeslot_id INTEGER NOT NULL,
-    max_capacity INTEGER DEFAULT 5,
-
-    FOREIGN KEY (schedule_id) REFERENCES schedules(id),
-    FOREIGN KEY (timeslot_id) REFERENCES timeslots(id)
-);
-
-CREATE TABLE session_enrollments (
+-- ==========================
+-- Availability
+-- ==========================
+CREATE TABLE availability (
     id SERIAL PRIMARY KEY,
-    session_id INTEGER REFERENCES sessions(id),
+    teacher_id INTEGER REFERENCES teacher(id),
     student_id INTEGER REFERENCES student(id),
-    enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(session_id, student_id) -- Impede aluno duplicado na mesma aula
+    day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 1 AND 7),
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+
+    CHECK (
+        (teacher_id IS NOT NULL AND student_id IS NULL)
+        OR
+        (teacher_id IS NULL AND student_id IS NOT NULL)
+    )
+);
+
+-- ==========================
+-- Teacher Restrictions
+-- ==========================
+CREATE TABLE restrictions (
+    id SERIAL PRIMARY KEY,
+    teacher_id INTEGER NOT NULL UNIQUE REFERENCES teacher(id),
+
+    max_daily_hours INTEGER NOT NULL,
+    session_duration_minutes INTEGER NOT NULL,
+    max_participants_per_session INTEGER NOT NULL,
+    max_sessions_per_student_per_day INTEGER NOT NULL
+);
+
+-- ==========================
+-- Student Restrictions
+-- ==========================
+CREATE TABLE "studentRestrictions" (
+    id SERIAL PRIMARY KEY,
+    student_id INTEGER NOT NULL REFERENCES student(id),
+    weekly_hours INTEGER NOT NULL
 );
