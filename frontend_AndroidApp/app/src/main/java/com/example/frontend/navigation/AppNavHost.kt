@@ -1,5 +1,7 @@
 package com.example.frontend.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -17,6 +19,7 @@ import com.example.frontend.ui.screens.LoginScreen
 import com.example.frontend.ui.screens.ProfileScreen
 import com.example.frontend.ui.screens.RegisterScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavHost(navController: NavHostController) {
 
@@ -80,29 +83,29 @@ fun AppNavHost(navController: NavHostController) {
         }
 
         composable(Routes.DASHBOARD) {
-
             val userRole = sessionManager.getUserRole()
             val userId = sessionManager.getUserId()
 
-            if (userRole != null && userId != -1) {
-                DashboardScreen(
-                    navController = navController,
-                    userRole = userRole,
-                    userId = userId,
-                    onSignOutClick = {
-                        sessionManager.clearSession()
-                        navController.navigate(Routes.LOGIN) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    }
-                )
-            } else {
+            if (userRole == null || userId == -1) {
                 LaunchedEffect(Unit) {
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(Routes.DASHBOARD) { inclusive = true }
                     }
                 }
+                return@composable
             }
+
+            DashboardScreen(
+                navController = navController,
+                userRole = userRole,
+                userId = userId,
+                onSignOutClick = {
+                    sessionManager.clearSession()
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(Routes.PROFILE) {

@@ -18,15 +18,20 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.request.repeatCount
 import com.example.frontend.R
 import com.example.frontend.ui.theme.Black
 import com.example.frontend.ui.theme.White
@@ -42,7 +47,7 @@ fun HomeScreen(onStartClick: () -> Unit) {
 
 
     // Estado para o gesto de puxar para cima
-    var offsetY by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableFloatStateOf(0f) }
     val draggableState = rememberDraggableState { delta ->
         if (offsetY + delta <= 0) {
             offsetY += delta
@@ -93,7 +98,7 @@ fun HomeScreen(onStartClick: () -> Unit) {
                 .align(Alignment.Center),
             contentAlignment = Alignment.Center
         ) {
-            Surface(
+            /*Surface(
                 color = botBody,
                 shape = RoundedCornerShape(40.dp),
                 modifier = Modifier.size(180.dp, 150.dp)
@@ -103,6 +108,27 @@ fun HomeScreen(onStartClick: () -> Unit) {
                     contentDescription = "Robô SPH",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
+                )
+            }
+
+             */
+            Surface(
+                color = Color.Transparent,
+                shape = RoundedCornerShape(40.dp),
+                modifier = Modifier.size(180.dp, 150.dp)
+            ) {
+                val context = LocalContext.current
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(R.drawable.descarregar)
+                        .build(),
+                    contentDescription = "Robô SPH",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.CenterStart, unbounded = true)
+                        .fillMaxWidth(1.5f), // duplica a largura para "esticar" para a direita
+                    contentScale = ContentScale.Crop,
+                    alignment =  Alignment.CenterEnd
                 )
             }
 
