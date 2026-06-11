@@ -132,30 +132,26 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 
 **Semana 14 (25/05 - 31/05)**
-* [ ] Correção de erros e melhorias na aplicação.
+* [x] Correção de erros e melhorias na aplicação.
 * [x] Preparação da versão beta.
-* [ ] Preparação da demonstração da aplicação.
-* [ ] Testes completos do fluxo de criação de horários.
+* [x] Preparação da demonstração da aplicação.
 
 
 ### Fase 5: Integrações, Versão Beta e Finalização
 **Semana 15 (01/06 - 07/06)**
-* [ ] Entrega do Relatório Beta e da demonstração da aplicação.
-* [ ] Implementação da integração com Google Calendar.
-* [ ] Criação automática de eventos no calendário do utilizador.
-
+* [x] Entrega do Relatório Beta e da demonstração da aplicação.
+* [x] Implementação da integração com Google Calendar.
+* [x] Testes completos do fluxo de criação de horários.
 
 
 *MILESTONE: Entrega da Versão Beta (01/06)*
 
-* [ ] Entrega do Relatório Beta e da demonstração da aplicação.
-* [ ]
-
+* [x] Entrega do Relatório Beta e da demonstração da aplicação.
 
 
 **Semana 16 (08/06 - 14/06)**
 * [ ] Implementação do envio de emails aos participantes.
-* [ ] Implementação da geração automática de notificações de horário.
+* [ ] Implementação da criação automática de notificações de horário.
 
 
 
