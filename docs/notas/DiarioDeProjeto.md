@@ -151,7 +151,8 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 **Semana 16 (08/06 - 14/06)**
 * [ ] Implementação do envio de emails aos participantes.
-* [ ] Implementação da criação automática de notificações de horário.
+* [ ] Histórico
+* [ ] Recorrência
 
 
 
@@ -164,7 +165,7 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 **Semana 18 (22/06 - 28/06)**
 * [ ] Melhorias de usabilidade na interface da aplicação.
 * [ ] Otimização do desempenho do algoritmo de planeamento.
-
+* [ ] Confirmação da aula ser dada
 
 
 **Semana 19 (29/06 - 05/07)**
