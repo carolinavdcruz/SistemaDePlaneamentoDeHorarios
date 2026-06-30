@@ -114,7 +114,8 @@ data class LoginResponse(
     val ownerType: OwnerType
 )
 
-// Lessons / histórico / recorrência / presenças
+// ---- Lessons / histórico / recorrência / presenças ----
+
 @Serializable
 enum class RecurrenceType { NONE, WEEKLY }
 
@@ -148,4 +149,32 @@ data class LessonResponse(
 @Serializable
 data class MarkAttendanceRequest(
     val attended: Boolean
+)
+
+@Serializable
+data class UpdateLessonRequest(
+    val date: String? = null,        // "2026-09-14" - se vier, desliga a aula da série
+    val startTime: String? = null,
+    val endTime: String? = null
+)
+
+@Serializable
+data class CancelSeriesResponse(
+    val cancelledCount: Int
+)
+
+@Serializable
+data class LessonConflictResponse(
+    val error: String,
+    val conflictingLessonId: Int
+)
+
+@Serializable
+data class AttendanceSummaryResponse(
+    val studentId: Int,
+    val totalLessons: Int,
+    val attended: Int,
+    val missed: Int,
+    val pending: Int,        // aulas ainda não marcadas (attended == null)
+    val attendanceRate: Double // attended / (attended + missed), 0.0 se não houver nenhuma marcada
 )

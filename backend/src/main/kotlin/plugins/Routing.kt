@@ -52,6 +52,10 @@ import model.LoginRequest
 import model.LoginResponse
 import model.MarkAttendanceRequest
 import model.OwnerType
+import model.UpdateLessonRequest
+import model.CancelSeriesResponse
+import model.LessonConflictResponse
+import model.AttendanceSummaryResponse
 import model.Restrictions
 import model.RestrictionsRequest
 import model.RestrictionsResponse
@@ -677,13 +681,11 @@ fun Application.configureRouting() {
                                 startTime = row[AvailabilityTable.startTime],
                                 endTime = row[AvailabilityTable.endTime],
                                 slotDurationMinutes = restrictions.sessionDurationMinutes.toLong()
-                            ).map { slot ->
-                                TimeSlot(
-                                    dayOfWeek = slot.dayOfWeek,
-                                    startTime = slot.startTime,
-                                    endTime = slot.endTime
-                                )
-                            }
+                            ).map { slot -> TimeSlot(
+                                dayOfWeek = slot.dayOfWeek,
+                                startTime = slot.startTime,
+                                endTime = slot.endTime
+                            ) }
                         }
                 }
 
@@ -760,6 +762,98 @@ fun Application.configureRouting() {
                 return@patch
             }
             call.respond(HttpStatusCode.OK, mapOf("message" to "Presença atualizada com sucesso"))
+        }
+
+        // GET /lessons/students/{studentId}/attendance-summary
+        // Resumo de presenças do aluno (todas as aulas, qualquer professor).
+        get("/lessons/students/{studentId}/attendance-summary") {
+            val studentId = call.parameters["studentId"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "studentId inválido"))
+
+            val summary = LessonService.getAttendanceSummary(studentId)
+            call.respond(
+                HttpStatusCode.OK,
+                AttendanceSummaryResponse(
+                    studentId = summary.studentId,
+                    totalLessons = summary.totalLessons,
+                    attended = summary.attended,
+                    missed = summary.missed,
+                    pending = summary.pending,
+                    attendanceRate = summary.attendanceRate
+                )
+            )
+        }
+
+        // GET /lessons/{lessonId}
+        // Devolve uma única aula pelo id.
+        get("/lessons/{lessonId}") {
+            val lessonId = call.parameters["lessonId"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "lessonId inválido"))
+
+            val lesson = LessonService.getById(lessonId)
+            if (lesson == null) {
+                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Aula não encontrada"))
+                return@get
+            }
+            call.respond(HttpStatusCode.OK, lesson.toResponse())
+        }
+
+        // DELETE /lessons/series/{seriesId}
+        // Cancela todas as ocorrências SCHEDULED de uma série de recorrência.
+        // Não apaga histórico, só marca status = CANCELLED.
+        delete("/lessons/series/{seriesId}") {
+            val seriesId = call.parameters["seriesId"]
+                ?: return@delete call.respond(HttpStatusCode.BadRequest, mapOf("error" to "seriesId inválido"))
+
+            val cancelledCount = LessonService.cancelSeries(seriesId)
+            call.respond(HttpStatusCode.OK, CancelSeriesResponse(cancelledCount))
+        }
+
+        // PATCH /lessons/{lessonId}/cancel
+        // Cancela uma única aula (não mexe nas restantes da série, se houver).
+        patch("/lessons/{lessonId}/cancel") {
+            val lessonId = call.parameters["lessonId"]?.toIntOrNull()
+                ?: return@patch call.respond(HttpStatusCode.BadRequest, mapOf("error" to "lessonId inválido"))
+
+            val cancelled = LessonService.cancelLesson(lessonId)
+            if (!cancelled) {
+                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Aula não encontrada"))
+                return@patch
+            }
+            call.respond(HttpStatusCode.OK, mapOf("message" to "Aula cancelada com sucesso"))
+        }
+
+        // PATCH /lessons/{lessonId}
+        // Edita data/hora de UMA ocorrência isolada (não afeta o resto da série).
+        // Ao editar, a aula deixa de pertencer à série (seriesId -> null).
+        // Body JSON esperado (todos os campos opcionais):
+        // { "date": "2026-09-14", "startTime": "10:00", "endTime": "11:00" }
+        patch("/lessons/{lessonId}") {
+            val lessonId = call.parameters["lessonId"]?.toIntOrNull()
+                ?: return@patch call.respond(HttpStatusCode.BadRequest, mapOf("error" to "lessonId inválido"))
+            val request = call.receive<UpdateLessonRequest>()
+
+            val result = LessonService.updateLesson(
+                lessonId = lessonId,
+                date = request.date?.let { LocalDate.parse(it) },
+                startTime = request.startTime?.let { LocalTime.parse(it) },
+                endTime = request.endTime?.let { LocalTime.parse(it) }
+            )
+
+            when (result) {
+                is LessonService.UpdateLessonResult.NotFound ->
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to "Aula não encontrada"))
+                is LessonService.UpdateLessonResult.Conflict ->
+                    call.respond(
+                        HttpStatusCode.Conflict,
+                        LessonConflictResponse(
+                            error = "O professor já tem outra aula nesse horário",
+                            conflictingLessonId = result.conflictingLessonId
+                        )
+                    )
+                is LessonService.UpdateLessonResult.Success ->
+                    call.respond(HttpStatusCode.OK, result.lesson.toResponse())
+            }
         }
 
         post("/login") {

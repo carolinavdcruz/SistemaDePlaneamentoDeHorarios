@@ -21,6 +21,8 @@ import com.example.frontend.ui.viewmodel.schedule.ScheduleViewModel
 import com.example.frontend.ui.viewmodel.student.ChooseTeacherViewModel
 import com.example.frontend.ui.viewmodel.teacher.RestrictionsViewModel
 import com.example.frontend.data.remote.api.StudentApi
+import com.example.frontend.data.remote.api.LessonApi
+import com.example.frontend.ui.viewmodel.lesson.LessonViewModel
 import com.example.frontend.data.remote.api.StudentRestrictionsApi
 import com.example.frontend.data.remote.api.TeacherApi
 import com.example.frontend.data.repository.StudentRestrictionsRepository
@@ -92,6 +94,10 @@ object AppModule {
         ScheduleApi()
     }
 
+    private val lessonApi by lazy {
+        LessonApi()
+    }
+
     fun provideStudentViewModel(): StudentViewModel {
         return StudentViewModel(studentRepository)
     }
@@ -136,6 +142,10 @@ object AppModule {
             scheduleApi = scheduleApi,
             studentRepository = studentRepository,
         )
+    }
+
+    fun provideLessonViewModel(): LessonViewModel {
+        return LessonViewModel(lessonApi)
     }
 
 }
