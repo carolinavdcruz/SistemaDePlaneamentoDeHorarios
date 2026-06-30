@@ -1,7 +1,9 @@
 package database.tables
 
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.javatime.date
 import org.jetbrains.exposed.sql.javatime.time
+import org.jetbrains.exposed.sql.javatime.timestamp
 
 object TeacherTable : IntIdTable("teacher") {
     val name = varchar("name", 100)
@@ -46,4 +48,25 @@ object RestrictionsTable : IntIdTable("restrictions") {
 object StudentRestrictionsTable : IntIdTable("studentRestrictions") {
     val studentId = reference("student_id", StudentTable)
     val weeklyHours = integer("weekly_hours")
+}
+
+// status de uma aula concreta (com data)
+enum class LessonStatus { SCHEDULED, CANCELLED, COMPLETED }
+
+object LessonTable : IntIdTable("lesson") {
+    val teacherId = reference("teacher_id", TeacherTable)
+    // agrupa todas as ocorrências geradas pela mesma recorrência (null = aula avulsa)
+    val seriesId = varchar("series_id", 36).nullable()
+    val date = date("date")
+    val startTime = time("start_time")
+    val endTime = time("end_time")
+    val status = enumerationByName("status", 20, LessonStatus::class).default(LessonStatus.SCHEDULED)
+}
+
+object LessonStudentTable : IntIdTable("lesson_student") {
+    val lessonId = reference("lesson_id", LessonTable)
+    val studentId = reference("student_id", StudentTable)
+    // null = ainda não marcado, true = presente, false = faltou
+    val attended = bool("attended").nullable()
+    val attendedAt = timestamp("attended_at").nullable()
 }

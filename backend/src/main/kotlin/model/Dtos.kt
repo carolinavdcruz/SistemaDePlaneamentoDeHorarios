@@ -113,3 +113,39 @@ data class LoginResponse(
     val userId: Int,
     val ownerType: OwnerType
 )
+
+// Lessons / histórico / recorrência / presenças
+@Serializable
+enum class RecurrenceType { NONE, WEEKLY }
+
+@Serializable
+data class GenerateLessonsRequest(
+    val teacherId: Int,
+    val startDate: String,           // "2026-09-07" (segunda-feira da semana de início)
+    val recurrence: RecurrenceType = RecurrenceType.WEEKLY,
+    val occurrences: Int = 1         // nº de semanas a gerar (1 = só essa semana)
+)
+
+@Serializable
+data class LessonStudentResponse(
+    val studentId: Int,
+    val attended: Boolean?,
+    val attendedAt: String?
+)
+
+@Serializable
+data class LessonResponse(
+    val id: Int,
+    val teacherId: Int,
+    val seriesId: String?,
+    val date: String,                // "2026-09-07"
+    val startTime: String,
+    val endTime: String,
+    val status: String,
+    val students: List<LessonStudentResponse>
+)
+
+@Serializable
+data class MarkAttendanceRequest(
+    val attended: Boolean
+)

@@ -39,13 +39,18 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.delete
+import io.ktor.server.routing.patch
 import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
 import model.AssignTeacherRequest
 import model.AvailabilityRequest
 import model.AvailabilityResponse
+import model.GenerateLessonsRequest
+import model.LessonResponse
+import model.LessonStudentResponse
 import model.LoginRequest
 import model.LoginResponse
+import model.MarkAttendanceRequest
 import model.OwnerType
 import model.Restrictions
 import model.RestrictionsRequest
@@ -70,7 +75,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.mindrot.jbcrypt.BCrypt
 import service.AvailabilityService
+import service.LessonService
 import service.ScheduleService
+import java.time.LocalDate
 import java.time.LocalTime
 
 @Suppress("NewApi")
@@ -603,6 +610,158 @@ fun Application.configureRouting() {
             call.respond(HttpStatusCode.OK, response)
         }
 
+        // POST /lessons/generate
+        // Gera e PERSISTE aulas concretas (com data) a partir das disponibilidades/restrições
+        // do professor, opcionalmente repetindo a mesma semana N vezes (recorrência).
+        // Body JSON esperado:
+        // {
+        //   "teacherId": 1,
+        //   "startDate": "2026-09-07",   <- segunda-feira da semana de início
+        //   "recurrence": "WEEKLY",      <- "NONE" ou "WEEKLY"
+        //   "occurrences": 4             <- nº de semanas a gerar
+        // }
+        post("/lessons/generate") {
+            val request = call.receive<GenerateLessonsRequest>()
+            val teacherId = request.teacherId
+            val startDate = LocalDate.parse(request.startDate)
+            val occurrences = if (request.recurrence == model.RecurrenceType.NONE) 1 else request.occurrences.coerceAtLeast(1)
+
+            val sessions = transaction {
+                val restrictionsRow = RestrictionsTable
+                    .select { RestrictionsTable.teacherId eq teacherId }
+                    .singleOrNull() ?: return@transaction null
+
+                val restrictions = Restrictions(
+                    teacherId = teacherId,
+                    maxDailyHours = restrictionsRow[RestrictionsTable.maxDailyHours],
+                    sessionDurationMinutes = restrictionsRow[RestrictionsTable.sessionDurationMinutes],
+                    maxParticipantsPerSession = restrictionsRow[RestrictionsTable.maxParticipantsPerSession],
+                    maxSessionsPerStudentPerDay = restrictionsRow[RestrictionsTable.maxSessionsPerStudentPerDay]
+                )
+
+                val teacherSlots = AvailabilityTable
+                    .select { AvailabilityTable.teacherId eq teacherId }
+                    .flatMap { row ->
+                        AvailabilityService.splitIntoSlots(
+                            dayOfWeek = row[AvailabilityTable.dayOfWeek],
+                            startTime = row[AvailabilityTable.startTime],
+                            endTime = row[AvailabilityTable.endTime],
+                            slotDurationMinutes = restrictions.sessionDurationMinutes.toLong()
+                        ).map { slot ->
+                            TimeSlot(
+                                dayOfWeek = slot.dayOfWeek,
+                                startTime = slot.startTime,
+                                endTime = slot.endTime
+                            )
+                        }
+                    }
+
+                val students = StudentTable
+                    .select { StudentTable.teacherId eq teacherId }
+                    .map {
+                        Student(
+                            id = it[StudentTable.id].value,
+                            name = it[StudentTable.name],
+                            email = it[StudentTable.email],
+                            teacherId = it[StudentTable.teacherId]?.value,
+                            maxDailySessions = it[StudentTable.maxDailySessions]
+                        )
+                    }
+
+                val studentAvailabilities = students.associate { student ->
+                    student.id to AvailabilityTable
+                        .select { AvailabilityTable.studentId eq student.id }
+                        .flatMap { row ->
+                            AvailabilityService.splitIntoSlots(
+                                dayOfWeek = row[AvailabilityTable.dayOfWeek],
+                                startTime = row[AvailabilityTable.startTime],
+                                endTime = row[AvailabilityTable.endTime],
+                                slotDurationMinutes = restrictions.sessionDurationMinutes.toLong()
+                            ).map { slot ->
+                                TimeSlot(
+                                    dayOfWeek = slot.dayOfWeek,
+                                    startTime = slot.startTime,
+                                    endTime = slot.endTime
+                                )
+                            }
+                        }
+                }
+
+                val studentWeeklyHours = students.associate { student ->
+                    student.id to (StudentRestrictionsTable
+                        .select { StudentRestrictionsTable.studentId eq student.id }
+                        .singleOrNull()
+                        ?.get(StudentRestrictionsTable.weeklyHours) ?: 3)
+                }
+
+                ScheduleService.create(
+                    teacherSlots = teacherSlots,
+                    students = students,
+                    studentAvailabilities = studentAvailabilities,
+                    studentWeeklyHours = studentWeeklyHours,
+                    restrictions = restrictions
+                )
+            }
+
+            if (sessions == null) {
+                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Restrições do professor não encontradas"))
+                return@post
+            }
+
+            val lessons = LessonService.persistRecurring(
+                teacherId = teacherId,
+                sessions = sessions,
+                startDate = startDate,
+                occurrences = occurrences
+            )
+
+            call.respond(HttpStatusCode.Created, lessons.map { it.toResponse() })
+        }
+
+        // GET /lessons/history?teacherId=1&from=2026-09-01&to=2026-09-30
+        // Devolve as aulas de um professor num intervalo de datas.
+        get("/lessons/history") {
+            val teacherId = call.request.queryParameters["teacherId"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "teacherId inválido"))
+            val from = call.request.queryParameters["from"]?.let { LocalDate.parse(it) }
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "from inválido"))
+            val to = call.request.queryParameters["to"]?.let { LocalDate.parse(it) }
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "to inválido"))
+
+            val lessons = LessonService.getHistory(teacherId, from, to)
+            call.respond(HttpStatusCode.OK, lessons.map { it.toResponse() })
+        }
+
+        // GET /lessons/week?teacherId=1&date=2026-09-10
+        // Devolve o horário (todas as aulas) da semana (segunda a domingo) que contém `date`.
+        get("/lessons/week") {
+            val teacherId = call.request.queryParameters["teacherId"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "teacherId inválido"))
+            val date = call.request.queryParameters["date"]?.let { LocalDate.parse(it) }
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "date inválido"))
+
+            val lessons = LessonService.getHistoryForWeek(teacherId, date)
+            call.respond(HttpStatusCode.OK, lessons.map { it.toResponse() })
+        }
+
+        // PATCH /lessons/{lessonId}/students/{studentId}/attendance
+        // Marca presença/falta de um aluno numa aula concreta.
+        // Body JSON esperado: { "attended": true }
+        patch("/lessons/{lessonId}/students/{studentId}/attendance") {
+            val lessonId = call.parameters["lessonId"]?.toIntOrNull()
+                ?: return@patch call.respond(HttpStatusCode.BadRequest, mapOf("error" to "lessonId inválido"))
+            val studentId = call.parameters["studentId"]?.toIntOrNull()
+                ?: return@patch call.respond(HttpStatusCode.BadRequest, mapOf("error" to "studentId inválido"))
+            val request = call.receive<MarkAttendanceRequest>()
+
+            val updated = LessonService.markAttendance(lessonId, studentId, request.attended)
+            if (!updated) {
+                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Aluno não encontrado nesta aula"))
+                return@patch
+            }
+            call.respond(HttpStatusCode.OK, mapOf("message" to "Presença atualizada com sucesso"))
+        }
+
         post("/login") {
             val request = call.receive<LoginRequest>()
 
@@ -644,3 +803,20 @@ fun Application.configureRouting() {
 
     }
 }
+
+private fun model.Lesson.toResponse() = LessonResponse(
+    id = id,
+    teacherId = teacherId,
+    seriesId = seriesId,
+    date = date.toString(),
+    startTime = startTime.toString(),
+    endTime = endTime.toString(),
+    status = status.name,
+    students = students.map {
+        LessonStudentResponse(
+            studentId = it.studentId,
+            attended = it.attended,
+            attendedAt = it.attendedAt?.toString()
+        )
+    }
+)

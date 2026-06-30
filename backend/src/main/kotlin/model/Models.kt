@@ -49,3 +49,20 @@ data class StudentRestrictions(
     val studentId: Int,
     val weeklyHours: Int
 )
+
+data class Lesson(
+    val id: Int,
+    val teacherId: Int,
+    val seriesId: String?,
+    val date: java.time.LocalDate,
+    val startTime: LocalTime,
+    val endTime: LocalTime,
+    val status: database.tables.LessonStatus,
+    val students: List<LessonStudent>
+)
+
+data class LessonStudent(
+    val studentId: Int,
+    val attended: Boolean?,
+    val attendedAt: java.time.Instant?
+)
