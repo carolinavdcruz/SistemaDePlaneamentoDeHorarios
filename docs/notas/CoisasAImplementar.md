@@ -1,6 +1,6 @@
 # Coisas a Implementar
 
-[ ] Os alunos deveriam poder definir quantas horas querem ir por semana
+[x] Os alunos deveriam poder definir quantas horas querem ir por semana
 
 [x] Quando selecionado o prof deveria ficar visivel na lista de profs no perfil dos alunos qual é o deles
 [x] Dá para mudar de prof se necessário

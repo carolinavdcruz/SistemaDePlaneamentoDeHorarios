@@ -129,3 +129,59 @@ data class LoginResponse(
     val userId: Int,
     val ownerType: String
 )
+
+// ---- Lessons / histórico / recorrência / presenças ----
+
+@Serializable
+data class GenerateLessonsRequest(
+    val teacherId: Int,
+    val startDate: String,
+    val recurrence: String = "WEEKLY", // "NONE" ou "WEEKLY"
+    val occurrences: Int = 1
+)
+
+@Serializable
+data class LessonStudentResponse(
+    val studentId: Int,
+    val attended: Boolean?,
+    val attendedAt: String?
+)
+
+@Serializable
+data class LessonResponse(
+    val id: Int,
+    val teacherId: Int,
+    val seriesId: String?,
+    val date: String,
+    val startTime: String,
+    val endTime: String,
+    val status: String,
+    val students: List<LessonStudentResponse>
+)
+
+@Serializable
+data class MarkAttendanceRequest(
+    val attended: Boolean
+)
+
+@Serializable
+data class UpdateLessonRequest(
+    val date: String? = null,
+    val startTime: String? = null,
+    val endTime: String? = null
+)
+
+@Serializable
+data class CancelSeriesResponse(
+    val cancelledCount: Int
+)
+
+@Serializable
+data class AttendanceSummaryResponse(
+    val studentId: Int,
+    val totalLessons: Int,
+    val attended: Int,
+    val missed: Int,
+    val pending: Int,
+    val attendanceRate: Double
+)

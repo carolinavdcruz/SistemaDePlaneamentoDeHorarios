@@ -17,6 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -26,13 +30,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -155,6 +162,10 @@ fun GenerateScheduleButton(teacherId: Int) {
                     Text("Aceitar", fontSize = 14.sp, fontWeight = FontWeight.Medium)
                 }
             }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Persistir como aulas concretas (data + recorrência semanal opcional)
+            RecurrenceGenerateSection(teacherId = teacherId)
             Spacer(modifier = Modifier.height(12.dp))
         }
 
@@ -427,6 +438,129 @@ fun WeeklyScheduleView(
                 sessions = grouped[day].orEmpty().sortedBy { it.startTime },
                 studentNames = studentNames
             )
+        }
+    }
+}
+
+/**
+ * Secção para persistir o horário gerado como aulas concretas, com data de início
+ * e opção de repetir a mesma semana N vezes (recorrência tipo Google Calendar).
+ * Usa LessonViewModel/POST /lessons/generate (separado do fluxo "Aceitar" com o
+ * Google Calendar acima, que continua a usar o ScheduleViewModel).
+ */
+@Composable
+fun RecurrenceGenerateSection(teacherId: Int) {
+    val lessonViewModel = remember { com.example.frontend.AppModule.provideLessonViewModel() }
+    val lessons by lessonViewModel.lessons.collectAsState()
+    val isLoading by lessonViewModel.isLoading.collectAsState()
+    val errorMessage by lessonViewModel.errorMessage.collectAsState()
+
+    var startDate by remember { mutableStateOf("") } // "2026-09-07"
+    var repeatEnabled by remember { mutableStateOf(false) }
+    var occurrences by remember { mutableStateOf(4) }
+
+    Surface(
+        color = CardBackground.copy(alpha = 0.5f),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, InputBorder),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                "Gerar e gravar aulas",
+                color = White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                "Cria aulas com data real (segunda-feira da semana de início)",
+                color = TextSecondary,
+                fontSize = 12.sp
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = startDate,
+                onValueChange = { startDate = it },
+                label = { Text("Data de início (segunda-feira, AAAA-MM-DD)") },
+                placeholder = { Text("2026-09-07") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Repetir semanalmente", color = White, fontSize = 14.sp)
+                Switch(
+                    checked = repeatEnabled,
+                    onCheckedChange = { repeatEnabled = it },
+                    colors = SwitchDefaults.colors(checkedThumbColor = AccentPurple)
+                )
+            }
+
+            if (repeatEnabled) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text("Nº de semanas:", color = TextSecondary, fontSize = 13.sp)
+                    IconButton(onClick = { if (occurrences > 1) occurrences-- }) {
+                        Icon(Icons.Default.Refresh, contentDescription = null, tint = TextSecondary)
+                    }
+                    Text(occurrences.toString(), color = White, fontWeight = FontWeight.Bold)
+                    IconButton(onClick = { if (occurrences < 52) occurrences++ }) {
+                        Icon(Icons.Default.DateRange, contentDescription = null, tint = AccentPurple)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (errorMessage != null) {
+                Text(errorMessage ?: "", color = Red, fontSize = 13.sp, modifier = Modifier.padding(bottom = 8.dp))
+            }
+
+            Button(
+                onClick = {
+                    lessonViewModel.generate(
+                        teacherId = teacherId,
+                        startDate = startDate,
+                        recurrence = if (repeatEnabled) "WEEKLY" else "NONE",
+                        occurrences = if (repeatEnabled) occurrences else 1
+                    )
+                },
+                enabled = !isLoading && startDate.isNotBlank(),
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = StatusActive),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(color = White, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                } else {
+                    Text(
+                        if (repeatEnabled) "Gravar e repetir $occurrences semanas" else "Gravar esta semana",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            if (lessons.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    "${lessons.size} aula(s) gravada(s) com sucesso",
+                    color = StatusActive,
+                    fontSize = 13.sp
+                )
+            }
         }
     }
 }

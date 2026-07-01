@@ -33,8 +33,22 @@ fun MyStudentsScreen(
     val viewModel = remember { AppModule.provideStudentViewModel() }
     val students by viewModel.students.collectAsState()
 
+    // Navegação simples dentro do próprio ecrã (sem rota no NavHost),
+    // seguindo o mesmo padrão usado no resto da app (ex: ChooseTeacherScreen).
+    var selectedStudent by remember { mutableStateOf<com.example.frontend.data.local.entity.StudentEntity?>(null) }
+
     LaunchedEffect(teacherId) {
         viewModel.loadStudentsByTeacherId(teacherId)
+    }
+
+    if (selectedStudent != null) {
+        StudentDetailScreen(
+            studentName = selectedStudent!!.name,
+            studentEmail = selectedStudent!!.email,
+            studentId = selectedStudent!!.id,
+            onBack = { selectedStudent = null }
+        )
+        return
     }
 
     Box(
@@ -92,7 +106,8 @@ fun MyStudentsScreen(
                     StudentCard(
                         name = student.name,
                         email = student.email,
-                        onUnassign = { viewModel.unassignTeacherFromStudent(student.id, teacherId) }
+                        onUnassign = { viewModel.unassignTeacherFromStudent(student.id, teacherId) },
+                        onClick = { selectedStudent = student }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -102,12 +117,12 @@ fun MyStudentsScreen(
 }
 
 @Composable
-fun StudentCard(name: String, email: String, onUnassign: () -> Unit) {
+fun StudentCard(name: String, email: String, onUnassign: () -> Unit, onClick: () -> Unit = {}) {
     Surface(
         color = CardBackground,
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(1.dp, InputBorder),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().clickable { onClick() }
     ) {
         Row(
             modifier = Modifier
