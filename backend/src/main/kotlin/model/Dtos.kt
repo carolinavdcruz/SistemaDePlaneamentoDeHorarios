@@ -113,3 +113,33 @@ data class LoginResponse(
     val userId: Int,
     val ownerType: OwnerType
 )
+
+@Serializable
+data class SaveScheduleRequest(
+    val teacherId: Int,
+    val title: String? = null,
+    val weekStart: String,
+    val weekEnd: String,
+    val sessions: List<SessionRequest>
+)
+
+@Serializable
+data class SessionRequest(
+    val dayOfWeek: Int,
+    val startTime: String,
+    val endTime: String,
+    val studentIds: List<Int>
+)
+
+@Serializable
+data class SchedulePlanResponse(
+    val id: Int,
+    val teacherId: Int,
+    val title: String,
+    val status: String,
+    val weekStart: String,
+    val weekEnd: String,
+    val createdAt: String,
+    val acceptedAt: String?,
+    val sessions: List<ScheduleSessionResponse>
+)

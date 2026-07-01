@@ -1,5 +1,7 @@
 package model
 
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 data class TimeSlot(
@@ -48,4 +50,24 @@ data class Restrictions(
 data class StudentRestrictions(
     val studentId: Int,
     val weeklyHours: Int
+)
+
+data class SchedulePlan(
+    val id: Int,
+    val teacherId: Int,
+    val title: String,
+    val status: String,
+    val weekStart: LocalDate,
+    val weekEnd: LocalDate,
+    val createdAt: LocalDateTime,
+    val acceptedAt: LocalDateTime? = null
+)
+
+data class PersistedScheduleSession(
+    val id: Int,
+    val schedulePlanId: Int,
+    val dayOfWeek: Int,
+    val startTime: LocalTime,
+    val endTime: LocalTime,
+    val studentIds: List<Int>
 )
