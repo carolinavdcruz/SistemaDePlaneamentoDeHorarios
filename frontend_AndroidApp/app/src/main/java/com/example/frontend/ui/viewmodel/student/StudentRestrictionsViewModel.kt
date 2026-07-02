@@ -2,7 +2,6 @@ package com.example.frontend.ui.viewmodel.student
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.data.repository.RestrictionsRepository
 import com.example.frontend.data.repository.StudentRestrictionsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

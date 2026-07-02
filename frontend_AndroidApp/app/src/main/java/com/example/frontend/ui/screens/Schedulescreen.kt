@@ -164,10 +164,12 @@ fun GenerateScheduleButton(teacherId: Int) {
             }
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Persistir como aulas concretas (data + recorrência semanal opcional)
             RecurrenceGenerateSection(teacherId = teacherId)
             Spacer(modifier = Modifier.height(12.dp))
         }
+
+        SavedLessonsSection(teacherId = teacherId)
+        Spacer(modifier = Modifier.height(12.dp))
 
         if (uiState is ScheduleUiState.Accepted) {
             Surface(
@@ -450,7 +452,7 @@ fun WeeklyScheduleView(
  */
 @Composable
 fun RecurrenceGenerateSection(teacherId: Int) {
-    val lessonViewModel = remember { com.example.frontend.AppModule.provideLessonViewModel() }
+    val lessonViewModel = remember { AppModule.provideLessonViewModel() }
     val lessons by lessonViewModel.lessons.collectAsState()
     val isLoading by lessonViewModel.isLoading.collectAsState()
     val errorMessage by lessonViewModel.errorMessage.collectAsState()
@@ -560,6 +562,282 @@ fun RecurrenceGenerateSection(teacherId: Int) {
                     color = StatusActive,
                     fontSize = 13.sp
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun SavedLessonsSection(teacherId: Int) {
+    val lessonViewModel = remember { AppModule.provideLessonViewModel() }
+
+    val lessons by lessonViewModel.lessons.collectAsState()
+    val isLoading by lessonViewModel.isLoading.collectAsState()
+    val errorMessage by lessonViewModel.errorMessage.collectAsState()
+    val successMessage by lessonViewModel.successMessage.collectAsState()
+
+    var selectedDate by remember { mutableStateOf("") }
+    var fromDate by remember { mutableStateOf("") }
+    var toDate by remember { mutableStateOf("") }
+
+    Surface(
+        color = CardBackground.copy(alpha = 0.5f),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, InputBorder),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                text = "Aulas gravadas",
+                color = White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "Consulta o horário real persistido e o histórico do professor",
+                color = TextSecondary,
+                fontSize = 12.sp
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = selectedDate,
+                onValueChange = { selectedDate = it },
+                label = { Text("Data da semana (AAAA-MM-DD)") },
+                placeholder = { Text("2026-07-07") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {
+                    lessonViewModel.loadWeek(
+                        teacherId = teacherId,
+                        date = selectedDate
+                    )
+                },
+                enabled = !isLoading && selectedDate.isNotBlank(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Carregar semana")
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            OutlinedTextField(
+                value = fromDate,
+                onValueChange = { fromDate = it },
+                label = { Text("Histórico: de (AAAA-MM-DD)") },
+                placeholder = { Text("2026-07-01") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = toDate,
+                onValueChange = { toDate = it },
+                label = { Text("Histórico: até (AAAA-MM-DD)") },
+                placeholder = { Text("2026-07-31") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {
+                    lessonViewModel.loadHistory(
+                        teacherId = teacherId,
+                        from = fromDate,
+                        to = toDate
+                    )
+                },
+                enabled = !isLoading && fromDate.isNotBlank() && toDate.isNotBlank(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = StatusActive),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Carregar histórico")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage ?: "",
+                    color = Red,
+                    fontSize = 13.sp,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            if (successMessage != null) {
+                Text(
+                    text = successMessage ?: "",
+                    color = StatusActive,
+                    fontSize = 13.sp,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            when {
+                isLoading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = AccentPurple)
+                    }
+                }
+
+                lessons.isEmpty() -> {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Background.copy(alpha = 0.55f),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, InputBorder.copy(alpha = 0.7f))
+                    ) {
+                        Text(
+                            text = "Nenhuma aula carregada",
+                            color = TextSecondary,
+                            fontSize = 13.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 18.dp)
+                        )
+                    }
+                }
+
+                else -> {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        lessons.forEach { lesson ->
+                            SavedLessonCard(
+                                lesson = lesson,
+                                onCancelLesson = {
+                                    lessonViewModel.cancelLesson(lesson.id) {
+                                        if (selectedDate.isNotBlank()) {
+                                            lessonViewModel.loadWeek(teacherId, selectedDate)
+                                        }
+                                    }
+                                },
+                                onCancelSeries = {
+                                    val seriesId = lesson.seriesId
+                                    if (seriesId != null) {
+                                        lessonViewModel.cancelSeries(seriesId) {
+                                            if (selectedDate.isNotBlank()) {
+                                                lessonViewModel.loadWeek(teacherId, selectedDate)
+                                            }
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SavedLessonCard(
+    lesson: com.example.frontend.data.remote.dto.LessonResponse,
+    onCancelLesson: () -> Unit,
+    onCancelSeries: () -> Unit
+) {
+    Surface(
+        color = AccentPurple.copy(alpha = 0.12f),
+        shape = RoundedCornerShape(14.dp),
+        border = BorderStroke(1.dp, AccentPurple.copy(alpha = 0.35f)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Text(
+                text = "${lesson.date} | ${lesson.startTime} - ${lesson.endTime}",
+                color = White,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Estado: ${lesson.status}",
+                color = if (lesson.status == "CANCELLED") Red else StatusActive,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Teacher ID: ${lesson.teacherId}",
+                color = TextSecondary,
+                fontSize = 12.sp
+            )
+
+            Text(
+                text = "Students: ${
+                    if (lesson.students.isEmpty()) {
+                        "sem alunos"
+                    } else {
+                        lesson.students.joinToString(", ") { "Aluno ${it.studentId}" }
+                    }
+                }",
+                color = TextSecondary,
+                fontSize = 12.sp
+            )
+
+            Text(
+                text = "Series ID: ${lesson.seriesId ?: "sem série"}",
+                color = TextSecondary,
+                fontSize = 12.sp
+            )
+
+            if (lesson.status != "CANCELLED") {
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Button(
+                        onClick = onCancelLesson,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Red),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Cancelar aula")
+                    }
+
+                    if (lesson.seriesId != null) {
+                        Button(
+                            onClick = onCancelSeries,
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Cancelar série")
+                        }
+                    }
+                }
             }
         }
     }

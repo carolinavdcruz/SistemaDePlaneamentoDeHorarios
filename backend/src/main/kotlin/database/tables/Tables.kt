@@ -1,7 +1,9 @@
 package database.tables
 
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.javatime.date
 import org.jetbrains.exposed.sql.javatime.time
+import org.jetbrains.exposed.sql.javatime.timestamp
 
 object TeacherTable : IntIdTable("teacher") {
     val name = varchar("name", 100)
@@ -43,7 +45,32 @@ object RestrictionsTable : IntIdTable("restrictions") {
     val maxSessionsPerStudentPerDay = integer("max_sessions_per_student_per_day")
 }
 
-object StudentRestrictionsTable : IntIdTable("studentRestrictions") {
-    val studentId = reference("student_id", StudentTable)
+object StudentRestrictionsTable : IntIdTable("student_restrictions") {
+    val studentId = reference("student_id", StudentTable).uniqueIndex()
     val weeklyHours = integer("weekly_hours")
+}
+
+enum class LessonStatus {
+    SCHEDULED,
+    CANCELLED
+}
+
+object LessonTable : IntIdTable("lesson") {
+    val teacherId = reference("teacher_id", TeacherTable)
+    val seriesId = varchar("series_id", 100).nullable()
+    val date = date("date")
+    val startTime = time("start_time")
+    val endTime = time("end_time")
+    val status = enumerationByName("status", 30, LessonStatus::class)
+}
+
+object LessonStudentTable : IntIdTable("lesson_student") {
+    val lessonId = reference("lesson_id", LessonTable)
+    val studentId = reference("student_id", StudentTable)
+    val attended = bool("attended").nullable()
+    val attendedAt = timestamp("attended_at").nullable()
+
+    init {
+        uniqueIndex(lessonId, studentId)
+    }
 }

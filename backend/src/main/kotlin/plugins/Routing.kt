@@ -4,12 +4,7 @@ import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import plugins.routes.auth.authRoutes
-import plugins.routes.availability.availabilityRoutes
-import plugins.routes.restrictions.restrictionsRoutes
-import plugins.routes.schedule.scheduleRoutes
-import plugins.routes.students.studentRoutes
-import plugins.routes.teachers.teacherRoutes
+
 /*
 @Suppress("NewApi")
 fun Application.configureRouting() {
@@ -33,15 +28,11 @@ import database.tables.StudentTable
 import database.tables.TeacherTable
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
-import io.ktor.server.application.call
 import io.ktor.server.request.receive
-import io.ktor.server.response.respond
-import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.put
-import io.ktor.server.routing.routing
 import model.AssignTeacherRequest
 import model.AvailabilityRequest
 import model.AvailabilityResponse
@@ -56,12 +47,12 @@ import model.UpdateLessonRequest
 import model.CancelSeriesResponse
 import model.LessonConflictResponse
 import model.AttendanceSummaryResponse
+import model.RecurrenceType
 import model.Restrictions
 import model.RestrictionsRequest
 import model.RestrictionsResponse
 import model.ScheduleCreateRequest
 import model.ScheduleSessionResponse
-import model.Session
 import model.Student
 import model.StudentRequest
 import model.StudentResponse
@@ -628,8 +619,7 @@ fun Application.configureRouting() {
             val request = call.receive<GenerateLessonsRequest>()
             val teacherId = request.teacherId
             val startDate = LocalDate.parse(request.startDate)
-            val occurrences = if (request.recurrence == model.RecurrenceType.NONE) 1 else request.occurrences.coerceAtLeast(1)
-
+            val occurrences = if (request.recurrence == RecurrenceType.NONE) 1 else request.occurrences.coerceAtLeast(1)
             val sessions = transaction {
                 val restrictionsRow = RestrictionsTable
                     .select { RestrictionsTable.teacherId eq teacherId }

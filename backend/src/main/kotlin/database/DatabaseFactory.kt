@@ -3,6 +3,8 @@ package database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import database.tables.AvailabilityTable
+import database.tables.LessonStudentTable
+import database.tables.LessonTable
 import database.tables.RestrictionsTable
 import database.tables.StudentRestrictionsTable
 import database.tables.StudentTable
@@ -30,7 +32,9 @@ object DatabaseFactory {
                 AvailabilityTable,
                 RestrictionsTable,
                 TimeSlotTable,
-                StudentRestrictionsTable
+                StudentRestrictionsTable,
+                LessonTable,
+                LessonStudentTable
             )
         }
     }

@@ -16,7 +16,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.frontend.navigation.AppNavHost
 import com.example.frontend.ui.theme.Frontend_AndroidAppTheme
 
-
 class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)

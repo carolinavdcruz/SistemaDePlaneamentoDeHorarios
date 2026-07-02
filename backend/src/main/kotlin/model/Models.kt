@@ -1,5 +1,8 @@
 package model
 
+import database.tables.LessonStatus
+import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalTime
 
 data class TimeSlot(
@@ -48,4 +51,21 @@ data class Restrictions(
 data class StudentRestrictions(
     val studentId: Int,
     val weeklyHours: Int
+)
+
+data class LessonStudent(
+    val studentId: Int,
+    val attended: Boolean?,
+    val attendedAt: Instant?
+)
+
+data class Lesson(
+    val id: Int,
+    val teacherId: Int,
+    val seriesId: String?,
+    val date: LocalDate,
+    val startTime: LocalTime,
+    val endTime: LocalTime,
+    val status: LessonStatus,
+    val students: List<LessonStudent>
 )

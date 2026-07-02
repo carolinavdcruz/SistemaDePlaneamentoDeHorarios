@@ -2,9 +2,6 @@ package plugins.routes.schedule
 
 import database.tables.AvailabilityTable
 import database.tables.RestrictionsTable
-import database.tables.SchedulePlanTable
-import database.tables.ScheduleSessionStudentTable
-import database.tables.ScheduleSessionTable
 import database.tables.StudentRestrictionsTable
 import database.tables.StudentTable
 import io.ktor.http.HttpStatusCode
@@ -14,21 +11,15 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import model.Restrictions
-import model.SaveScheduleRequest
 import model.ScheduleCreateRequest
-import model.SchedulePlanResponse
 import model.ScheduleSessionResponse
 import model.Student
 import model.TimeSlot
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import plugins.intParam
 import service.AvailabilityService
 import service.ScheduleService
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
+
 
 @Suppress("NewApi")
 fun Route.scheduleRoutes() {
@@ -125,57 +116,6 @@ fun Route.scheduleRoutes() {
         call.respond(HttpStatusCode.OK, response)
     }
 
-    post("/schedule/save") {
-        val request = call.receive<SaveScheduleRequest>()
 
-        val response = transaction {
-            val createdPlanId = SchedulePlanTable.insert {
-                it[teacherId] = request.teacherId
-                it[title] = request.title ?: "Horario ${request.weekStart}"
-                it[status] = "ACCEPTED"
-                it[weekStart] = LocalDate.parse(request.weekStart)
-                it[weekEnd] = LocalDate.parse(request.weekEnd)
-                it[createdAt] = LocalDateTime.now()
-                it[acceptedAt] = LocalDateTime.now()
-            } get SchedulePlanTable.id
-
-            val savedSessions = request.sessions.map { session ->
-                val createdSessionId = ScheduleSessionTable.insert {
-                    it[schedulePlanId] = createdPlanId
-                    it[dayOfWeek] = session.dayOfWeek
-                    it[startTime] = LocalTime.parse(session.startTime)
-                    it[endTime] = LocalTime.parse(session.endTime)
-                } get ScheduleSessionTable.id
-
-                session.studentIds.forEach { studentId ->
-                    ScheduleSessionStudentTable.insert {
-                        it[ScheduleSessionStudentTable.sessionId] = createdSessionId
-                        it[ScheduleSessionStudentTable.studentId] = studentId
-                    }
-                }
-
-                ScheduleSessionResponse(
-                    dayOfWeek = session.dayOfWeek,
-                    startTime = session.startTime,
-                    endTime = session.endTime,
-                    studentIds = session.studentIds
-                )
-            }
-
-            SchedulePlanResponse(
-                id = createdPlanId.value,
-                teacherId = request.teacherId,
-                title = request.title ?: "Horario ${request.weekStart}",
-                status = "ACCEPTED",
-                weekStart = request.weekStart,
-                weekEnd = request.weekEnd,
-                createdAt = LocalDateTime.now().toString(),
-                acceptedAt = LocalDateTime.now().toString(),
-                sessions = savedSessions
-            )
-        }
-
-        call.respond(HttpStatusCode.Created, response)
-    }
 }
 

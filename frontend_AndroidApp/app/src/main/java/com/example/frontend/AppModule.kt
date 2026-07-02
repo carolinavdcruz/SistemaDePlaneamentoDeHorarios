@@ -22,11 +22,11 @@ import com.example.frontend.ui.viewmodel.student.ChooseTeacherViewModel
 import com.example.frontend.ui.viewmodel.teacher.RestrictionsViewModel
 import com.example.frontend.data.remote.api.StudentApi
 import com.example.frontend.data.remote.api.LessonApi
-import com.example.frontend.ui.viewmodel.lesson.LessonViewModel
 import com.example.frontend.data.remote.api.StudentRestrictionsApi
 import com.example.frontend.data.remote.api.TeacherApi
 import com.example.frontend.data.repository.StudentRestrictionsRepository
 import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
+import com.example.frontend.ui.viewmodel.schedule.LessonViewModel
 import com.example.frontend.ui.viewmodel.student.StudentRestrictionsViewModel
 
 

@@ -105,20 +105,6 @@ data class ScheduleSessionResponse(
 )
 
 @Serializable
-data class SaveScheduleRequest(
-    val teacherId: Int,
-    val sessions: List<SessionRequest>
-)
-
-@Serializable
-data class SessionRequest(
-    val dayOfWeek: Int,
-    val startTime: String,
-    val endTime: String,
-    val studentIds: List<Int>
-)
-
-@Serializable
 data class LoginRequest(
     val email: String,
     val password: String
