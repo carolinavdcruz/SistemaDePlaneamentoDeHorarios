@@ -47,6 +47,22 @@ class LessonApi {
         }.body()
     }
 
+    // Horário do ALUNO (qualquer professor) para a semana que contém `date`.
+    suspend fun getWeekForStudent(studentId: Int, date: String): List<LessonResponse> {
+        return client.get("$baseUrl/lessons/student/week") {
+            parameter("studentId", studentId)
+            parameter("date", date)
+        }.body()
+    }
+
+    suspend fun getHistoryForStudent(studentId: Int, from: String, to: String): List<LessonResponse> {
+        return client.get("$baseUrl/lessons/student/history") {
+            parameter("studentId", studentId)
+            parameter("from", from)
+            parameter("to", to)
+        }.body()
+    }
+
     // Edita uma ocorrência isolada (data/hora); destaca-a da série.
     // Pode devolver 409 (conflito de horário) - tratar a exceção no chamador.
     suspend fun update(lessonId: Int, request: UpdateLessonRequest): LessonResponse {

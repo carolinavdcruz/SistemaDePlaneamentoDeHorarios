@@ -3,6 +3,8 @@ package com.example.frontend.data.remote.api
 import com.example.frontend.data.remote.client
 import com.example.frontend.data.remote.dto.LoginRequest
 import com.example.frontend.data.remote.dto.LoginResponse
+import com.example.frontend.data.remote.dto.NotifyStudentsRequest
+import com.example.frontend.data.remote.dto.NotifyStudentsResponse
 import com.example.frontend.data.remote.dto.TeacherRequest
 import com.example.frontend.data.remote.dto.TeacherResponse
 import io.ktor.client.call.body
@@ -27,5 +29,11 @@ class TeacherApi {
         }.body()
     }
 
+    // Envia um aviso/email livre a alunos do professor (todos, se studentIds for null/vazio).
+    suspend fun notifyStudents(teacherId: Int, request: NotifyStudentsRequest): NotifyStudentsResponse {
+        return client.post("http://10.0.2.2:8080/teachers/$teacherId/notify") {
+            setBody(request)
+        }.body()
+    }
 
 }

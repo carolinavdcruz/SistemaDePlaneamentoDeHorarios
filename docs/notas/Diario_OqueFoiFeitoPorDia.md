@@ -147,3 +147,23 @@ td@example.com
 
     Testprof0
 Testedemonst0 - Aluno
+
+
+## Notificações por email
+
+O backend envia emails aos alunos:
+- **Automaticamente**, quando o professor cancela uma aula (`PATCH /lessons/{id}/cancel`), cancela uma série recorrente (`DELETE /lessons/series/{seriesId}`) ou remarca uma aula (`PATCH /lessons/{id}`).
+- **Manualmente**, através de `POST /teachers/{teacherId}/notify`, onde o professor escreve o assunto e a mensagem livremente (para todos os alunos ou só para alguns, via `studentIds`).
+
+Para enviar emails a sério, define estas variáveis de ambiente antes de correr o backend:
+
+```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=oteuemail@gmail.com
+SMTP_PASSWORD=<app password gerada em myaccount.google.com/apppasswords>
+SMTP_FROM_NAME=Sistema de Planeamento de Horários   # opcional
+```
+
+Sem estas variáveis definidas, o sistema fica em **modo simulação**: em vez de enviar, regista no log o email que seria enviado (útil para testar sem credenciais reais na demonstração).
+!!! não coloquei as últimas duas !!!

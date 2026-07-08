@@ -9,6 +9,7 @@ import model.Session
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greater
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
@@ -101,6 +102,34 @@ object LessonService {
         val monday = anyDateInWeek.minusDays((anyDateInWeek.dayOfWeek.value - 1).toLong())
         val sunday = monday.plusDays(6)
         return getHistory(teacherId, monday, sunday)
+    }
+
+    /**
+     * Todas as aulas (de qualquer professor) em que este aluno participa,
+     * num intervalo [from, to] (inclusive). Usado no ecrã principal do aluno.
+     */
+    fun getHistoryForStudent(studentId: Int, from: LocalDate, to: LocalDate): List<Lesson> = transaction {
+        val lessonIds = LessonStudentTable
+            .select { LessonStudentTable.studentId eq studentId }
+            .map { it[LessonStudentTable.lessonId].value }
+            .distinct()
+
+        if (lessonIds.isEmpty()) return@transaction emptyList()
+
+        LessonTable
+            .select {
+                (LessonTable.id inList lessonIds) and
+                        (LessonTable.date greaterEq from) and
+                        (LessonTable.date lessEq to)
+            }
+            .map { it.toLesson() }
+    }
+
+    /** Conveniência: aulas do aluno na semana (segunda a domingo) que contém `anyDateInWeek`. */
+    fun getWeekForStudent(studentId: Int, anyDateInWeek: LocalDate): List<Lesson> {
+        val monday = anyDateInWeek.minusDays((anyDateInWeek.dayOfWeek.value - 1).toLong())
+        val sunday = monday.plusDays(6)
+        return getHistoryForStudent(studentId, monday, sunday)
     }
 
     fun markAttendance(lessonId: Int, studentId: Int, attended: Boolean): Boolean = transaction {

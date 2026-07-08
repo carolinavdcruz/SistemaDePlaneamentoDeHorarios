@@ -173,3 +173,16 @@ data class LessonConflictResponse(
     val error: String,
     val conflictingLessonId: Int
 )
+
+@Serializable
+data class NotifyStudentsRequest(
+    // Se null ou vazio, envia a TODOS os alunos do professor.
+    val studentIds: List<Int>? = null,
+    val subject: String,
+    val message: String
+)
+
+@Serializable
+data class NotifyStudentsResponse(
+    val sentTo: Int
+)

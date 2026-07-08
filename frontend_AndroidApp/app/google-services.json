@@ -1,30 +1,30 @@
 {
   "project_info": {
-    "project_number": "214331665868",
-    "project_id": "sph-finalproject",
-    "storage_bucket": "sph-finalproject.firebasestorage.app"
+    "project_number": "741010855449",
+    "project_id": "pfcsph",
+    "storage_bucket": "pfcsph.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:214331665868:android:32d17ab6acb22b69b8c169",
+        "mobilesdk_app_id": "1:741010855449:android:a1bc19d338c684c1e2bc88",
         "android_client_info": {
           "package_name": "com.example.frontend"
         }
       },
       "oauth_client": [
         {
-          "client_id": "214331665868-5o27ht8n4udl7ndtoflenjfrjb6bhk3a.apps.googleusercontent.com",
+          "client_id": "741010855449-lv6m5l7lrqkof66e4b38vr0f2anbvk8m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.frontend",
-            "certificate_hash": "ca61b9bf9414a43ec6615079860f64aa93c72b49"
+            "certificate_hash": "02b8e4b534390cfb5acc4bf5709f89e7d45b80a9"
           }
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD8Cf72__PQUDzpFzrb-6iI2B31OjEsDNY"
+          "current_key": "AIzaSyCBD2iFTILqM2Lhm__1nlp1QUL3b05uL24"
         }
       ],
       "services": {

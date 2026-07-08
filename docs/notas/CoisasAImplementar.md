@@ -7,7 +7,7 @@
 
 [ ] várias formas de input das disponibilidades
 
-[ ] email ser enviado a cada aluno com o seu horário
+[x] email ser enviado a cada aluno com o seu horário
 
 [ ] Pensar em funcionalidades que poçam encaixar no ecra do perfil
 

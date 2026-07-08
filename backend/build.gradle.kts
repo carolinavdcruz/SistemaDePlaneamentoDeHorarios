@@ -34,6 +34,9 @@ dependencies {
 
     implementation("org.mindrot:jbcrypt:0.4")
 
+    // Envio de emails via SMTP (Gmail, Outlook, ou qualquer servidor SMTP)
+    implementation("com.sun.mail:jakarta.mail:2.0.1")
+
 }
 
 kotlin {

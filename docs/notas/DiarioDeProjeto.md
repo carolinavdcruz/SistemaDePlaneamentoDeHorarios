@@ -150,10 +150,10 @@ O objetivo central é desenvolver uma aplicação para gerir horários de profes
 
 
 **Semana 16 (08/06 - 14/06)**
-* [ ] Implementação do envio de emails aos participantes.
+* [x] Implementação do envio de emails aos participantes.
 * [x] Histórico
 * [x] Recorrência (backend)
-* [ ] Recorrência (frontend)
+* [x] Recorrência (frontend)
 
 
 

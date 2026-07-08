@@ -21,6 +21,9 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -39,6 +42,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +52,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.AppModule
+import com.example.frontend.data.local.entity.StudentEntity
 import com.example.frontend.data.model.ScheduledSession
+import com.example.frontend.data.remote.api.LessonApi
+import com.example.frontend.data.remote.api.TeacherApi
+import com.example.frontend.data.remote.dto.LessonResponse
+import com.example.frontend.data.remote.dto.NotifyStudentsRequest
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
@@ -62,6 +71,7 @@ import com.example.frontend.ui.viewmodel.schedule.ScheduleUiState
 import com.example.frontend.ui.viewmodel.schedule.ScheduleViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
+import kotlinx.coroutines.launch
 
 private val DAY_NAMES = mapOf(
     1 to "Monday", 2 to "Tuesday", 3 to "Wednesday",
@@ -169,6 +179,9 @@ fun GenerateScheduleButton(teacherId: Int) {
         }
 
         SavedLessonsSection(teacherId = teacherId)
+        Spacer(modifier = Modifier.height(12.dp))
+
+        NotifyStudentsCard(teacherId = teacherId)
         Spacer(modifier = Modifier.height(12.dp))
 
         if (uiState is ScheduleUiState.Accepted) {
@@ -570,11 +583,19 @@ fun RecurrenceGenerateSection(teacherId: Int) {
 @Composable
 fun SavedLessonsSection(teacherId: Int) {
     val lessonViewModel = remember { AppModule.provideLessonViewModel() }
+    val studentViewModel = remember { AppModule.provideStudentViewModel() }
 
     val lessons by lessonViewModel.lessons.collectAsState()
     val isLoading by lessonViewModel.isLoading.collectAsState()
     val errorMessage by lessonViewModel.errorMessage.collectAsState()
     val successMessage by lessonViewModel.successMessage.collectAsState()
+    val students by studentViewModel.students.collectAsState()
+
+    // Nomes dos alunos do professor, para não mostrar apenas o id na aula.
+    LaunchedEffect(teacherId) {
+        studentViewModel.loadStudentsByTeacherId(teacherId)
+    }
+    val studentsById = remember(students) { students.associateBy { it.id } }
 
     var selectedDate by remember { mutableStateOf("") }
     var fromDate by remember { mutableStateOf("") }
@@ -730,6 +751,7 @@ fun SavedLessonsSection(teacherId: Int) {
                         lessons.forEach { lesson ->
                             SavedLessonCard(
                                 lesson = lesson,
+                                studentsById = studentsById,
                                 onCancelLesson = {
                                     lessonViewModel.cancelLesson(lesson.id) {
                                         if (selectedDate.isNotBlank()) {
@@ -746,6 +768,27 @@ fun SavedLessonsSection(teacherId: Int) {
                                             }
                                         }
                                     }
+                                },
+                                onMarkAttendance = { studentId, attended ->
+                                    lessonViewModel.markAttendance(lesson.id, studentId, attended) {
+                                        if (selectedDate.isNotBlank()) {
+                                            lessonViewModel.loadWeek(teacherId, selectedDate)
+                                        } else if (fromDate.isNotBlank() && toDate.isNotBlank()) {
+                                            lessonViewModel.loadHistory(teacherId, fromDate, toDate)
+                                        }
+                                    }
+                                },
+                                onReschedule = { date, startTime, endTime ->
+                                    lessonViewModel.updateLesson(
+                                        lessonId = lesson.id,
+                                        date = date,
+                                        startTime = startTime,
+                                        endTime = endTime
+                                    ) {
+                                        if (selectedDate.isNotBlank()) {
+                                            lessonViewModel.loadWeek(teacherId, selectedDate)
+                                        }
+                                    }
                                 }
                             )
                         }
@@ -759,9 +802,16 @@ fun SavedLessonsSection(teacherId: Int) {
 @Composable
 fun SavedLessonCard(
     lesson: com.example.frontend.data.remote.dto.LessonResponse,
+    studentsById: Map<Int, StudentEntity>,
     onCancelLesson: () -> Unit,
-    onCancelSeries: () -> Unit
+    onCancelSeries: () -> Unit,
+    onMarkAttendance: (studentId: Int, attended: Boolean) -> Unit,
+    onReschedule: (date: String, startTime: String, endTime: String) -> Unit
 ) {
+    var showRescheduleDialog by remember { mutableStateOf(false) }
+    var showCancelLessonConfirm by remember { mutableStateOf(false) }
+    var showCancelSeriesConfirm by remember { mutableStateOf(false) }
+
     Surface(
         color = AccentPurple.copy(alpha = 0.12f),
         shape = RoundedCornerShape(14.dp),
@@ -788,28 +838,36 @@ fun SavedLessonCard(
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = "Teacher ID: ${lesson.teacherId}",
-                color = TextSecondary,
-                fontSize = 12.sp
-            )
-
-            Text(
-                text = "Students: ${
-                    if (lesson.students.isEmpty()) {
-                        "sem alunos"
-                    } else {
-                        lesson.students.joinToString(", ") { "Aluno ${it.studentId}" }
-                    }
-                }",
-                color = TextSecondary,
-                fontSize = 12.sp
-            )
-
-            Text(
                 text = "Series ID: ${lesson.seriesId ?: "sem série"}",
                 color = TextSecondary,
                 fontSize = 12.sp
             )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            if (lesson.students.isEmpty()) {
+                Text(text = "Sem alunos nesta aula", color = TextSecondary, fontSize = 12.sp)
+            } else {
+                Text(
+                    text = "Presenças",
+                    color = White,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    lesson.students.forEach { student ->
+                        val studentName = studentsById[student.studentId]?.name
+                            ?: "Aluno ${student.studentId}"
+                        AttendanceRow(
+                            studentName = studentName,
+                            attended = student.attended,
+                            enabled = lesson.status != "CANCELLED",
+                            onMark = { attended -> onMarkAttendance(student.studentId, attended) }
+                        )
+                    }
+                }
+            }
 
             if (lesson.status != "CANCELLED") {
                 Spacer(modifier = Modifier.height(12.dp))
@@ -819,7 +877,7 @@ fun SavedLessonCard(
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Button(
-                        onClick = onCancelLesson,
+                        onClick = { showCancelLessonConfirm = true },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(containerColor = Red),
                         shape = RoundedCornerShape(8.dp)
@@ -829,7 +887,7 @@ fun SavedLessonCard(
 
                     if (lesson.seriesId != null) {
                         Button(
-                            onClick = onCancelSeries,
+                            onClick = { showCancelSeriesConfirm = true },
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
                             shape = RoundedCornerShape(8.dp)
@@ -838,8 +896,453 @@ fun SavedLessonCard(
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Button(
+                    onClick = { showRescheduleDialog = true },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = StatusActive),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Remarcar aula")
+                }
+            }
+        }
+    }
+
+    if (showRescheduleDialog) {
+        RescheduleDialog(
+            initialDate = lesson.date,
+            initialStartTime = lesson.startTime,
+            initialEndTime = lesson.endTime,
+            onDismiss = { showRescheduleDialog = false },
+            onConfirm = { date, startTime, endTime ->
+                onReschedule(date, startTime, endTime)
+                showRescheduleDialog = false
+            }
+        )
+    }
+
+    if (showCancelLessonConfirm) {
+        ConfirmDialog(
+            title = "Cancelar esta aula?",
+            message = "Esta ação não pode ser desfeita. Os alunos vão receber um email a avisar do cancelamento.",
+            confirmLabel = "Cancelar aula",
+            onDismiss = { showCancelLessonConfirm = false },
+            onConfirm = {
+                onCancelLesson()
+                showCancelLessonConfirm = false
+            }
+        )
+    }
+
+    if (showCancelSeriesConfirm) {
+        ConfirmDialog(
+            title = "Cancelar toda a série?",
+            message = "Todas as aulas futuras desta série recorrente vão ser canceladas. Esta ação não pode ser desfeita. Os alunos vão receber um email a avisar.",
+            confirmLabel = "Cancelar série",
+            onDismiss = { showCancelSeriesConfirm = false },
+            onConfirm = {
+                onCancelSeries()
+                showCancelSeriesConfirm = false
+            }
+        )
+    }
+}
+
+/** Diálogo genérico de confirmação para ações destrutivas (cancelar aula/série, etc). */
+@Composable
+fun ConfirmDialog(
+    title: String,
+    message: String,
+    confirmLabel: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = { Text(message, color = TextSecondary, fontSize = 13.sp) },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(containerColor = Red)
+            ) {
+                Text(confirmLabel)
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(containerColor = CardBackground)
+            ) {
+                Text("Voltar", color = White)
+            }
+        }
+    )
+}
+
+/**
+ * Horário do ALUNO no seu ecrã principal: carrega automaticamente as aulas
+ * da semana atual (com qualquer professor) via GET /lessons/student/week.
+ */
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun StudentScheduleSection(studentId: Int) {
+    val lessonApi = remember { LessonApi() }
+
+    var lessons by remember { mutableStateOf<List<LessonResponse>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(studentId) {
+        isLoading = true
+        errorMessage = null
+        try {
+            val today = java.time.LocalDate.now().toString()
+            lessons = lessonApi.getWeekForStudent(studentId, today)
+        } catch (e: Exception) {
+            errorMessage = "Não foi possível carregar o teu horário: ${e.message}"
+        } finally {
+            isLoading = false
+        }
+    }
+
+    Surface(
+        color = CardBackground.copy(alpha = 0.5f),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, InputBorder),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                text = "O teu horário desta semana",
+                color = White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            when {
+                isLoading -> CircularProgressIndicator(color = AccentPurple)
+                errorMessage != null -> Text(errorMessage ?: "", color = Red, fontSize = 13.sp)
+                lessons.isEmpty() -> Text(
+                    text = "Ainda não tens aulas agendadas para esta semana.",
+                    color = TextSecondary,
+                    fontSize = 13.sp
+                )
+                else -> Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    lessons
+                        .sortedWith(compareBy({ it.date }, { it.startTime }))
+                        .forEach { lesson -> StudentLessonRow(lesson) }
+                }
             }
         }
     }
 }
 
+@Composable
+fun StudentLessonRow(lesson: LessonResponse) {
+    Surface(
+        color = AccentPurple.copy(alpha = 0.12f),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, AccentPurple.copy(alpha = 0.3f)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = "${lesson.date} | ${lesson.startTime} - ${lesson.endTime}",
+                color = White,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = if (lesson.status == "CANCELLED") "Cancelada" else "Confirmada",
+                color = if (lesson.status == "CANCELLED") Red else StatusActive,
+                fontSize = 12.sp
+            )
+        }
+    }
+}
+@Composable
+fun AttendanceRow(
+    studentName: String,
+    attended: Boolean?,
+    enabled: Boolean,
+    onMark: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(studentName, color = White, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+            Text(
+                text = when (attended) {
+                    true -> "Presente"
+                    false -> "Faltou"
+                    null -> "Por marcar"
+                },
+                color = when (attended) {
+                    true -> StatusActive
+                    false -> Red
+                    null -> TextSecondary
+                },
+                fontSize = 11.sp
+            )
+        }
+
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Button(
+                onClick = { onMark(true) },
+                enabled = enabled,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (attended == true) StatusActive else StatusActive.copy(alpha = 0.25f)
+                ),
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.height(34.dp)
+            ) {
+                Text("Presente", fontSize = 11.sp)
+            }
+            Button(
+                onClick = { onMark(false) },
+                enabled = enabled,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (attended == false) Red else Red.copy(alpha = 0.25f)
+                ),
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.height(34.dp)
+            ) {
+                Text("Falta", fontSize = 11.sp)
+            }
+        }
+    }
+}
+
+/** Diálogo simples para editar data/hora de uma aula isolada (remarcação). */
+@Composable
+fun RescheduleDialog(
+    initialDate: String,
+    initialStartTime: String,
+    initialEndTime: String,
+    onDismiss: () -> Unit,
+    onConfirm: (date: String, startTime: String, endTime: String) -> Unit
+) {
+    var date by remember { mutableStateOf(initialDate) }
+    var startTime by remember { mutableStateOf(initialStartTime) }
+    var endTime by remember { mutableStateOf(initialEndTime) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Remarcar aula") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(
+                    text = "O aluno recebe um email automático com a data/hora antiga e a nova.",
+                    color = TextSecondary,
+                    fontSize = 12.sp
+                )
+                OutlinedTextField(
+                    value = date,
+                    onValueChange = { date = it },
+                    label = { Text("Data (AAAA-MM-DD)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = startTime,
+                    onValueChange = { startTime = it },
+                    label = { Text("Início (HH:MM)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = endTime,
+                    onValueChange = { endTime = it },
+                    label = { Text("Fim (HH:MM)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(date, startTime, endTime) },
+                colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
+            ) {
+                Text("Guardar")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(containerColor = CardBackground)
+            ) {
+                Text("Cancelar", color = White)
+            }
+        }
+    )
+}
+
+/**
+ * Cartão para o professor enviar um aviso/email livre aos seus alunos
+ * (todos, ou apenas os selecionados). Usa POST /teachers/{teacherId}/notify.
+ */
+@Composable
+fun NotifyStudentsCard(teacherId: Int) {
+    val teacherApi = remember { TeacherApi() }
+    val studentViewModel = remember { AppModule.provideStudentViewModel() }
+    val students by studentViewModel.students.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(teacherId) {
+        studentViewModel.loadStudentsByTeacherId(teacherId)
+    }
+
+    var subject by remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("") }
+    var sendToAll by remember { mutableStateOf(true) }
+    val selectedStudentIds = remember { mutableStateOf(setOf<Int>()) }
+    var isSending by remember { mutableStateOf(false) }
+    var feedback by remember { mutableStateOf<String?>(null) }
+
+    Surface(
+        color = CardBackground.copy(alpha = 0.5f),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, InputBorder),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                text = "Enviar aviso aos alunos",
+                color = White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Envia um email livre, escrito por ti, para todos os alunos ou só para alguns.",
+                color = TextSecondary,
+                fontSize = 12.sp
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = subject,
+                onValueChange = { subject = it },
+                label = { Text("Assunto") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = message,
+                onValueChange = { message = it },
+                label = { Text("Mensagem") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Switch(
+                    checked = sendToAll,
+                    onCheckedChange = {
+                        sendToAll = it
+                        if (it) selectedStudentIds.value = emptySet()
+                    },
+                    colors = SwitchDefaults.colors(checkedTrackColor = AccentPurple)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (sendToAll) "Enviar a todos os alunos" else "Enviar só aos selecionados",
+                    color = White,
+                    fontSize = 13.sp
+                )
+            }
+
+            if (!sendToAll) {
+                Spacer(modifier = Modifier.height(8.dp))
+                if (students.isEmpty()) {
+                    Text("Sem alunos associados", color = TextSecondary, fontSize = 12.sp)
+                } else {
+                    Column {
+                        students.forEach { student ->
+                            val checked = selectedStudentIds.value.contains(student.id)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = checked,
+                                    onCheckedChange = { isChecked ->
+                                        selectedStudentIds.value = if (isChecked) {
+                                            selectedStudentIds.value + student.id
+                                        } else {
+                                            selectedStudentIds.value - student.id
+                                        }
+                                    },
+                                    colors = CheckboxDefaults.colors(checkedColor = AccentPurple)
+                                )
+                                Text(student.name, color = White, fontSize = 13.sp)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            if (feedback != null) {
+                Text(
+                    text = feedback ?: "",
+                    color = StatusActive,
+                    fontSize = 13.sp,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            Button(
+                onClick = {
+                    feedback = null
+                    isSending = true
+                    scope.launch {
+                        try {
+                            val response = teacherApi.notifyStudents(
+                                teacherId = teacherId,
+                                request = NotifyStudentsRequest(
+                                    studentIds = if (sendToAll) null else selectedStudentIds.value.toList(),
+                                    subject = subject,
+                                    message = message
+                                )
+                            )
+                            feedback = "Aviso enviado a ${response.sentTo} aluno(s)."
+                            subject = ""
+                            message = ""
+                        } catch (e: Exception) {
+                            feedback = "Erro ao enviar aviso: ${e.message}"
+                        } finally {
+                            isSending = false
+                        }
+                    }
+                },
+                enabled = !isSending && subject.isNotBlank() && message.isNotBlank() &&
+                        (sendToAll || selectedStudentIds.value.isNotEmpty()),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                if (isSending) {
+                    CircularProgressIndicator(color = White, modifier = Modifier.size(20.dp))
+                } else {
+                    Text("Enviar")
+                }
+            }
+        }
+    }
+}

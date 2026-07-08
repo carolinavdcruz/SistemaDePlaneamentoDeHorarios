@@ -22,6 +22,8 @@ fun Application.configureRouting() {
  */
 
 import database.tables.AvailabilityTable
+import database.tables.LessonStudentTable
+import database.tables.LessonTable
 import database.tables.RestrictionsTable
 import database.tables.StudentRestrictionsTable
 import database.tables.StudentTable
@@ -42,6 +44,8 @@ import model.LessonStudentResponse
 import model.LoginRequest
 import model.LoginResponse
 import model.MarkAttendanceRequest
+import model.NotifyStudentsRequest
+import model.NotifyStudentsResponse
 import model.OwnerType
 import model.UpdateLessonRequest
 import model.CancelSeriesResponse
@@ -62,6 +66,8 @@ import model.TeacherRequest
 import model.TeacherResponse
 import model.TimeSlot
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -70,6 +76,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.mindrot.jbcrypt.BCrypt
 import service.AvailabilityService
+import service.EmailService
 import service.LessonService
 import service.ScheduleService
 import java.time.LocalDate
@@ -736,6 +743,32 @@ fun Application.configureRouting() {
             call.respond(HttpStatusCode.OK, lessons.map { it.toResponse() })
         }
 
+        // GET /lessons/student/week?studentId=1&date=2026-09-10
+        // Horário do ALUNO (qualquer professor) para a semana que contém `date`.
+        // É esta rota que alimenta o ecrã principal do aluno.
+        get("/lessons/student/week") {
+            val studentId = call.request.queryParameters["studentId"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "studentId inválido"))
+            val date = call.request.queryParameters["date"]?.let { LocalDate.parse(it) }
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "date inválido"))
+
+            val lessons = LessonService.getWeekForStudent(studentId, date)
+            call.respond(HttpStatusCode.OK, lessons.map { it.toResponse() })
+        }
+
+        // GET /lessons/student/history?studentId=1&from=...&to=...
+        get("/lessons/student/history") {
+            val studentId = call.request.queryParameters["studentId"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "studentId inválido"))
+            val from = call.request.queryParameters["from"]?.let { LocalDate.parse(it) }
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "from inválido"))
+            val to = call.request.queryParameters["to"]?.let { LocalDate.parse(it) }
+                ?: return@get call.respond(HttpStatusCode.BadRequest, mapOf("error" to "to inválido"))
+
+            val lessons = LessonService.getHistoryForStudent(studentId, from, to)
+            call.respond(HttpStatusCode.OK, lessons.map { it.toResponse() })
+        }
+
         // PATCH /lessons/{lessonId}/students/{studentId}/attendance
         // Marca presença/falta de um aluno numa aula concreta.
         // Body JSON esperado: { "attended": true }
@@ -795,7 +828,34 @@ fun Application.configureRouting() {
             val seriesId = call.parameters["seriesId"]
                 ?: return@delete call.respond(HttpStatusCode.BadRequest, mapOf("error" to "seriesId inválido"))
 
+            // Recolhe professor + alunos afetados ANTES de cancelar (para poder notificar depois).
+            val affected = transaction {
+                val lessonRows = LessonTable.select { LessonTable.seriesId eq seriesId }.toList()
+                val teacherId = lessonRows.firstOrNull()?.get(LessonTable.teacherId)?.value
+                val lessonIds = lessonRows.map { it[LessonTable.id].value }
+                val studentIds = if (lessonIds.isEmpty()) emptyList() else {
+                    LessonStudentTable
+                        .select { LessonStudentTable.lessonId inList lessonIds }
+                        .map { it[LessonStudentTable.studentId].value }
+                        .distinct()
+                }
+                teacherId?.let { it to studentIds }
+            }
+
             val cancelledCount = LessonService.cancelSeries(seriesId)
+
+            if (affected != null && cancelledCount > 0) {
+                val (teacherId, studentIds) = affected
+                notifyStudentIds(teacherId, studentIds) { studentEmail, studentName, teacherName ->
+                    EmailService.notifySeriesCancelled(
+                        studentEmail = studentEmail,
+                        studentName = studentName,
+                        teacherName = teacherName,
+                        affectedCount = cancelledCount
+                    )
+                }
+            }
+
             call.respond(HttpStatusCode.OK, CancelSeriesResponse(cancelledCount))
         }
 
@@ -805,11 +865,28 @@ fun Application.configureRouting() {
             val lessonId = call.parameters["lessonId"]?.toIntOrNull()
                 ?: return@patch call.respond(HttpStatusCode.BadRequest, mapOf("error" to "lessonId inválido"))
 
+            // Guarda os dados da aula ANTES de cancelar, para poder notificar os alunos.
+            val lessonBeforeCancel = LessonService.getById(lessonId)
+
             val cancelled = LessonService.cancelLesson(lessonId)
             if (!cancelled) {
                 call.respond(HttpStatusCode.NotFound, mapOf("error" to "Aula não encontrada"))
                 return@patch
             }
+
+            if (lessonBeforeCancel != null) {
+                notifyStudentsOfLesson(lessonBeforeCancel) { studentEmail, studentName, teacherName ->
+                    EmailService.notifyLessonCancelled(
+                        studentEmail = studentEmail,
+                        studentName = studentName,
+                        teacherName = teacherName,
+                        date = lessonBeforeCancel.date,
+                        startTime = lessonBeforeCancel.startTime,
+                        endTime = lessonBeforeCancel.endTime
+                    )
+                }
+            }
+
             call.respond(HttpStatusCode.OK, mapOf("message" to "Aula cancelada com sucesso"))
         }
 
@@ -822,6 +899,9 @@ fun Application.configureRouting() {
             val lessonId = call.parameters["lessonId"]?.toIntOrNull()
                 ?: return@patch call.respond(HttpStatusCode.BadRequest, mapOf("error" to "lessonId inválido"))
             val request = call.receive<UpdateLessonRequest>()
+
+            // Guarda o estado anterior para poder comparar e notificar em caso de remarcação.
+            val lessonBeforeUpdate = LessonService.getById(lessonId)
 
             val result = LessonService.updateLesson(
                 lessonId = lessonId,
@@ -841,9 +921,75 @@ fun Application.configureRouting() {
                             conflictingLessonId = result.conflictingLessonId
                         )
                     )
-                is LessonService.UpdateLessonResult.Success ->
-                    call.respond(HttpStatusCode.OK, result.lesson.toResponse())
+                is LessonService.UpdateLessonResult.Success -> {
+                    val updatedLesson = result.lesson
+                    val actuallyChanged = lessonBeforeUpdate != null && (
+                            lessonBeforeUpdate.date != updatedLesson.date ||
+                                    lessonBeforeUpdate.startTime != updatedLesson.startTime ||
+                                    lessonBeforeUpdate.endTime != updatedLesson.endTime
+                            )
+
+                    if (actuallyChanged && lessonBeforeUpdate != null) {
+                        notifyStudentsOfLesson(updatedLesson) { studentEmail, studentName, teacherName ->
+                            EmailService.notifyLessonRescheduled(
+                                studentEmail = studentEmail,
+                                studentName = studentName,
+                                teacherName = teacherName,
+                                oldDate = lessonBeforeUpdate.date,
+                                oldStart = lessonBeforeUpdate.startTime,
+                                oldEnd = lessonBeforeUpdate.endTime,
+                                newDate = updatedLesson.date,
+                                newStart = updatedLesson.startTime,
+                                newEnd = updatedLesson.endTime
+                            )
+                        }
+                    }
+
+                    call.respond(HttpStatusCode.OK, updatedLesson.toResponse())
+                }
             }
+        }
+
+        // POST /teachers/{teacherId}/notify
+        // Envia um email/aviso livre, escrito pelo professor, a um conjunto de alunos
+        // (ou a todos os alunos do professor, se studentIds vier vazio/null).
+        // Body JSON esperado:
+        // {
+        //   "studentIds": [1, 2],       <- opcional; omitir/vazio = todos os alunos do professor
+        //   "subject": "Aviso importante",
+        //   "message": "A aula de amanhã vai ter início 15 minutos mais tarde."
+        // }
+        post("/teachers/{teacherId}/notify") {
+            val teacherId = call.parameters["teacherId"]?.toIntOrNull()
+                ?: return@post call.respond(HttpStatusCode.BadRequest, mapOf("error" to "teacherId inválido"))
+            val request = call.receive<NotifyStudentsRequest>()
+
+            val teacherName = transaction {
+                TeacherTable.select { TeacherTable.id eq teacherId }.singleOrNull()?.get(TeacherTable.name)
+            } ?: return@post call.respond(HttpStatusCode.NotFound, mapOf("error" to "Professor não encontrado"))
+
+            val students = transaction {
+                val query = if (request.studentIds.isNullOrEmpty()) {
+                    StudentTable.select { StudentTable.teacherId eq teacherId }
+                } else {
+                    StudentTable.select {
+                        (StudentTable.teacherId eq teacherId) and (StudentTable.id inList request.studentIds)
+                    }
+                }
+                query.map { it[StudentTable.name] to it[StudentTable.email] }
+            }
+
+            students.forEach { (studentName, studentEmail) ->
+                EmailService.notifyCustom(
+                    studentEmail = studentEmail,
+                    studentName = studentName,
+                    teacherName = teacherName,
+                    subject = request.subject,
+                    message = request.message
+                )
+            }
+
+            call.respond(HttpStatusCode.OK, NotifyStudentsResponse(sentTo = students.size))
         }
 
         post("/login") {
@@ -885,6 +1031,45 @@ fun Application.configureRouting() {
             }
         }
 
+    }
+}
+
+/**
+ * Vai buscar o nome do professor e o nome/email de cada aluno da aula,
+ * e invoca [action] para cada aluno (studentEmail, studentName, teacherName).
+ * Usado para disparar notificações por email após cancelar/remarcar uma aula.
+ */
+private fun notifyStudentsOfLesson(
+    lesson: model.Lesson,
+    action: (studentEmail: String, studentName: String, teacherName: String) -> Unit
+) {
+    notifyStudentIds(lesson.teacherId, lesson.students.map { it.studentId }, action)
+}
+
+/** Igual a [notifyStudentsOfLesson], mas recebendo diretamente a lista de ids de alunos. */
+private fun notifyStudentIds(
+    teacherId: Int,
+    studentIds: List<Int>,
+    action: (studentEmail: String, studentName: String, teacherName: String) -> Unit
+) {
+    if (studentIds.isEmpty()) return
+
+    val (teacherName, students) = transaction {
+        val name = TeacherTable
+            .select { TeacherTable.id eq teacherId }
+            .singleOrNull()
+            ?.get(TeacherTable.name)
+            ?: "O seu professor"
+
+        val studentsInfo = StudentTable
+            .select { StudentTable.id inList studentIds }
+            .map { it[StudentTable.email] to it[StudentTable.name] }
+
+        name to studentsInfo
+    }
+
+    students.forEach { (email, name) ->
+        action(email, name, teacherName)
     }
 }
 

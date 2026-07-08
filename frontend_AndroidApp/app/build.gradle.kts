@@ -70,6 +70,9 @@ dependencies {
     implementation("com.google.apis:google-api-services-calendar:v3-rev20231123-2.0.0")
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
 
+    implementation(platform("com.google.firebase:firebase-bom:34.15.0"))
+    implementation("com.google.firebase:firebase-analytics")
+
     // Ktor
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)

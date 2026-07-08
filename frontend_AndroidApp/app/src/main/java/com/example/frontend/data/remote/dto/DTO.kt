@@ -171,3 +171,15 @@ data class AttendanceSummaryResponse(
     val pending: Int,
     val attendanceRate: Double
 )
+
+@Serializable
+data class NotifyStudentsRequest(
+    val studentIds: List<Int>? = null,
+    val subject: String,
+    val message: String
+)
+
+@Serializable
+data class NotifyStudentsResponse(
+    val sentTo: Int
+)
