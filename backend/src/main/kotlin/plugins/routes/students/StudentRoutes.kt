@@ -12,6 +12,7 @@ import io.ktor.server.routing.post
 import model.AssignTeacherRequest
 import model.StudentRequest
 import model.StudentResponse
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -31,16 +32,20 @@ fun Route.studentRoutes() {
     // }
     post("/students") {
         val request = call.receive<StudentRequest>()
-        val created = transaction {
-            val id = StudentTable.insert {
-                it[name] = request.name
-                it[email] = request.email
-                it[password] = BCrypt.hashpw(request.password, BCrypt.gensalt())
-                it[teacherId] = request.teacherId
-            } get StudentTable.id
-            StudentResponse(id = id.value, name = request.name, email = request.email, teacherId = request.teacherId)
+        try {
+            val created = transaction {
+                val id = StudentTable.insert {
+                    it[name] = request.name
+                    it[email] = request.email
+                    it[password] = BCrypt.hashpw(request.password, BCrypt.gensalt())
+                    it[teacherId] = request.teacherId
+                } get StudentTable.id
+                StudentResponse(id = id.value, name = request.name, email = request.email, teacherId = request.teacherId)
+            }
+            call.respond(HttpStatusCode.Created, created)
+        } catch (e: ExposedSQLException) {
+            call.respond(HttpStatusCode.Conflict, mapOf("error" to "Este email já está registado"))
         }
-        call.respond(HttpStatusCode.Created, created)
     }
 
     // GET /students
