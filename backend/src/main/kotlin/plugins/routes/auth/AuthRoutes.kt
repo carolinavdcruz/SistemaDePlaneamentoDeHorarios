@@ -20,22 +20,37 @@ fun Route.authRoutes() {
         val request = call.receive<LoginRequest>()
 
         val result = transaction {
-            StudentTable.select { StudentTable.email eq request.email }
+            val student = StudentTable
+                .select { StudentTable.email eq request.email }
                 .singleOrNull()
-                ?.takeIf { BCrypt.checkpw(request.password, it[StudentTable.password]) }
-                ?.let { return@transaction LoginResponse(it[StudentTable.id].value, OwnerType.STUDENT) }
 
-            TeacherTable.select { TeacherTable.email eq request.email }
+            if (student != null && BCrypt.checkpw(request.password, student[StudentTable.password])) {
+                return@transaction LoginResponse(
+                    userId = student[StudentTable.id].value,
+                    ownerType = OwnerType.STUDENT
+                )
+            }
+
+            val teacher = TeacherTable
+                .select { TeacherTable.email eq request.email }
                 .singleOrNull()
-                ?.takeIf { BCrypt.checkpw(request.password, it[TeacherTable.password]) }
-                ?.let { return@transaction LoginResponse(it[TeacherTable.id].value, OwnerType.TEACHER) }
+
+            if (teacher != null && BCrypt.checkpw(request.password, teacher[TeacherTable.password])) {
+                return@transaction LoginResponse(
+                    userId = teacher[TeacherTable.id].value,
+                    ownerType = OwnerType.TEACHER
+                )
+            }
 
             null
         }
-
-        if (result == null)
-            return@post call.respond(HttpStatusCode.Unauthorized, mapOf("error" to "Email ou password incorretos"))
-
-        call.respond(HttpStatusCode.OK, result)
+        if (result == null) {
+            call.respond(
+                HttpStatusCode.Unauthorized,
+                mapOf("error" to "Email ou password incorretos")
+            )
+        } else {
+            call.respond(HttpStatusCode.OK, result)
+        }
     }
 }

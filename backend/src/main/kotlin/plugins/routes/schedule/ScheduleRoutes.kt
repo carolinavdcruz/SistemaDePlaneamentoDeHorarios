@@ -23,10 +23,12 @@ import service.ScheduleService
 
 @Suppress("NewApi")
 fun Route.scheduleRoutes() {
+
+    // POST /schedule/create
+    // Cria horário para o professor com base nas disponibilidades
     post("/schedule/create") {
         val request = call.receive<ScheduleCreateRequest>()
         val teacherId = request.teacherId
-
         val response = transaction {
             val restrictionsRow = RestrictionsTable
                 .select { RestrictionsTable.teacherId eq teacherId }
@@ -40,58 +42,68 @@ fun Route.scheduleRoutes() {
                 maxSessionsPerStudentPerDay = restrictionsRow[RestrictionsTable.maxSessionsPerStudentPerDay]
             )
 
-            val teacherSlots = AvailabilityTable
+            val teacherAvailability = AvailabilityTable
                 .select { AvailabilityTable.teacherId eq teacherId }
-                .flatMap { row ->
-                    AvailabilityService.splitIntoSlots(
-                        dayOfWeek = row[AvailabilityTable.dayOfWeek],
-                        startTime = row[AvailabilityTable.startTime],
-                        endTime   = row[AvailabilityTable.endTime],
-                        slotDurationMinutes = restrictions.sessionDurationMinutes.toLong()
-                    ).map { slot ->
-                        TimeSlot(
-                            dayOfWeek = slot.dayOfWeek,
-                            startTime = slot.startTime,
-                            endTime   = slot.endTime
-                        )}
-                }
+                .map { Triple(
+                        it[AvailabilityTable.dayOfWeek],
+                        it[AvailabilityTable.startTime],
+                        it[AvailabilityTable.endTime]
+                ) }
+
+            val teacherSlots = teacherAvailability.flatMap { (dayOfWeek, startTime, endTime) ->
+                AvailabilityService.splitIntoSlots(
+                    dayOfWeek = dayOfWeek,
+                    startTime = startTime,
+                    endTime = endTime,
+                    slotDurationMinutes = restrictions.sessionDurationMinutes.toLong()
+                ).map { slot -> TimeSlot(
+                        dayOfWeek = slot.dayOfWeek,
+                        startTime = slot.startTime,
+                        endTime = slot.endTime
+                ) }
+            }
 
             val students = StudentTable
                 .select { StudentTable.teacherId eq teacherId }
-                .map {
-                    Student(
+                .map { Student(
                         id = it[StudentTable.id].value,
                         name = it[StudentTable.name],
                         email = it[StudentTable.email],
                         teacherId = it[StudentTable.teacherId]?.value,
-                        maxDailySessions = it[StudentTable.maxDailySessions]
-                    )
-                }
+                        maxDailySessions = it[StudentTable.maxDailySessions],
+                ) }
 
             val studentAvailabilities = students.associate { student ->
-                student.id to AvailabilityTable
+                val availabilityIntervals = AvailabilityTable
                     .select { AvailabilityTable.studentId eq student.id }
-                    .flatMap { row ->
-                        AvailabilityService.splitIntoSlots(
-                            dayOfWeek = row[AvailabilityTable.dayOfWeek],
-                            startTime = row[AvailabilityTable.startTime],
-                            endTime   = row[AvailabilityTable.endTime],
-                            slotDurationMinutes = restrictions.sessionDurationMinutes.toLong()
-                        ).map { slot ->
-                            TimeSlot(
-                                dayOfWeek = slot.dayOfWeek,
-                                startTime = slot.startTime,
-                                endTime   = slot.endTime
-                            )
-                        }
-                    }
+                    .map { Triple(
+                            it[AvailabilityTable.dayOfWeek],
+                            it[AvailabilityTable.startTime],
+                            it[AvailabilityTable.endTime]
+                    ) }
+
+                val slots = availabilityIntervals.flatMap { (dayOfWeek, startTime, endTime) ->
+                    AvailabilityService.splitIntoSlots(
+                        dayOfWeek = dayOfWeek,
+                        startTime = startTime,
+                        endTime = endTime,
+                        slotDurationMinutes = restrictions.sessionDurationMinutes.toLong()
+                    ).map { slot -> TimeSlot(
+                            dayOfWeek = slot.dayOfWeek,
+                            startTime = slot.startTime,
+                            endTime = slot.endTime
+                    ) }
+                }
+                student.id to slots
             }
 
             val studentWeeklyHours = students.associate { student ->
-                student.id to (StudentRestrictionsTable
+                val weeklyHours = StudentRestrictionsTable
                     .select { StudentRestrictionsTable.studentId eq student.id }
                     .singleOrNull()
-                    ?.get(StudentRestrictionsTable.weeklyHours) ?: 3)
+                    ?.get(StudentRestrictionsTable.weeklyHours)
+                    ?: 3
+                student.id to weeklyHours
             }
 
             ScheduleService.create(
@@ -100,21 +112,24 @@ fun Route.scheduleRoutes() {
                 studentAvailabilities = studentAvailabilities,
                 studentWeeklyHours = studentWeeklyHours,
                 restrictions = restrictions
-            ).map { session ->
-                ScheduleSessionResponse(
-                    dayOfWeek  = session.slot.dayOfWeek,
-                    startTime  = session.slot.startTime.toString(),
-                    endTime    = session.slot.endTime.toString(),
+            ).map { session -> ScheduleSessionResponse(
+                    dayOfWeek = session.slot.dayOfWeek,
+                    startTime = session.slot.startTime.toString(),
+                    endTime = session.slot.endTime.toString(),
                     studentIds = session.studentIds
-                )
-            }
+            ) }
         }
-
-        if (response == null)
-            return@post call.respond(HttpStatusCode.NotFound, mapOf("error" to "Restrições do professor não encontradas"))
-
+        if (response == null) {
+            call.respond(
+                HttpStatusCode.NotFound,
+                mapOf("error" to "Restrições do professor não encontradas")
+            )
+            return@post
+        }
         call.respond(HttpStatusCode.OK, response)
     }
+
+
 
 
 }

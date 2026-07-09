@@ -16,6 +16,14 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 
 fun Route.teacherRoutes() {
+
+    // POST /teachers
+    // Regista um novo professor.
+    // Body JSON esperado:
+    // {
+    //   "name": "João Silva",
+    //   "email": "joao@isel.pt",
+    // }
     post("/teachers") {
         val request = call.receive<TeacherRequest>()
         val created = transaction {
@@ -29,6 +37,8 @@ fun Route.teacherRoutes() {
         call.respond(HttpStatusCode.Created, created)
     }
 
+    // GET /teachers
+    // Lista todos os professores.
     get("/teachers") {
         val teachers = transaction {
             TeacherTable.selectAll().map {
