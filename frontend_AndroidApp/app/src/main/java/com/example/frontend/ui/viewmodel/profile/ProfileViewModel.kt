@@ -49,10 +49,6 @@ class ProfileViewModel(
 
                             val teacherName = student.teacherId?.let { teacherId ->
                                 teacherRepository.getById(teacherId)?.name
-                                    ?: run {
-                                        teacherRepository.getAll()
-                                        teacherRepository.getById(teacherId)?.name
-                                    }
                             }
 
                             _uiState.update {

@@ -179,7 +179,8 @@ class LessonViewModel(
         }
     }
 
-    fun markAttendance(lessonId: Int, studentId: Int, attended: Boolean) {
+    fun markAttendance(lessonId: Int, studentId: Int, attended: Boolean, onSuccess: (() -> Unit)? = null
+    ) {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
@@ -188,6 +189,7 @@ class LessonViewModel(
             try {
                 lessonApi.markAttendance(lessonId, studentId, attended)
                 _successMessage.value = "Presença atualizada com sucesso."
+                onSuccess?.invoke()
             } catch (e: Exception) {
                 _errorMessage.value = e.localizedMessage ?: "Erro ao atualizar presença."
             } finally {

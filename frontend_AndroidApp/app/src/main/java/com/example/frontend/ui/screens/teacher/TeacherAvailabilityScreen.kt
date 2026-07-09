@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.teacher
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import com.example.frontend.AppModule
 import com.example.frontend.data.model.OwnerType
+import com.example.frontend.ui.screens.AvailabilitySelector
+import com.example.frontend.ui.screens.MobileParameterInput
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
@@ -35,7 +37,7 @@ import com.example.frontend.ui.theme.White
 import com.example.frontend.ui.viewmodel.teacher.RestrictionsViewModel
 
 @Composable
-fun TeacherAvailabilityAndRestrictionsScreen(
+fun TeacherAvailabilityScreen(
     teacherId: Int,
     restrictionsViewModel: RestrictionsViewModel = remember {
         AppModule.provideRestrictionsViewModel()

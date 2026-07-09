@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.students
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.AppModule
 import com.example.frontend.data.model.OwnerType
+import com.example.frontend.ui.screens.AvailabilitySelector
+import com.example.frontend.ui.screens.MobileParameterInput
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.TextSecondary
@@ -98,7 +102,7 @@ fun StudentAvailabilityScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = errorMessage.orEmpty(),
-                        color = androidx.compose.material3.MaterialTheme.colorScheme.error,
+                        color = MaterialTheme.colorScheme.error,
                         fontSize = 13.sp
                     )
                 }
@@ -114,7 +118,7 @@ fun StudentAvailabilityScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                androidx.compose.material3.Button(
+                Button(
                     onClick = { restrictionsViewModel.saveRestrictions(studentId) },
                     enabled = !isLoading,
                     modifier = Modifier.fillMaxWidth()

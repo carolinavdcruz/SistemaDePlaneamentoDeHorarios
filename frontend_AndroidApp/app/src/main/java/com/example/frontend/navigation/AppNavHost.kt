@@ -13,7 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.frontend.AppModule
 import com.example.frontend.data.session.SessionManager
-import com.example.frontend.ui.screens.DashboardScreen
+import com.example.frontend.ui.screens.MainNavigationScreen
 import com.example.frontend.ui.screens.HomeScreen
 import com.example.frontend.ui.screens.LoginScreen
 import com.example.frontend.ui.screens.ProfileScreen
@@ -95,7 +95,7 @@ fun AppNavHost(navController: NavHostController) {
                 return@composable
             }
 
-            DashboardScreen(
+            MainNavigationScreen(
                 navController = navController,
                 userRole = userRole,
                 userId = userId,

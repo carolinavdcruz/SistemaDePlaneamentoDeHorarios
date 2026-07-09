@@ -22,12 +22,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.frontend.data.model.OwnerType
+import com.example.frontend.ui.screens.students.ChooseTeacherScreen
+import com.example.frontend.ui.screens.students.StudentAvailabilityScreen
+import com.example.frontend.ui.screens.students.StudentLessonsScreen
+import com.example.frontend.ui.screens.teacher.MyStudentsScreen
+import com.example.frontend.ui.screens.teacher.TeacherAvailabilityScreen
+import com.example.frontend.ui.screens.teacher.TeacherLessonsScreen
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.StatusActive
-import com.example.frontend.ui.theme.TextMain
 import com.example.frontend.ui.theme.TextSecondary
 import com.example.frontend.ui.theme.White
 import com.example.frontend.ui.viewmodel.schedule.ScheduleUiState
@@ -42,7 +47,7 @@ data class BottomNavItem(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DashboardScreen(
+fun MainNavigationScreen(
     navController: NavController,
     userRole: OwnerType,
     userId: Int,
@@ -52,17 +57,18 @@ fun DashboardScreen(
 
     val bottomNavItems = when (userRole) {
         OwnerType.TEACHER -> listOf(
-            BottomNavItem("Dashboard", Icons.Filled.DateRange, Icons.Outlined.DateRange),
-            BottomNavItem("Availability&Restrictions", Icons.Filled.Settings, Icons.Outlined.Settings),
-            BottomNavItem("Students", Icons.Filled.Face, Icons.Outlined.Face),
-            BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person)
+            BottomNavItem("Horário", Icons.Filled.DateRange, Icons.Outlined.DateRange),
+            BottomNavItem("Aulas", Icons.Filled.CheckCircle, Icons.Outlined.CheckCircle),
+            BottomNavItem("Disponibilidade", Icons.Filled.Settings, Icons.Outlined.Settings),
+            BottomNavItem("Alunos", Icons.Filled.Face, Icons.Outlined.Face),
+            BottomNavItem("Perfil", Icons.Filled.Person, Icons.Outlined.Person)
         )
 
         OwnerType.STUDENT -> listOf(
-            BottomNavItem("Dashboard", Icons.Filled.DateRange, Icons.Outlined.DateRange),
-            BottomNavItem("Availability", Icons.Filled.DateRange, Icons.Outlined.DateRange),
-            BottomNavItem("Teacher", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle),
-            BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person)
+            BottomNavItem("Aulas", Icons.Filled.CheckCircle, Icons.Outlined.CheckCircle),
+            BottomNavItem("Disponibilidade", Icons.Filled.DateRange, Icons.Outlined.DateRange),
+            BottomNavItem("Professores", Icons.Filled.AccountCircle, Icons.Outlined.AccountCircle),
+            BottomNavItem("Perfil", Icons.Filled.Person, Icons.Outlined.Person)
         )
     }
     Scaffold(
@@ -102,14 +108,15 @@ fun DashboardScreen(
             when (userRole) {
                 OwnerType.TEACHER ->
                     when (selectedItemIndex) {
-                        0 -> MainDashboardContent(teacherId = userId, studentId = null, onSignOutClick = onSignOutClick)
-                        1 -> TeacherAvailabilityAndRestrictionsScreen(teacherId = userId)
-                        2 -> MyStudentsScreen(teacherId = userId)
-                        3 -> ProfileScreen(navController)
+                        0 -> TeacherScheduleScreen(teacherId = userId, onSignOutClick = onSignOutClick)
+                        1 -> TeacherLessonsScreen(teacherId = userId)
+                        2 -> TeacherAvailabilityScreen(teacherId = userId)
+                        3 -> MyStudentsScreen(teacherId = userId)
+                        4 -> ProfileScreen(navController)
                     }
                 OwnerType.STUDENT ->
                     when (selectedItemIndex) {
-                        0 -> MainDashboardContent(teacherId = null, studentId = userId, onSignOutClick = onSignOutClick)
+                        0 -> StudentLessonsScreen(studentId = userId)
                         1 -> StudentAvailabilityScreen(studentId = userId)
                         2 -> ChooseTeacherScreen(onTeacherAssigned = { selectedItemIndex = 0 })
                         3 -> ProfileScreen(navController)
@@ -123,7 +130,7 @@ fun DashboardScreen(
 // DASHBOARD PRINCIPAL
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MainDashboardContent(teacherId: Int?, studentId: Int? = null, onSignOutClick: () -> Unit) {
+fun TeacherScheduleScreen(teacherId: Int, onSignOutClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -131,13 +138,9 @@ fun MainDashboardContent(teacherId: Int?, studentId: Int? = null, onSignOutClick
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        DashboardHeader()
+        ScheduleHeader()
         Spacer(modifier = Modifier.height(24.dp))
-        when {
-            teacherId != null -> GenerateScheduleButton(teacherId = teacherId)
-            studentId != null -> StudentScheduleSection(studentId = studentId)
-            else -> ProposedScheduleCard(uiState = ScheduleUiState.Idle)
-        }
+        GenerateScheduleButton(teacherId = teacherId)
         Spacer(modifier = Modifier.height(30.dp))
         SignOutButton(onSignOutClick)
     }
@@ -145,15 +148,15 @@ fun MainDashboardContent(teacherId: Int?, studentId: Int? = null, onSignOutClick
 
 // COMPONENTES AUXILIARES (Header, etc)
 @Composable
-fun DashboardHeader() {
+fun ScheduleHeader() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            Text("Workspace", color = White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-            Text("Overview of your schedule", color = TextSecondary, fontSize = 12.sp)
+            Text("Horário", color = White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text("Cria e confirma o horário semanal", color = TextSecondary, fontSize = 12.sp)
         }
         Surface(
             color = Color.Transparent,
@@ -165,29 +168,6 @@ fun DashboardHeader() {
                 Spacer(modifier = Modifier.width(6.dp))
                 Text("Google", color = StatusActive, fontSize = 10.sp, fontWeight = FontWeight.Bold)
             }
-        }
-    }
-}
-
-@Composable
-fun ProposedScheduleCardMobile() {
-    Surface(
-        color = CardBackground.copy(alpha = 0.5f),
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, InputBorder),
-        modifier = Modifier.fillMaxWidth().height(200.dp)
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(20.dp)) {
-            // Texto do Header
-            Text("Proposed Weekly Schedule", color = White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth())
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            // Estado vazio (Simulado)
-            Icon(Icons.Default.DateRange, "", tint = TextSecondary, modifier = Modifier.size(48.dp))
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("No active proposal", color = TextMain, fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            Text("Generate to see blocks", color = TextSecondary, fontSize = 12.sp)
         }
     }
 }
@@ -210,8 +190,8 @@ fun SignOutButton(onSignOutClick: () -> Unit) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
-fun DashboardScreenPreview() {
-    DashboardScreen(
+fun MainNavigationScreenPreview() {
+    MainNavigationScreen(
         navController = rememberNavController(),
         userRole = OwnerType.TEACHER,
         userId = 1,

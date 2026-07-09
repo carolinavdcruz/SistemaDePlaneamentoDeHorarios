@@ -53,7 +53,31 @@ class StudentRepository(
     }
 
     suspend fun getById(id: Int): StudentEntity? {
-        return dao.getById(id)
+        val local = dao.getById(id)
+        if (local != null) return local
+
+        return try {
+            val remoteStudents = api.getAll()
+            val found = remoteStudents.firstOrNull { it.id == id }
+
+            if (found != null) {
+                val entity = StudentEntity(
+                    id = found.id,
+                    name = found.name,
+                    email = found.email,
+                    password = "",
+                    teacherId = found.teacherId,
+                    maxDailySessions = 1
+                )
+                dao.insert(entity)
+                entity
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(tag, "Erro ao buscar aluno por id na API: ${e.message}")
+            null
+        }
     }
 
     suspend fun getByEmail(email: String): StudentEntity? {

@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.teacher
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -17,6 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.AppModule
+import com.example.frontend.data.local.entity.StudentEntity
+import com.example.frontend.ui.screens.StudentDetailScreen
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
@@ -35,7 +37,7 @@ fun MyStudentsScreen(
 
     // Navegação simples dentro do próprio ecrã (sem rota no NavHost),
     // seguindo o mesmo padrão usado no resto da app (ex: ChooseTeacherScreen).
-    var selectedStudent by remember { mutableStateOf<com.example.frontend.data.local.entity.StudentEntity?>(null) }
+    var selectedStudent by remember { mutableStateOf<StudentEntity?>(null) }
 
     LaunchedEffect(teacherId) {
         viewModel.loadStudentsByTeacherId(teacherId)

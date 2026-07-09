@@ -75,7 +75,29 @@ class TeacherRepository(
     }
 
     suspend fun getById(id: Int): TeacherEntity? {
-        return dao.getById(id)
+        val local = dao.getById(id)
+        if (local != null) return local
+
+        return try {
+            val remoteTeachers = api.getAll()
+            val found = remoteTeachers.firstOrNull { it.id == id }
+
+            if (found != null) {
+                val entity = TeacherEntity(
+                    id = found.id,
+                    name = found.name,
+                    email = found.email,
+                    password = ""
+                )
+                dao.insert(entity)
+                entity
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(tag, "Erro ao buscar professor por id na API: ${e.message}")
+            null
+        }
     }
 
     suspend fun getByEmail(email: String): TeacherEntity? {
