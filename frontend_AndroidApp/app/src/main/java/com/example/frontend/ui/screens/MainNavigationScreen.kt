@@ -35,8 +35,6 @@ import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.StatusActive
 import com.example.frontend.ui.theme.TextSecondary
 import com.example.frontend.ui.theme.White
-import com.example.frontend.ui.viewmodel.schedule.ScheduleUiState
-
 
 // CLASSE DE DADOS
 data class BottomNavItem(
