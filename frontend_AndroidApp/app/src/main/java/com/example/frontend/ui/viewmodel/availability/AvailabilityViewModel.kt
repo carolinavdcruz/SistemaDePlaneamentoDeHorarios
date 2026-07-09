@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.local.entity.AvailabilityEntity
 import com.example.frontend.data.model.OwnerType
 import com.example.frontend.data.repository.AvailabilityRepository
-import com.example.frontend.data.repository.StudentRestrictionsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,7 +23,6 @@ data class DayAvailabilityInput(
 
 class AvailabilityViewModel(
     private val availabilityRepository: AvailabilityRepository,
-    private val studentRestrictionsRepository: StudentRestrictionsRepository
 ) : ViewModel() {
 
     private val defaultDays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
@@ -33,12 +31,6 @@ class AvailabilityViewModel(
         defaultDays.map { day -> DayAvailabilityInput(day) }
     )
     val dayAvailabilities: StateFlow<List<DayAvailabilityInput>> = _dayAvailabilities
-
-    private val _availabilityList = MutableStateFlow<List<AvailabilityEntity>>(emptyList())
-    val availabilityList: StateFlow<List<AvailabilityEntity>> = _availabilityList
-
-    private val _weeklyHours = MutableStateFlow("3")
-    val weeklyHours: StateFlow<String> = _weeklyHours
 
     private val daysMap = mapOf(
         "Mon" to 1,
@@ -49,12 +41,6 @@ class AvailabilityViewModel(
         "Sat" to 6,
         "Sun" to 7
     )
-
-    fun setWeeklyHours(value: String) {
-        if (value.all { it.isDigit() } || value.isEmpty()) {
-            _weeklyHours.value = value
-        }
-    }
 
     fun addRange(day: String) {
         _dayAvailabilities.value = _dayAvailabilities.value.map { dayInput ->
@@ -113,16 +99,8 @@ class AvailabilityViewModel(
     fun load(ownerId: Int, ownerType: OwnerType) {
         viewModelScope.launch {
             val data = availabilityRepository.getByOwner(ownerId, ownerType)
-            _availabilityList.value = data
 
             val groupedByDay = data.groupBy { it.dayOfWeek }
-
-            if (ownerType == OwnerType.STUDENT) {
-                val restrictions = studentRestrictionsRepository.getByStudentId(ownerId)
-                _weeklyHours.value = restrictions?.weeklyHours?.toString() ?: "3"
-            } else {
-                _weeklyHours.value = "3"
-            }
 
             _dayAvailabilities.value = defaultDays.map { day ->
                 val dayNumber = daysMap[day] ?: 1
@@ -146,11 +124,6 @@ class AvailabilityViewModel(
         viewModelScope.launch {
             availabilityRepository.deleteByOwner(ownerId, ownerType)
 
-            if (ownerType == OwnerType.STUDENT) {
-                val weeklyHoursInt = _weeklyHours.value.toIntOrNull()?.takeIf { it > 0 } ?: 3
-                studentRestrictionsRepository.save(ownerId, weeklyHoursInt)
-            }
-
             val selectedAvailabilities = _dayAvailabilities.value.flatMap { dayInput ->
                 dayInput.ranges.map { range ->
                     AvailabilityEntity(
@@ -173,9 +146,7 @@ class AvailabilityViewModel(
 
     fun clear(ownerId: Int, ownerType: OwnerType) {
         viewModelScope.launch {
-
             availabilityRepository.deleteByOwner(ownerId, ownerType)
-            _availabilityList.value = emptyList()
             _dayAvailabilities.value = defaultDays.map { day ->
                 DayAvailabilityInput(day)
             }

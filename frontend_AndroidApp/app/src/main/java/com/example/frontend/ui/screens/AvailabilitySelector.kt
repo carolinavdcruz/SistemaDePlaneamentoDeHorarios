@@ -62,7 +62,7 @@ fun AvailabilitySelector(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            "Weekly Availability",
+            "Disponibilidade Semanal",
             color = White,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
@@ -71,7 +71,7 @@ fun AvailabilitySelector(
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            "Add one or more time blocks for each day",
+            "Adiciona um ou mais intervalos por dia",
             color = TextSecondary,
             fontSize = 13.sp
         )
@@ -188,7 +188,7 @@ fun DayAvailabilityCard(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.size(6.dp))
-                    Text("Add interval", fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                    Text("Adicionar", fontSize = 12.sp, fontWeight = FontWeight.Medium)
                 }
             }
 
@@ -202,7 +202,7 @@ fun DayAvailabilityCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "No time blocks yet",
+                        text = "Ainda sem intervalos de disponibilidades",
                         color = TextSecondary,
                         fontSize = 13.sp,
                         modifier = Modifier.padding(14.dp)

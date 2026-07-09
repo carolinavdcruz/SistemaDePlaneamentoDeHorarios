@@ -13,9 +13,7 @@ import com.example.frontend.data.repository.RestrictionsRepository
 import com.example.frontend.data.session.SessionManager
 import com.example.frontend.ui.viewmodel.login.LoginViewModel
 import com.example.frontend.ui.viewmodel.profile.ProfileViewModel
-import com.example.frontend.ui.viewmodel.teacher.TeacherViewModel
 import com.example.frontend.data.repository.TeacherRepository
-import com.example.frontend.data.repository.TimeSlotRepository
 import com.example.frontend.ui.viewmodel.register.RegisterViewModel
 import com.example.frontend.ui.viewmodel.schedule.ScheduleViewModel
 import com.example.frontend.ui.viewmodel.student.ChooseTeacherViewModel
@@ -78,10 +76,6 @@ object AppModule {
         RestrictionsRepository(db().restrictionsDao(), restrictionsApi)
     }
 
-    private val timeSlotRepository by lazy {
-        TimeSlotRepository(db().timeSlotDao())
-    }
-
     private val studentRestrictionsApi by lazy {
         StudentRestrictionsApi()
     }
@@ -102,15 +96,8 @@ object AppModule {
         return StudentViewModel(studentRepository)
     }
 
-    fun provideTeacherViewModel(): TeacherViewModel {
-        return TeacherViewModel(teacherRepository)
-    }
-
     fun provideAvailabilityViewModel(): AvailabilityViewModel {
-        return AvailabilityViewModel(
-            availabilityRepository,
-            studentRestrictionsRepository
-        )
+        return AvailabilityViewModel(availabilityRepository)
     }
 
     fun provideLoginViewModel(): LoginViewModel {

@@ -37,7 +37,8 @@ class LessonViewModel(
         teacherId: Int,
         startDate: String,
         recurrence: String,
-        occurrences: Int
+        occurrences: Int,
+        onSuccess: ((List<LessonResponse>) -> Unit)? = null
     ) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -55,6 +56,7 @@ class LessonViewModel(
                 )
                 _lessons.value = result
                 _successMessage.value = "${result.size} aula(s) gerada(s) com sucesso."
+                onSuccess?.invoke(result)
             } catch (e: Exception) {
                 _errorMessage.value = e.localizedMessage ?: "Erro ao gerar aulas."
             } finally {

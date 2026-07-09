@@ -35,16 +35,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.AppModule
-import com.example.frontend.data.remote.api.GoogleCalendarManager
 import com.example.frontend.data.remote.api.TeacherApi
 import com.example.frontend.data.remote.dto.NotifyStudentsRequest
-import com.example.frontend.ui.screens.SavedLessonCard
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
@@ -82,10 +79,6 @@ fun SavedLessonsSection(teacherId: Int) {
     val students by studentViewModel.students.collectAsState()
 
     val scope = rememberCoroutineScope()
-
-    val context = LocalContext.current
-    val calendarManager = remember { GoogleCalendarManager(context) }
-    var calendarFeedback by remember { mutableStateOf<String?>(null) }
 
     // Nomes dos alunos do professor, para não mostrar apenas o id na aula.
     LaunchedEffect(teacherId) {
@@ -208,45 +201,6 @@ fun SavedLessonsSection(teacherId: Int) {
                     color = StatusActive,
                     fontSize = 13.sp,
                     modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-
-            if (lessons.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Button(
-                    onClick = {
-                        val studentNames = studentsById.mapValues { it.value.name }
-
-                        scope.launch {
-                            val result = calendarManager.addLessonsToCalendar(
-                                lessons = lessons,
-                                studentNames = studentNames
-                            )
-
-                            calendarFeedback = if (result.isSuccess) {
-                                "${result.getOrNull() ?: 0} evento(s) adicionados ao Google Calendar."
-                            } else {
-                                "Erro ao adicionar ao Google Calendar: ${result.exceptionOrNull()?.message}"
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = StatusActive),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Adicionar aulas ao Google Calendar")
-                }
-            }
-
-            if (calendarFeedback != null) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = calendarFeedback ?: "",
-                    color = StatusActive,
-                    fontSize = 13.sp
                 )
             }
 

@@ -183,7 +183,7 @@ fun SignOutButton(onSignOutClick: () -> Unit) {
     ) {
         Icon(Icons.Default.ExitToApp, "", modifier = Modifier.size(18.dp))
         Spacer(modifier = Modifier.width(8.dp))
-        Text("Sign Out", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        Text("Terminar Sessão", fontSize = 14.sp, fontWeight = FontWeight.Medium)
     }
 }
 

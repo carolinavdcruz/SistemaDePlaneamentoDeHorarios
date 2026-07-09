@@ -39,21 +39,10 @@ import com.example.frontend.ui.viewmodel.student.StudentRestrictionsViewModel
 @Composable
 fun StudentAvailabilityScreen(
     studentId: Int,
-    restrictionsViewModel: StudentRestrictionsViewModel = remember {
-        AppModule.provideStudentRestrictionsViewModel()
-    },
     availabilityViewModel: AvailabilityViewModel = remember {
         AppModule.provideAvailabilityViewModel()
     }
 ) {
-    val weeklyHours by restrictionsViewModel.weeklyHours.collectAsState()
-    val isLoading by restrictionsViewModel.isLoading.collectAsState()
-    val isSaved by restrictionsViewModel.isSaved.collectAsState()
-    val errorMessage by restrictionsViewModel.errorMessage.collectAsState()
-
-    LaunchedEffect(studentId) {
-        restrictionsViewModel.loadRestrictions(studentId)
-    }
 
     Column(
         modifier = Modifier
@@ -63,14 +52,14 @@ fun StudentAvailabilityScreen(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         Text(
-            text = "Availability & Preferences",
+            text = "Disponibilidade",
             color = White,
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold
         )
 
         Text(
-            text = "Define your weekly availability and your preferred weekly workload",
+            text = "Define a tua disponibilidade semanal",
             color = TextSecondary,
             fontSize = 14.sp
         )
@@ -83,67 +72,7 @@ fun StudentAvailabilityScreen(
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
-                    text = "Student Preference",
-                    color = White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                MobileParameterInput(
-                    label = "Desired Hours per Week",
-                    value = weeklyHours,
-                    onValueChange = restrictionsViewModel::setWeeklyHours,
-                    placeholder = "3"
-                )
-
-                if (errorMessage != null) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = errorMessage.orEmpty(),
-                        color = MaterialTheme.colorScheme.error,
-                        fontSize = 13.sp
-                    )
-                }
-
-                if (isSaved) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = "Preference saved successfully.",
-                        color = White,
-                        fontSize = 13.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = { restrictionsViewModel.saveRestrictions(studentId) },
-                    enabled = !isLoading,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = if (isLoading) "Saving..." else "Save Preference"
-                    )
-                }
-            }
-        }
-
-        HorizontalDivider(
-            color = InputBorder,
-            thickness = 0.5.dp
-        )
-
-        Surface(
-            color = CardBackground,
-            shape = RoundedCornerShape(16.dp),
-            border = BorderStroke(1.dp, InputBorder),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(20.dp)) {
-                Text(
-                    text = "Your Availability",
+                    text = "Disponibilidade Semanal",
                     color = White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold

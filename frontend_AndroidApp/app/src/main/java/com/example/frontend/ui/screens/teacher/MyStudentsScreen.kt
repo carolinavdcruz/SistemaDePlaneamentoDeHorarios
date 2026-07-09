@@ -66,14 +66,14 @@ fun MyStudentsScreen(
         ) {
             item {
                 Text(
-                    text = "My Students",
+                    text = "Os meus alunos",
                     color = White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
-                    text = "Students assigned to you",
+                    text = "Alunos que te estão atribuidos",
                     color = TextSecondary,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(bottom = 24.dp)
@@ -90,13 +90,13 @@ fun MyStudentsScreen(
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text(
-                                text = "No students yet",
+                                text = "Ainda sem alunos",
                                 color = White,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "When students choose you as their teacher, they will appear here.",
+                                text = "Quando os alunos te escolherem como professor, vão aparecer aqui.",
                                 color = TextSecondary,
                                 fontSize = 14.sp
                             )
@@ -160,7 +160,7 @@ fun StudentCard(name: String, email: String, onUnassign: () -> Unit, onClick: ()
             IconButton(onClick = onUnassign) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Remove My Student",
+                    contentDescription = "Remover alunos da minha lista",
                     tint = lightRed
                 )
             }

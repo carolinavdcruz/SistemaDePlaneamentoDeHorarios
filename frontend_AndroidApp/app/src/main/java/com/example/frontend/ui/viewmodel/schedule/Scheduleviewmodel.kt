@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.ScheduledSession
-import com.example.frontend.data.remote.api.GoogleCalendarManager
 import com.example.frontend.data.remote.api.ScheduleApi
 import com.example.frontend.data.repository.StudentRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -38,11 +37,6 @@ class ScheduleViewModel(
 
     private val _uiState = MutableStateFlow<ScheduleUiState>(ScheduleUiState.Idle)
     val uiState: StateFlow<ScheduleUiState> = _uiState
-
-    //private var currentScheduleId: Int? = null
-    private var lastSessions: List<ScheduledSession> = emptyList()
-    private var lastStudentNames: Map<Int, String> = emptyMap()
-
 
     // Google Sign-In
     fun buildGoogleSignInIntent(context: Context): Intent {
@@ -85,8 +79,6 @@ class ScheduleViewModel(
                 if (sessions.isEmpty()) {
                     _uiState.value = ScheduleUiState.Empty("Sem sobreposições de disponibilidade encontradas.")
                 } else {
-                    lastSessions = sessions
-                    lastStudentNames = studentNames
                     _uiState.value = ScheduleUiState.Success(
                         sessions = sessions,
                         studentName = studentNames
@@ -100,34 +92,8 @@ class ScheduleViewModel(
         }
     }
 
-    fun acceptSchedule(context: Context) {
-        viewModelScope.launch {
-            try {
-                // Verifica se já está autenticado no Google
-                val account = GoogleSignIn.getLastSignedInAccount(context)
-                if (account == null) {
-                    // Não autenticado! -> sinaliza a UI para lançar o Sign-In
-                    _uiState.value = ScheduleUiState.Error("GOOGLE_SIGN_IN_REQUIRED")
-                    return@launch
-                }
-
-                // Adiciona sessões ao Google Calendar
-                val manager = GoogleCalendarManager(context)
-                val result  = manager.addSessionsToCalendar(lastSessions, lastStudentNames)
-
-                if (result.isSuccess) {
-                    _uiState.value = ScheduleUiState.Accepted
-                } else {
-                    val msg = result.exceptionOrNull()?.message ?: "Erro desconhecido"
-                    _uiState.value = ScheduleUiState.Error("Erro ao adicionar ao Google Calendar: $msg")
-                }
-
-            } catch (e: Exception) {
-                _uiState.value = ScheduleUiState.Error(
-                    e.localizedMessage ?: "Erro ao aceitar horário."
-                )
-            }
-        }
+    fun markAccepted() {
+        _uiState.value = ScheduleUiState.Accepted
     }
 
     fun setUiError(message: String) {

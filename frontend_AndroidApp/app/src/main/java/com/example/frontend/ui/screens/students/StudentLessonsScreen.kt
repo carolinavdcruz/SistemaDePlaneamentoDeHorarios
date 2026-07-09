@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.data.remote.api.LessonApi
 import com.example.frontend.data.remote.dto.LessonResponse
-import com.example.frontend.ui.screens.StudentLessonRow
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
