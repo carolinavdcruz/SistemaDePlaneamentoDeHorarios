@@ -4,60 +4,56 @@
 \chapter{Testes e Validação} \label{cap:testes}
 
 A validação do sistema foi realizada de forma progressiva ao longo do desenvolvimento, acompanhando a implementação das diferentes funcionalidades da aplicação e do backend.
-Esta abordagem permitiu testar isoladamente componentes específicos e, posteriormente, verificar o comportamento integrado da solução. Na versão beta, os testes incidiram sobretudo sobre a lógica de tratamento de disponibilidades, a criação de horários, o funcionamento da API e os fluxos principais da aplicação Android.
+Esta abordagem permitiu testar isoladamente componentes específicos e, posteriormente, verificar o comportamento integrado da solução. Na versão beta, os testes incidiram
+sobretudo sobre a lógica de tratamento de disponibilidades, a criação de horários, o funcionamento da API e os fluxos principais da aplicação Android.
 
-A estratégia adotada combinou diferentes níveis de validação, incluindo testes unitários, testes manuais da aplicação e testes aos endpoints da API com recurso ao Postman.
+Na versão final, a estratégia de testes evoluiu de verificações maioritariamente manuais para a implementação de uma infraestrutura robusta de testes integrados e unitários no backend, garantindo a integridade das regras de negócio, dos endpoints da API e dos fluxos das aplicações móveis.
 
-\section{Testes Unitários}
+\section{Infraestrutura e Testes Automatizados no Backend}
 
-Ao nível da lógica local da aplicação, foram implementados testes unitários para componentes diretamente relacionados com a criação de horários e o processamento de disponibilidades.
-Estes testes tiveram como objetivo garantir que os blocos mais sensíveis da lógica do sistema produziam resultados coerentes e previsíveis.
+Para assegurar a fiabilidade da lógica de negócio sem depender da base de dados de produção (PostgreSQL), foi montado um ecossistema de testes automatizados suportado por uma base de dados \textit{H2} em memória partilhada.
 
-Entre os componentes testados destacam-se:
+Através da classe \textit{TestDatabase}, implementou-se um mecanismo que executa um \textit{reset} integral ao esquema de tabelas antes da execução de cada caso de teste. Esta abordagem garante o isolamento completo dos testes, permitindo que corram de forma rápida e previsível.
+
+Desta forma, os testes automatizados cobrem atualmente os seguintes componentes lógicos e de serviço:
+
 \begin{itemize}
-    \item processador de intervalos temporais, responsável por dividir disponibilidades em blocos utilizáveis pelo algoritmo;
-    \item mecanismo de criação de horários, responsável por construir propostas de sessões com base nas disponibilidades e restrições.
+    \item \textbf{Processador de intervalos temporais:} Responsável por dividir disponibilidades em blocos utilizáveis pelo algoritmo. Os testes unitários permitem verificar aspetos como: o número de blocos criados para diferentes intervalos, a preservação correta do dia da semana, o comportamento em intervalos inválidos ou demasiado curtos, e o suporte a diferentes durações de bloco.
+
+    \item \textbf{Mecanismo e algoritmo de criação de horários:} Responsável por construir as propostas de sessões. Os testes unitários e de serviço (\textit{AvailabilityServiceTest}) validam a atribuição correta de alunos disponíveis, o respeito pelo número máximo de participantes por sessão, o respeito pelo número máximo de sessões por aluno por dia, as restrições semanais de carga horária do aluno (\textit{weeklyHours}) e o comportamento em cenários sem alunos ou sem disponibilidade do professor.
+
+    \item \textbf{Gestão de Aulas Concretas (\textit{LessonServiceTest}):} Uma adição crítica da versão final que testa a lógica de persistência de aulas recorrentes com datas reais, a criação do histórico de sumários, a marcação de presenças (\textit{attendance}), os fluxos de cancelamento de séries (com simulação de notificações) e a deteção automática de conflitos em edições de horário.
+
+    \item \textbf{Rotas e Contratos da API (\textit{Integration Level}):} Recorrendo à funcionalidade \textit{testApplication} do \textit{Ktor}, foram criados testes de integração automatizados (\textit{LessonRoutesTest} e \textit{AccountRoutesTest}) que simulam pedidos HTTP contra o servidor e validam os payloads JSON e os c´odigos de resposta face ao esperado.
 \end{itemize}
 
-No caso do processamento de intervalos temporais, os testes permitiram verificar aspetos como:
-\begin{itemize}
-    \item número de blocos criados para diferentes intervalos;
-    \item preservação correta do dia da semana;
-    \item comportamento em intervalos inválidos ou demasiado curtos;
-    \item suporte a diferentes durações de bloco.
-\end{itemize}
-
-No caso do algoritmo de criação de horários, os testes procuraram validar:
-\begin{itemize}
-    \item atribuição correta de alunos disponíveis;
-    \item respeito pelo número máximo de participantes por sessão;
-    \item respeito pelo número máximo de sessões por aluno por dia;
-    \item comportamento em cenários sem alunos ou sem disponibilidade do professor.
-\end{itemize}
-
-Estes testes constituem uma base importante de confiança para o comportamento do sistema, sobretudo nas partes em que a lógica é mais sensível a regras e combinações de dados.
+Estes testes constituem uma base importante de confian¸ca para o comportamento do sistema, sobretudo nas partes em que a lógica é mais sensível a regras e combinações de dados.
 
 \section{Validação do Backend com Postman}
 
-Para a validação do backend foi utilizada a ferramenta Postman, permitindo testar os endpoints da API REST de forma independente da aplicação Android.
-Esta fase revelou-se importante para confirmar a correção dos contratos HTTP, a estrutura dos pedidos e respostas e a persistência efetiva dos dados em PostgreSQL.
+Com a introdução dos testes automatizados via \textit{Ktor} e \textit{H2}, a ferramenta Postman deixou de ser a única forma de testar a API, transitando para um papel de validação manual durante o desenvolvimento concorrente das interfaces móveis.
 
-Os testes realizados no Postman abrangeram, entre outros, os seguintes cenários:
+Esta ferramenta revelou-se importante para validar em tempo real o comportamento físico do \textit{PostgreSQL} e inspecionar os payloads de rotas mais complexas antes da sua integração final na aplicação.
+Os testes realizados no Postman integraram os fluxos originais e as novas rotas implementadas, cobrindo os seguintes cenários do domínio:
+
 \begin{itemize}
-    \item verificação de disponibilidade do servidor;
-    \item criação de professores;
-    \item criação de alunos;
-    \item autenticação de utilizadores;
-    \item consulta de listas de professores e alunos;
-    \item associação de alunos a professores;
-    \item consulta dos alunos associados a um professor;
-    \item registo e consulta de disponibilidades;
-    \item registo e consulta de restrições;
-    \item criação de propostas de horário.
+    \item verificação de disponibilidade do servidor (\textit{/health});
+    \item criação de professores e alunos;
+    \item autenticação de utilizadores e validação de credenciais (\textit{/login});
+    \item consulta de listagens globais de professores e alunos;
+    \item associação de alunos a professores e remoção desse vínculo;
+    \item consulta de alunos associados a um professores;
+    \item registo, consulta e remoção de lote de disponibilidades;
+    \item registo, consulta e atualização de restrições do professor;
+    \item criação e execução do algoritmo de criação de horários (\textit{POST /lessons/create});
+    \item \textbf{[Novo]} consulta de horários semanais e históricos específicos de professores e alunos;
+    \item \textbf{[Novo]} alteração dinâmica do estado de presença de um aluno;
+    \item \textbf{[Novo]} remoção de lote de séries de aulas por \textit{seriesId} e cancelamentos individuais;
+    \item \textbf{[Novo]} envio de alertas livres por e-mail aos alunos via \textit{EmailService}.
 \end{itemize}
 
-Através destes testes foi possível confirmar que a API se encontrava funcional e que os principais fluxos do domínio estavam corretamente representados no backend.
-Esta validação permitiu também identificar e corrigir inconsistências entre o modelo de dados do frontend e o do backend, contribuindo para uma integração mais robusta entre os dois componentes.
+Através destes testes foi possível confirmar que os métodos HTTP e os principais fluxos do domínio estavam corretamente representados no backend. Esta validação em duplicado permitiu também identificar e corrigir inconsistências entre o modelo de dados do frontend e o do backend, contribuindo para uma integração mais robusta entre os dois componentes do ecossistema.
+
 
 \section{Testes Funcionais da Aplicação Android}
 
@@ -112,7 +108,8 @@ Esta abordagem incremental revelou-se útil para consolidar a versão beta e pre
 
 \section{Síntese dos Resultados Obtidos}
 
-Os testes realizados permitiram concluir que a versão beta já apresenta um nível de funcionalidade significativo. O backend encontra-se operacional, os principais endpoints foram validados com sucesso, a aplicação Android executa os fluxos centrais do sistema, a autenticação se encontra funcional e a criação de horários produz resultados coerentes em cenários representativos.
+Os testes realizados permitiram concluir que a versão beta do sistema já apresenta um nível de funcionalidade significativo. O backend encontra-se operacional,
+os principais endpoints foram validados com sucesso, a aplicação Android executa os fluxos centrais do sistema, a autenticação se encontra funcional e a criação de horários produz resultados coerentes em cenários representativos.
 
 Apesar de persistirem aspetos a refinar, nomeadamente ao nível da integração total entre componentes, da evolução futura do algoritmo e do polimento de algumas componentes da interface, a validação efetuada demonstra que a solução
 já consegue suportar os casos de uso mais importantes do projeto.

@@ -82,22 +82,18 @@ Esta solução revelou-se adequada para suportar o conjunto de operações neces
 
 \section{Persistência de Dados}
 
-A persistência do sistema está dividida em dois níveis complementares. No backend, os dados principais são armazenados em PostgreSQL,
-funcionando esta base de dados como repositório central do sistema. No frontend, foi utilizado Room para persistência local,
-permitindo manter dados no dispositivo e suportar alguns fluxos locais ou híbridos durante a evolução da aplicação.
+A persistência do sistema está dividida em dois níveis complementares. No backend, os dados principais e o estado real do sistema são centralizados numa base de dados \textit{PostgreSQL}, que funciona como o repositório definitivo da aplicação. No frontend, a utilização de \textit{Room} para persistência local foi reformulada, passou a ter um papel puramente auxiliar, funcionando essencialmente como uma camada de cache para melhorar a fluidez da interface e permitir a consulta rápida de dados já sincronizados.
 
-Na base de dados central, são armazenadas entidades essenciais ao domínio do problema, tais como:
+Na base de dados central, o modelo conceptual foi expandido para abranger não só o planeamento abstrato, mas também a execução e controlo das aulas em tempo real. Assim, são armazenadas as seguintes entidades essenciais ao domínio:
+
 \begin{itemize}
-    \item professores;
-    \item alunos;
-    \item disponibilidades;
-    \item restrições.
+    \item \textbf{Utilizadores e Vínculos:} professores, alunos e a associação explícita entre ambos;
+    \item \textbf{Planeamento e Restrições:} disponibilidades horárias de professores e alunos, restrições específicas dos docentes e os limites de horas semanais dos estudantes;
+    \item \textbf{Instâncias de Aulas:} aulas concretas calendarizadas com datas reais, associadas ou não a uma série de recorrência;
+    \item \textbf{Assiduidade:} a relação entre alunos e cada aula concreta, incluindo o registo individualizado de presenças e faltas.
 \end{itemize}
 
-A utilização de Room no frontend permite preservar alguma informação localmente, o que facilita o funcionamento de certas operações
-e reduz a dependência imediata da comunicação remota em todos os momentos. No entanto, a arquitetura tem evoluído no sentido de
-atribuir à API e à base de dados remota um papel cada vez mais central, nomeadamente nos fluxos de autenticação e nas operações
-principais do domínio.
+Esta centralização no PostgreSQL garante que operações críticas como a criação de aulas recorrentes, a validação de conflitos de horários em tempo real e o disparo de notificações por email dependam de um estado único e partilhado por todos os utilizadores.
 
 \section{Comunicação entre Frontend e Backend}
 

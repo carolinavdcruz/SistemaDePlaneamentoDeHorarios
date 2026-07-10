@@ -45,69 +45,53 @@ a lógica funcional e o acesso à persistência.
 
 \section{Modelo de Persistência no Backend}
 
-A camada de persistência do backend foi concebida para suportar as entidades centrais do domínio do projeto.
-Na versão beta, foram modeladas estruturas que permitem armazenar:
+A camada de persistência do backend foi concebida para suportar as entidades centrais do domínio do projeto. Na versão beta, o sistema focava-se no armazenamento de professores, alunos, associações entre ambos, disponibilidades, restrições dos professores e credenciais de autenticação. Para a versão final, este modelo foi expandido de forma a suportar o ciclo de vida completo das aulas e as novas regras de negócio do algoritmo, passando a incluir na sua totalidade:
+
 \begin{itemize}
     \item professores;
     \item alunos;
     \item associação entre alunos e professor;
-    \item disponibilidades;
+    \item disponibilidades de horários;
     \item restrições associadas ao professor;
+    \item restrições semanais do aluno;
+    \item instâncias de aulas concretas calendarizadas;
+    \item relação many-to-many entre alunos e aulas com controlo de presenças;
     \item credenciais necessárias à autenticação dos utilizadores.
 \end{itemize}
 
+A informação é persistida em PostgreSQL, permitindo manter um repositório central do estado do sistema. Esta abordagem representa um passo importante relativamente às fases iniciais do projeto, em que a aplicação dependia fortemente de persistência local (\textit{Room}), que passou a ter um papel puramente auxiliar de cache. Com a consolidação do backend, a responsabilidade da gestão de dados principais ficou totalmente centralizada nesta componente remota, garantindo a integridade dos dados.
 
-A informação é persistida em PostgreSQL, permitindo manter um repositório central do estado do sistema.
-Esta abordagem representa um passo importante relativamente às fases iniciais do projeto, em que a aplicação
-dependia fortemente de persistência local. Com a introdução do backend, foi possível começar a transferir a
-responsabilidade da gestão de dados principais para uma componente remota, mais adequada a uma solução multiutilizador.
+No caso das disponibilidades, o backend armazena os intervalos registados por professores e alunos, utilizando essa informação posteriormente para a criação de propostas de horário. Relativamente às restrições, o modelo foi atualizado para incluir não só as regras do professor, mas também o limite de horas semanais do aluno (\textit{weeklyHours}), permitindo que o algoritmo de criação de horários processe estas condicionantes.
 
-No caso das disponibilidades, o backend armazena os intervalos registados por professores e alunos, utilizando essa informação
-posteriormente para a criação de propostas de horário. No caso das restrições, os dados configurados pelo professor são também persistidos,
-permitindo que a criação de horários seja baseada em regras efetivamente armazenadas e reutilizáveis.
+A maior evolução no modelo de dados prende-se com a transição de um modelo abstrato de horários para a persistência de dados reais. Através da \textit{LessonTable}, o sistema consegue agora mapear cada aula a um dia e hora específicos do calendário, agrupando-as por séries de recorrência (\textit{seriesId}). Complementarmente, a introdução da \textit{LessonStudentTable} viabilizou o registo individualizado de assiduidade (\textit{attendance}), permitindo extrair resumos estatísticos de presenças por aluno ou por turma.
 
-No contexto da autenticação, foi também introduzido o uso de \textit{hashing} de palavras-passe com recurso a BCrypt.
-Desta forma, as credenciais deixaram de ser armazenadas em texto simples, reforçando a segurança da solução relativamente às abordagens iniciais.
+No contexto da autenticação, manteve-se o uso de \textit{hashing} de palavras-passe com recurso a BCrypt. Desta forma, as credenciais continuam a ser protegidas contra armazenamento em texto simples, reforçando a segurança da solução face às abordagens iniciais.
+
 
 \section{API REST Implementada}
 
-A API desenvolvida no backend foi desenhada para suportar os fluxos principais do sistema.
+A API desenvolvida no backend foi desenhada para suportar os fluxos principais do sistema. Os endpoints existentes permitem realizar operações
+de registo, autenticação, consulta, associação de utilizadores, gestão de disponibilidades, gestão de restrições e criação de horários.
+
+Entre os principais endpoints implementados incluem-se:
+\begin{itemize}
+    \item verificação de disponibilidade do servidor;
+    \item criação e consulta de professores;
+    \item criação e consulta de alunos;
+    \item autenticação de utilizadores;
+    \item associação e desassociação de alunos a professores;
+    \item consulta dos alunos de um professor;
+    \item criação, remoção e consulta de disponibilidades;
+    \item criação e consulta de restrições;
+    \item criação de propostas de horário.
+\end{itemize}
+
+
+A utilização de uma API REST permitiu estabelecer um contrato claro entre o frontend e o backend, facilitando a integração progressiva da aplicação Android com a componente remota.
 O formato JSON foi adotado como mecanismo de serialização dos dados, permitindo representar os pedidos e respostas de forma simples e consistente.
-Durante a evolução da versão beta, foi também introduzido um endpoint específico de autenticação, permitindo validar no backend as credenciais dos utilizadores. Desta forma, a validação do login deixou de depender da comparação local de dados no frontend, passando a ser tratada de forma centralizada na API.
-
-
-\begin{table}[htbp]
-    \centering
-    \footnotesize
-    \caption{Rotas e endpoints da API REST implementados no backend Ktor.}
-    \label{tab:api_endpoints}
-
-    \newcolumntype{D}{>{\hsize=1.5\hsize\raggedright\arraybackslash}X}
-    \newcolumntype{E}{>{\hsize=0.5\hsize\raggedright\arraybackslash}X}
-
-    \renewcommand{\arraystretch}{1.1}
-
-    \begin{tabularx}{\textwidth}{llDE}
-\toprule
-\textbf{Método} & \textbf{Endpoint} & \textbf{Descrição} & \textbf{Entidades / Tabelas} \\ \midrule
-\textbf{GET}    & \texttt{/health} & Validação do estado operacional do servidor. & Sistema \\ \hline
-\textbf{POST}   & \texttt{/teachers} & Registo de professor com cifra BCrypt. & \texttt{TeacherTable} \\
-\textbf{GET}    & \texttt{/teachers} & Listagem global de professores. & \texttt{TeacherTable} \\ \hline
-\textbf{POST}   & \texttt{/students} & Registo de aluno (com/sem professor). & \texttt{StudentTable} \\
-\textbf{GET}    & \texttt{/students} & Listagem global de alunos. & \texttt{StudentTable} \\
-\textbf{POST}   & \texttt{/students/assign-teacher} & Associa um professor a um aluno. & \texttt{StudentTable} \\
-\textbf{POST}   & \texttt{/students/unassign-teacher/\{id\}} & Remove o vínculo de um aluno com o professor. & \texttt{StudentTable} \\
-\textbf{GET}    & \texttt{/students/by-teacher/\{id\}} & Filtra alunos por ID do professor. & \texttt{StudentTable} \\ \hline
-\textbf{POST}   & \texttt{/availability} & Cria intervalo de disponibilidade semanal. & \texttt{AvailabilityTable} \\
-\textbf{GET}    & \texttt{/availability} & Consulta disponibilidades por utilizador. & \texttt{AvailabilityTable} \\
-\textbf{DELETE} & \texttt{/availability} & Remoção em lote de disponibilidades. & \texttt{AvailabilityTable} \\ \hline
-\textbf{GET}    & \texttt{/restrictions/\{id\}} & Consulta regras de agendamento do professor. & \texttt{RestrictionsTable} \\
-\textbf{PUT}    & \texttt{/restrictions/\{id\}} & Atualiza/insere restrições do professor. & \texttt{RestrictionsTable} \\ \hline
-\textbf{POST}   & \texttt{/schedule/create} & Executa o algoritmo de geração de horários. & \texttt{ScheduleService} \\ \hline
-\textbf{POST}   & \texttt{/login} & Autentica utilizadores e valida credenciais. & \texttt{Teacher / Student} \\ \bottomrule
-    \end{tabularx}
-\end{table}
-
+Durante a evolução da versão beta, foi também introduzido um endpoint específico de autenticação, permitindo validar no backend as credenciais dos utilizadores.
+Esta alteração representou um passo importante na arquitetura da solução, uma vez que a validação do login deixou de depender da comparação local de dados no frontend,
+passando a ser tratada de forma centralizada na API.
 
 \section{Criação de Horários no Backend}
 
@@ -120,10 +104,24 @@ A partir da informação armazenada, o backend:
     \item obtém as disponibilidades dos alunos associados;
     \item carrega as restrições definidas;
     \item divide os intervalos em blocos temporais adequados;
-    \item cria sessões compatíveis com os dados disponíveis.
+    \item  cria sessões compatíveis com os dados disponíveis.
 \end{itemize}
 
-Esta lógica permite que a proposta seja construída de forma coerente e reutilizável, garantindo que diferentes clientes possam consumir o mesmo comportamento central sem a necessidade de replicar o algoritmo localmente.
+Esta lógica permite que a proposta de horário seja construída de forma coerente e reutilizável, garantindo que diferentes clientes possam consumir
+o mesmo comportamento central sem necessidade de replicar o algoritmo localmente.
+
+\section{Serviço de Notificações por Email}
+
+De modo a assegurar uma comunicação fluida e automatizada entre o sistema e os utilizadores, foi desenvolvido e integrado o \textit{EmailService}. Este serviço assenta na biblioteca \textit{Jakarta Mail / JavaMail} e comunica com o servidor \textit{SMTP do Gmail} para o envio de alertas em tempo real.
+
+De forma a mitigar dependências externas em ambiente de desenvolvimento e testes, implementou-se um mecanismo de simulação. Caso as variáveis de ambiente necessárias para a ligação SMTP não estejam configuradas, o serviço reverte automaticamente para um modo de simulação, escrevendo o conteúdo e o destino dos emails diretamente nos \textit{logs} da aplicação.
+
+Atualmente, o ecossistema do backend despoleta notificações automáticas por email em três cenários críticos:
+\begin{itemize}
+    \item  Cancelamento de Aula Individual: Notifica todos os alunos inscritos numa determinada aula de que a respetiva sessão foi cancelada.
+    \item Cancelamento de Série: Quando o professor cancela uma recorrência (uma série de aulas), é enviado um aviso geral a todos os alunos.
+    \item Remarcação de Aula: Notifica os estudantes sobre alterações na data, hora ou moldes de uma aula já agendada, após a validação de conflitos.
+\end{itemize}
 
 \section{Validação com Postman}
 

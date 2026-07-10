@@ -68,19 +68,18 @@ fiquem disponíveis para posterior utilização na criação de horários.
 \section{Gestão de Restrições}
 
 Para além das disponibilidades, o sistema implementa um conjunto de restrições que orientam a construção do horário do professor.
-Estas restrições representam regras de negócio relevantes para o problema e são definidas exclusivamente a partir do perfil do professor.
+Estas restrições representam regras de negócio relevantes para o problema e são definidas a partir do perfil do professor.
 
-A interface expõe campos de validação numérica para os seguintes parâmetros centrais:
+Na implementação atual, o professor pode configurar:
 \begin{itemize}
-    \item Carga horária máxima diária;
-    \item Duração de cada sessão;
-    \item Lotação máxima de alunos por sessão;
-    \item Limite de sessões diárias por aluno.
+    \item número máximo de horas diárias;
+    \item duração de cada sessão;
+    \item número máximo de alunos por sessão;
+    \item número máximo de sessões por aluno por dia.
 \end{itemize}
 
 A introdução desta funcionalidade permitiu passar de uma simples compatibilização de horários para um problema de planeamento mais próximo do caso de uso real.
 As restrições são persistidas e utilizadas posteriormente pelo mecanismo de criação de horários, desempenhando um papel central na validação das sessões propostas.
-
 
 \section{Associação entre Alunos e Professores}
 
@@ -95,32 +94,22 @@ Esta decisão foi refletida:
     \item nos ecrãs de seleção e visualização de alunos.
 \end{itemize}
 
-Na aplicação, o aluno pode selecionar um professor a partir da lista de professores disponíveis. Quando já existe um professor associado,
-a interface passa a evidenciar essa associação e apenas permite a sua alteração através de uma ação explícita de troca.
-Por sua vez, o professor pode consultar os alunos que lhe estão associados. Foi também introduzida a possibilidade de desassociar um aluno,
-removendo a ligação ao professor sem eliminar o registo do aluno do sistema.
-
-Esta funcionalidade é essencial para garantir que a criação do horário é feita apenas com base nos alunos relevantes para cada professor,
-tornando o problema mais bem definido e mais próximo do contexto de utilização previsto.
-
 \section{Criação de Propostas de Horário}
 
-A criação de horários constitui o núcleo funcional do projeto.
-A implementação atual baseia-se na recolha de disponibilidades do professor e dos seus alunos, na consideração das restrições definidas e na
-construção de sessões válidas a partir da interseção desses dados.
+A criação de horários constitui o núcleo funcional do projeto. Na versão final, este processo evoluiu de um modelo puramente abstrato para uma abordagem em dois níveis: a criação de uma proposta semanal baseada em \textit{templates} e a subsequente instanciação de aulas concretas e calendarizadas na base de dados com datas do ano civil.
 
-A lógica de criação parte de uma representação em blocos temporais, obtidos a partir dos intervalos de disponibilidade registados.
-Estes blocos são depois analisados para identificar combinações possíveis entre professor e alunos.
-O processo de construção das sessões considera, entre outros aspetos:
+A lógica de criação parte de uma representação em blocos temporais, obtidos a partir dos intervalos de disponibilidade registados. Estes blocos são analisados pelo algoritmo para identificar combinações viáveis entre o professor e os seus alunos. O processo de construção das propostas considera, de forma combinada, os seguintes aspetos:
 \begin{itemize}
     \item compatibilidade de disponibilidade entre professor e alunos;
     \item limite máximo de alunos por sessão;
     \item limite de sessões por aluno no mesmo dia;
-    \item limite de carga diária do professor.
+    \item limite de carga diária do professor;
+    \item restrições semanais de carga horária do aluno.
 \end{itemize}
 
-A versão beta implementa uma primeira abordagem funcional a este problema, suficiente para demonstrar o comportamento do sistema e validar o fluxo completo de criação de horários.
-Embora o algoritmo atual ainda possa ser refinado em versões futuras, já permite construir propostas coerentes para cenários representativos do domínio do projeto.
+Após a proposta ser validada e aceite, o sistema procede à criação em lote das aulas reais. Para gerir o vínculo e a consistência destas sessões ao longo do tempo, introduziu-se o conceito de identificador de série (\textit{seriesId}) e regras de recorrência (\textit{RecurrenceType}). Uma aula pode ser criada como um evento isolado ou fazer parte de uma sequência repetitiva (tipicamente semanalmente), sendo replicada na base de dados com datas concretas de acordo com o número estipulado de ocorrências.
+
+Esta distinção veio conferir ao sistema a flexibilidade necessária para o quotidiano letivo, permitindo que alterações pontuais ou cancelamentos de sessões individuais coexistam com a manutenção e integridade da série de horários planeada originalmente.
 
 \section{Visualização do Horário Criado}
 
@@ -139,11 +128,19 @@ Esta representação permite ao utilizador compreender facilmente:
 A implementação desta visualização constitui uma componente importante da versão beta, pois transforma o resultado do algoritmo
 numa representação diretamente compreensível e utilizável pelo utilizador final.
 
+\section{Gestão Dinâmica de Aulas e Presenças}
+
+Com o backend e as aplicações móveis totalmente integrados, foi possível expandir o sistema com um conjunto de ecrãs e fluxos operacionais destinados ao dia a dia do corpo docente e discente.
+
+No lado do docente, através do \textit{TeacherLessonsScreen}, passou a ser possível gerir o ciclo de vida das aulas. O professor dispõe de uma vista semanal organizada por datas concretas, onde pode criar novas aulas calendarizadas, editar o horário/data (com validação automática no backend para evitar sobreposição de horários do docente) e efetuar o cancelamento individual ou em série de aulas (o que cria os referidos emails automáticos). É também neste ecrã que se faz a marcação e alteração de presenças dos alunos, cujos dados agregados alimentam um resumo estatístico consultável pelo docente.
+
+Do lado do estudante, o ecrã \textit{StudentLessonsScreen} oferece uma visão clara e cronológica do seu horário pessoal para a semana corrente. O aluno consegue verificar o estado de cada aula (confirmada ou cancelada) e acompanhar o seu histórico de assiduidade e pontualidade ao longo do semestre.
+
 \section{Integração Progressiva com o Backend}
 
 Ao longo da implementação, foi também sendo reforçada a integração entre o frontend e o backend.
-Algumas operações começaram por ser validadas localmente, recorrendo à persistência em Room, e foram posteriormente adaptadas para consumir a API REST e interagir com o PostgreSQL.
+Algumas operações começaram por ser validadas localmente, recorrendo à persistência em Room, e foram posteriormente adaptadas para consumir
+a API REST e interagir com o PostgreSQL.
 
 Este processo de integração foi realizado de forma progressiva, permitindo validar cada funcionalidade antes da passagem completa para a componente remota.
-
-A implementação atual representa, assim, uma base funcional robusta sobre a qual será possível continuar a consolidar a solução até à versão final, reduzindo gradualmente a dependência de mecanismos locais auxiliares e reforçando o papel do backend como componente central do sistema.
+A implementação atual representa, uma base funcional robusta sobre a qual existiu uma redução gradual da dependência de mecanismos locais auxiliares e reforçando o papel do backend como componente central do sistema.
