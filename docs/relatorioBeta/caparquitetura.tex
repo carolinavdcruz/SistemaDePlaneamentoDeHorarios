@@ -21,6 +21,7 @@ para organizar o estado da aplicação e a lógica de acesso a dados.
 No backend, a API foi implementada em Ktor, com persistência em PostgreSQL.
 
 Em termos funcionais, a arquitetura pode ser vista como composta pelos seguintes elementos:
+
 \begin{itemize}
     \item aplicação Android, que apresenta os ecrãs e gere a interação com o utilizador;
     \item camada de lógica no frontend, responsável por coordenar o estado da interface e os fluxos de utilização;
@@ -41,6 +42,7 @@ construção da interface. Esta escolha permite uma abordagem declarativa ao des
 estados e a criação de componentes reutilizáveis.
 
 A aplicação encontra-se organizada em várias camadas, com destaque para:
+
 \begin{itemize}
     \item \textit{screens}, responsáveis pela apresentação visual das funcionalidades;
     \item \textit{ViewModels}, responsáveis pela gestão do estado e coordenação da lógica de apresentação;
@@ -50,8 +52,7 @@ A aplicação encontra-se organizada em várias camadas, com destaque para:
 
 Do ponto de vista funcional, a aplicação distingue dois perfis de utilizador: professor e aluno.
 Cada perfil possui ecrãs e ações específicas.
-O professor pode gerir a sua disponibilidade, definir restrições, consultar os alunos associados e criar propostas de horário.
-O aluno pode escolher um professor e registar a sua disponibilidade.
+O professor pode gerir a sua disponibilidade, definir restrições, consultar os alunos associados, criar propostas de horário, confirmar essas propostas, consultar aulas já persistidas, marcar presenças, cancelar ou remarcar sessões e enviar notificações aos alunos. O aluno pode escolher um professor, registar a sua disponibilidade, definir a sua carga horária semanal pretendida, consultar as aulas que lhe estão atribuídas e acompanhar o respetivo estado.
 Esta separação por papéis foi integrada tanto na navegação da aplicação como na própria lógica dos \textit{ViewModels}.
 
 \section{Arquitetura do Backend}
@@ -59,16 +60,22 @@ Esta separação por papéis foi integrada tanto na navegação da aplicação c
 O backend foi desenvolvido em Kotlin com Ktor, funcionando como servidor de aplicação e ponto central de integração de dados.
 A API implementada segue o estilo REST e expõe endpoints para operações como:
 
-\begin {itemize}
+\begin{itemize}
     \item criação e consulta de professores e alunos;
     \item autenticação de utilizadores;
-    \item associação de alunos a professores;
-    \item registo e consulta de disponibilidades;
-    \item registo e consulta de restrições;
-    \item criação de propostas de horário.
-\end {itemize}
+    \item associação e desassociação de alunos a professores;
+    \item registo, consulta e remoção de disponibilidades;
+    \item registo e consulta de restrições do professor e do aluno;
+    \item criação de propostas de horário;
+    \item geração e persistência de aulas concretas com recorrência;
+    \item consulta de aulas semanais e histórico;
+    \item marcação de presenças;
+    \item cancelamento e remarcação de aulas;
+    \item envio de notificações por email aos alunos.
+\end{itemize}
 
 A estrutura interna do backend encontra-se organizada em componentes como:
+
 \begin{itemize}
     \item definição de rotas, responsável por mapear pedidos HTTP para operações concretas;
     \item modelos e DTOs, que representam os dados trocados entre cliente e servidor;
@@ -77,7 +84,7 @@ A estrutura interna do backend encontra-se organizada em componentes como:
 \end{itemize}
 
 A escolha de Ktor permitiu construir um backend leve, relativamente simples de estruturar e bem alinhado com o restante ecossistema Kotlin do projeto.
-Esta solução revelou-se adequada para suportar o conjunto de operações necessárias à versão beta e para validar a integração com a aplicação móvel.
+Esta solução revelou-se adequada para suportar o conjunto de operações necessárias e para validar a integração com a aplicação móvel.
 
 \section{Persistência de Dados}
 
@@ -101,19 +108,24 @@ servidor durante o desenvolvimento. Os dados trocados entre os componentes são 
 representação simples e facilmente interpretável por ambas as partes.
 
 Esta comunicação suporta já um conjunto importante de operações, incluindo:
+
 \begin{itemize}
     \item criação de professores e alunos;
     \item autenticação de utilizadores;
     \item consulta de listas de utilizadores;
-    \item associação de alunos a professores;
-    \item registo e consulta de disponibilidades;
+    \item associação e desassociação de alunos a professores;
+    \item registo, consulta e remoção de disponibilidades;
     \item registo e consulta de restrições;
-    \item criação de propostas de horário.
+    \item criação de propostas de horário;
+    \item geração de aulas concretas com datas reais;
+    \item consulta semanal e histórica de aulas;
+    \item marcação de presenças;
+    \item cancelamento e remarcação de aulas;
+    \item envio de notificações e integração com Google Calendar.
 \end{itemize}
 
 A existência desta comunicação remota permite validar o sistema como uma solução efetivamente distribuída, em que a aplicação cliente
-e o backend colaboram para concretizar os fluxos principais do projeto. A versão beta representa uma etapa importante desta integração,
-demonstrando que os componentes já comunicam entre si e que a base funcional do sistema se encontra operacional.
+e o backend colaboram para concretizar os fluxos principais do projeto.
 
 \section{Considerações sobre a Arquitetura Atual}
 
@@ -123,6 +135,5 @@ e remota reflete a evolução incremental do projeto, permitindo apoiar o desenv
 API e a base de dados central.
 
 Embora a arquitetura atual já permita demonstrar de forma consistente o funcionamento da solução, existem ainda aspetos a consolidar,
-nomeadamente o reforço da sincronização entre dados locais e remotos, a evolução da componente de disponibilidade e a melhoria da
-apresentação dos horários. Ainda assim, a base estrutural da solução encontra-se definida e suficientemente sólida para suportar a
-continuação do desenvolvimento até à versão final.
+nomeadamente o reforço da sincronização entre dados locais e remotos, a evolução da componente de disponibilidade e a melhoria da apresentação dos horários.
+Ainda assim, a base estrutural da solução encontra-se definida e suficientemente sólida para suportar a utilização do sistema no contexto previsto e a sua evolução futura com novas funcionalidades.

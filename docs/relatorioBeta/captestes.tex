@@ -4,8 +4,7 @@
 \chapter{Testes e Validação} \label{cap:testes}
 
 A validação do sistema foi realizada de forma progressiva ao longo do desenvolvimento, acompanhando a implementação das diferentes funcionalidades da aplicação e do backend.
-Esta abordagem permitiu testar isoladamente componentes específicos e, posteriormente, verificar o comportamento integrado da solução. Na versão beta, os testes incidiram
-sobretudo sobre a lógica de tratamento de disponibilidades, a criação de horários, o funcionamento da API e os fluxos principais da aplicação Android.
+Esta abordagem permitiu testar isoladamente componentes específicos e, posteriormente, verificar o comportamento integrado da solução. Numa fase inicial, os testes incidiram sobretudo sobre a lógica de tratamento de disponibilidades, a criação de horários, o funcionamento da API e os fluxos principais da aplicação Android.
 
 Na versão final, a estratégia de testes evoluiu de verificações maioritariamente manuais para a implementação de uma infraestrutura robusta de testes integrados e unitários no backend, garantindo a integridade das regras de negócio, dos endpoints da API e dos fluxos das aplicações móveis.
 
@@ -20,11 +19,11 @@ Desta forma, os testes automatizados cobrem atualmente os seguintes componentes 
 \begin{itemize}
     \item \textbf{Processador de intervalos temporais:} Responsável por dividir disponibilidades em blocos utilizáveis pelo algoritmo. Os testes unitários permitem verificar aspetos como: o número de blocos criados para diferentes intervalos, a preservação correta do dia da semana, o comportamento em intervalos inválidos ou demasiado curtos, e o suporte a diferentes durações de bloco.
 
-    \item \textbf{Mecanismo e algoritmo de criação de horários:} Responsável por construir as propostas de sessões. Os testes unitários e de serviço (\textit{AvailabilityServiceTest}) validam a atribuição correta de alunos disponíveis, o respeito pelo número máximo de participantes por sessão, o respeito pelo número máximo de sessões por aluno por dia, as restrições semanais de carga horária do aluno (\textit{weeklyHours}) e o comportamento em cenários sem alunos ou sem disponibilidade do professor.
+    \item \textbf{Mecanismo e algoritmo de criação de horários:} Responsável por construir as propostas de sessões. Os testes unitários e de serviço (\textit{ScheduleServiceTest}) validam a atribuição correta de alunos disponíveis, o respeito pelo número máximo de participantes por sessão, o respeito pelo número máximo de sessões por aluno por dia, as restrições semanais de carga horária do aluno (\textit{weeklyHours}) e o comportamento em cenários sem alunos ou sem disponibilidade do professor.
 
-    \item \textbf{Gestão de Aulas Concretas (\textit{LessonServiceTest}):} Uma adição crítica da versão final que testa a lógica de persistência de aulas recorrentes com datas reais, a criação do histórico de sumários, a marcação de presenças (\textit{attendance}), os fluxos de cancelamento de séries (com simulação de notificações) e a deteção automática de conflitos em edições de horário.
+    \item \textbf{Gestão de Aulas Concretas (\textit{LessonServiceTest}):} Uma adição crítica da versão final que testa a lógica de persistência de aulas recorrentes com datas reais, a consulta de histórico, a marcação de presenças (\textit{attendance}), os fluxos de cancelamento de séries (com simulação de notificações) e a deteção automática de conflitos em edições de horário.
 
-    \item \textbf{Rotas e Contratos da API (\textit{Integration Level}):} Recorrendo à funcionalidade \textit{testApplication} do \textit{Ktor}, foram criados testes de integração automatizados (\textit{LessonRoutesTest} e \textit{AccountRoutesTest}) que simulam pedidos HTTP contra o servidor e validam os payloads JSON e os c´odigos de resposta face ao esperado.
+    \item \textbf{Rotas e Contratos da API (\textit{Integration Level}):} Recorrendo à funcionalidade \textit{testApplication} do \textit{Ktor}, foram criados testes de integração automatizados (\textit{TeacherRoutesTest}, \textit{StudentRoutesTest}, \textit{AvailabilityRoutesTest}, \textit{RestrictionsRoutesTest}, \textit{ScheduleRoutesTest}, \textit{LessonRoutesTest}, \textit{AccountRoutesTest} e \textit{AuthRoutesExtraTest}) que simulam pedidos HTTP contra o servidor e validam os payloads JSON e os códigos de resposta face ao esperado.
 \end{itemize}
 
 Estes testes constituem uma base importante de confiança para o comportamento do sistema, sobretudo nas partes em que a lógica é mais sensível a regras e combinações de dados.
@@ -42,14 +41,14 @@ Os testes realizados no Postman integraram os fluxos originais e as novas rotas 
     \item autenticação de utilizadores e validação de credenciais (\textit{/login});
     \item consulta de listagens globais de professores e alunos;
     \item associação de alunos a professores e remoção desse vínculo;
-    \item consulta de alunos associados a um professores;
-    \item registo, consulta e remoção de lote de disponibilidades;
+    \item consulta de alunos associados a um professor;
+    \item \item registo, consulta e remoção de lote de disponibilidades;
     \item registo, consulta e atualização de restrições do professor;
-    \item criação e execução do algoritmo de criação de horários (\textit{POST /lessons/create});
-    \item \textbf{[Novo]} consulta de horários semanais e históricos específicos de professores e alunos;
-    \item \textbf{[Novo]} alteração dinâmica do estado de presença de um aluno;
-    \item \textbf{[Novo]} remoção de lote de séries de aulas por \textit{seriesId} e cancelamentos individuais;
-    \item \textbf{[Novo]} envio de alertas livres por e-mail aos alunos via \textit{EmailService}.
+    \item criação e execução do algoritmo de criação de horários (\textit{POST /lessons/generate});
+    \item consulta de horários semanais e históricos específicos de professores e alunos;
+    \item alteração dinâmica do estado de presença de um aluno;
+    \item remoção de lote de séries de aulas por \textit{seriesId} e cancelamentos individuais;
+    \item envio de alertas livres por e-mail aos alunos via \textit{EmailService}.
 \end{itemize}
 
 Através destes testes foi possível confirmar que os métodos HTTP e os principais fluxos do domínio estavam corretamente representados no backend. Esta validação em duplicado permitiu também identificar e corrigir inconsistências entre o modelo de dados do frontend e o do backend, contribuindo para uma integração mais robusta entre os dois componentes do ecossistema.
@@ -70,6 +69,10 @@ Entre os fluxos testados destacam-se:
     \item definição de restrições;
     \item criação e apresentação do horário;
     \item aceitação do horário e integração com Google Calendar.
+    \item consulta de aulas persistidas e histórico;
+    \item marcação de presenças por parte do professor;
+    \item remarcação e cancelamento de aulas;
+    \item envio manual de notificações aos alunos.
 \end{itemize}
 
 A validação funcional da aplicação foi importante para garantir que a interface suportava corretamente os comportamentos previstos pelo domínio
@@ -91,9 +94,10 @@ Os testes incidiram sobre aspetos como:
     \item respeito pelos limites de participantes por sessão;
     \item respeito pelo número máximo de sessões por aluno no mesmo dia;
     \item distribuição de alunos por diferentes blocos quando aplicável.
+    \item respeito pelo limite semanal de horas definido para cada aluno;
 \end{itemize}
 
-Através destes testes foi possível confirmar que a versão beta já produz propostas de horário coerentes com as regras definidas e com a informação introduzida no sistema.
+Através destes testes foi possível confirmar que o projeto já produz propostas de horário coerentes com as regras definidas e com a informação introduzida no sistema.
 Embora a abordagem atual ainda possa ser melhorada, os resultados obtidos mostram que a funcionalidade principal do projeto já se encontra operacional.
 
 \section{Integração e Validação Progressiva}
@@ -104,12 +108,12 @@ Esta estratégia permitiu identificar mais cedo inconsistências em endpoints, m
 
 A coexistência de persistência local e persistência remota exigiu também atenção adicional, uma vez que parte da validação teve de assegurar que os dados obtidos da API
 se mantinham consistentes com o estado visível na aplicação.
-Esta abordagem incremental revelou-se útil para consolidar a versão beta e preparar a solução para uma integração mais completa nas fases seguintes do projeto.
+Esta abordagem incremental revelou-se útil para consolidar a solução final e estabelecer uma base sólida para futuras evoluções funcionais do sistema.
 
 \section{Síntese dos Resultados Obtidos}
 
-Os testes realizados permitiram concluir que a versão beta do sistema já apresenta um nível de funcionalidade significativo. O backend está operacional, os principais endpoints foram validados com sucesso, a aplicação Android executa os fluxos centrais do sistema, a autenticação encontra-se funcional e a criação de horários produz resultados coerentes em cenários representativos.
+Os testes realizados permitiram concluir que o sistema apresenta um nível de funcionalidade significativo. O backend está operacional, os principais endpoints foram validados com sucesso, a aplicação Android executa os fluxos centrais do sistema, a autenticação encontra-se funcional e a criação de horários produz resultados coerentes em cenários representativos.
 
 Apesar de persistirem aspetos a melhorar, nomeadamente ao nível da integração total entre componentes, da evolução futura do algoritmo e do polimento de algumas componentes da interface, a validação efetuada demonstra que a solução
 já consegue suportar os casos de uso mais importantes do projeto.
-Este resultado constitui um indicador positivo para a continuação do desenvolvimento até à versão final.
+Este resultado constitui um indicador positivo da robustez da solução atualmente desenvolvida e da sua capacidade de suportar futuras evoluções.

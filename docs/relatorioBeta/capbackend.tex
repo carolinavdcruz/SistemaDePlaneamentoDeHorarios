@@ -23,13 +23,15 @@ amplamente utilizado e adequado ao armazenamento estruturado das entidades do pr
 Para a interação com a base de dados foi utilizada a biblioteca Exposed, que facilita a definição de tabelas e a execução
 de operações de acesso a dados em Kotlin.
 
-No conjunto, estas tecnologias permitiram construir uma base sólida para a versão beta, conciliando simplicidade de desenvolvimento
+No conjunto, estas tecnologias permitiram construir uma base sólida, conciliando simplicidade de desenvolvimento
 com capacidade de evolução futura.
 
 \section{Estrutura do Backend}
 
 O backend foi organizado em vários componentes com responsabilidades distintas, de forma a manter o código compreensível e modular.
+
 Entre os principais elementos da sua estrutura destacam-se:
+
 \begin{itemize}
     \item ficheiro principal de arranque da aplicação, responsável pela inicialização do servidor;
     \item configuração das rotas da API;
@@ -44,7 +46,7 @@ a lógica funcional e o acesso à persistência.
 
 \section{Modelo de Persistência no Backend}
 
-A camada de persistência do backend foi concebida para suportar as entidades centrais do domínio do projeto. Na versão beta, o sistema focava-se no armazenamento de professores, alunos, associações entre ambos, disponibilidades, restrições dos professores e credenciais de autenticação. Para a versão final, este modelo foi expandido de forma a suportar o ciclo de vida completo das aulas e as novas regras de negócio do algoritmo, passando a incluir na sua totalidade:
+A camada de persistência do backend foi concebida para suportar as entidades centrais do domínio do projeto. O sistema focava-se no armazenamento de professores, alunos, associações entre ambos, disponibilidades, restrições dos professores e credenciais de autenticação. Para a versão final, este modelo foi expandido de forma a suportar o ciclo de vida completo das aulas e as novas regras de negócio do algoritmo, passando a incluir na sua totalidade:
 
 \begin{itemize}
     \item professores;
@@ -69,10 +71,10 @@ No contexto da autenticação, manteve-se o uso de \textit{hashing} de palavras-
 
 \section{API REST Implementada}
 
-A API desenvolvida no backend foi desenhada para suportar os fluxos principais do sistema. Os endpoints existentes permitem realizar operações
-de registo, autenticação, consulta, associação de utilizadores, gestão de disponibilidades, gestão de restrições e criação de horários.
+A API desenvolvida no backend foi desenhada para suportar os fluxos principais do sistema. Os endpoints existentes permitem realizar operações de registo, autenticação, consulta, associação de utilizadores, gestão de disponibilidades, gestão de restrições, criação de propostas de horário, persistência de aulas concretas, marcação de presenças, consulta de histórico, cancelamento e remarcação de aulas, bem como envio de notificações.
 
 Entre os principais endpoints implementados incluem-se:
+
 \begin{itemize}
     \item verificação de disponibilidade do servidor;
     \item criação e consulta de professores;
@@ -81,33 +83,42 @@ Entre os principais endpoints implementados incluem-se:
     \item associação e desassociação de alunos a professores;
     \item consulta dos alunos de um professor;
     \item criação, remoção e consulta de disponibilidades;
-    \item criação e consulta de restrições;
-    \item criação de propostas de horário.
+    \item criação e consulta de restrições do professor e do aluno;
+    \item criação de propostas de horário;
+    \item geração e persistência de aulas concretas com datas reais;
+    \item consulta semanal e histórica de aulas;
+    \item marcação de presenças e obtenção de resumos de assiduidade;
+    \item cancelamento individual e cancelamento em série;
+    \item remarcação de aulas;
+    \item envio de notificações por email aos alunos.
 \end{itemize}
-
 
 A utilização de uma API REST permitiu estabelecer um contrato claro entre o frontend e o backend, facilitando a integração progressiva da aplicação Android com a componente remota.
 O formato JSON foi adotado como mecanismo de serialização dos dados, permitindo representar os pedidos e respostas de forma simples e consistente.
-Durante a evolução da versão beta, foi também introduzido um endpoint específico de autenticação, permitindo validar no backend as credenciais dos utilizadores.
+Durante a evolução do projeto, foi também introduzido um endpoint específico de autenticação, permitindo validar no backend as credenciais dos utilizadores.
 Esta alteração representou um passo importante na arquitetura da solução, uma vez que a validação do login deixou de depender da comparação local de dados no frontend,
 passando a ser tratada de forma centralizada na API.
 
 \section{Criação de Horários no Backend}
 
-Uma das evoluções mais relevantes da versão beta foi a passagem da lógica de criação de horários para o backend.
+Uma das evoluções mais relevantes foi a passagem da lógica de criação de horários para o backend.
 Esta decisão permite centralizar a lógica principal do sistema e reduzir a duplicação de comportamento entre cliente e servidor.
 
 A partir da informação armazenada, o backend:
+
 \begin{itemize}
     \item obtém a disponibilidade do professor;
     \item obtém as disponibilidades dos alunos associados;
-    \item carrega as restrições definidas;
+    \item carrega as restrições definidas para o professor;
+    \item carrega o limite semanal de horas definido para cada aluno;
     \item divide os intervalos em blocos temporais adequados;
-    \item  cria sessões compatíveis com os dados disponíveis.
+    \item cria sessões compatíveis com os dados disponíveis;
+    \item persiste essas sessões como aulas concretas com datas reais e recorrência configurável.
 \end{itemize}
 
 Esta lógica permite que a proposta de horário seja construída de forma coerente e reutilizável, garantindo que diferentes clientes possam consumir
 o mesmo comportamento central sem necessidade de replicar o algoritmo localmente.
+Com esta evolução, o backend deixou de produzir apenas um resultado abstrato de planeamento, passando também a gerir o ciclo de vida das aulas geradas, incluindo a sua persistência, consulta, alteração, cancelamento e ligação a séries de recorrência.
 
 \section{Serviço de Notificações por Email}
 
@@ -116,11 +127,14 @@ De modo a assegurar uma comunicação fluida e automatizada entre o sistema e os
 De forma a mitigar dependências externas em ambiente de desenvolvimento e testes, implementou-se um mecanismo de simulação. Caso as variáveis de ambiente necessárias para a ligação SMTP não estejam configuradas, o serviço reverte automaticamente para um modo de simulação, escrevendo o conteúdo e o destino dos emails diretamente nos \textit{logs} da aplicação.
 
 Atualmente, o ecossistema do backend despoleta notificações automáticas por email em três cenários críticos:
+
 \begin{itemize}
     \item  Cancelamento de Aula Individual: Notifica todos os alunos inscritos numa determinada aula de que a respetiva sessão foi cancelada.
     \item Cancelamento de Série: Quando o professor cancela uma recorrência (uma série de aulas), é enviado um aviso geral a todos os alunos.
     \item Remarcação de Aula: Notifica os estudantes sobre alterações na data, hora ou moldes de uma aula já agendada, após a validação de conflitos.
 \end{itemize}
+
+Para além destes cenários automáticos, o sistema suporta também o envio manual de avisos livres pelo professor para todos os alunos associados ou apenas para um subconjunto selecionado, permitindo utilizar a infraestrutura de email como mecanismo de comunicação operacional.
 
 \section{Validação com Postman}
 
@@ -128,14 +142,21 @@ A validação do backend foi realizada com recurso ao Postman, ferramenta utiliz
 Este processo foi importante para confirmar que os contratos da API estavam corretos e que as operações principais produziam os resultados esperados.
 
 Durante os testes foram validados fluxos como:
+
 \begin{itemize}
     \item criação de professores e alunos;
     \item autenticação de utilizadores;
     \item consulta de listas de utilizadores;
-    \item associação entre aluno e professor;
-    \item registo e consulta de disponibilidades;
-    \item registo e consulta de restrições;
-    \item criação de propostas de horário.
+    \item associação e desassociação entre aluno e professor;
+    \item registo, consulta e remoção de disponibilidades;
+    \item registo e consulta de restrições do professor e do aluno;
+    \item criação de propostas de horário;
+    \item geração de aulas concretas com recorrência;
+    \item consulta semanal e histórica de aulas;
+    \item marcação de presenças;
+    \item cancelamento individual e em série;
+    \item remarcação de aulas;
+    \item envio de notificações por email.
 \end{itemize}
 
 A utilização do Postman permitiu isolar o backend durante o processo de validação, facilitando a identificação de problemas antes da integração direta com a aplicação Android.
@@ -144,17 +165,16 @@ Este passo revelou-se particularmente útil para testar a coerência das respost
 \section{Integração com a Aplicação Android}
 
 Após a validação inicial dos endpoints, a integração com o frontend foi sendo realizada de forma progressiva.
-A aplicação Android passou a consumir a API para operações relacionadas com utilizadores, autenticação, disponibilidades, restrições e, mais recentemente, criação de horários.
+A aplicação Android passou a consumir a API para operações relacionadas com utilizadores, autenticação, disponibilidades, restrições, criação de horários, gestão de aulas persistidas, marcação de presenças, notificações e integração com Google Calendar.
 
 Esta integração permitiu aproximar a solução da sua arquitetura final, em que o backend assume o papel de componente central na gestão dos dados e da lógica principal do sistema.
 Apesar de ainda existirem aspetos híbridos entre persistência local e remota, a evolução observada nesta fase demonstra que a base da comunicação cliente-servidor já se encontra estabelecida e funcional.
 
 \section{Síntese do Estado Atual do Backend}
 
-Na versão beta, o backend já se encontra suficientemente estruturado para suportar os principais fluxos do projeto.
+O backend já se encontra suficientemente estruturado para suportar os principais fluxos do projeto.
 A API implementada encontra-se funcional, a ligação à base de dados PostgreSQL foi estabelecida com sucesso e os principais
 endpoints, incluindo os de autenticação e criação de horários, já foram validados de forma independente e em conjunto com a aplicação móvel.
 
 Este estado representa um marco importante no desenvolvimento da solução, pois demonstra que o projeto já não depende apenas de lógica local no frontend.
-O backend passou a constituir uma parte ativa e central do sistema, permitindo sustentar a evolução futura da solução para uma arquitetura mais consistente,
-integrada e próxima da versão final pretendida.
+O backend passou a constituir uma parte ativa e central do sistema, permitindo sustentar o funcionamento atual da solução e a sua evolução futura para novas funcionalidades e cenários de utilização.

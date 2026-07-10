@@ -4,14 +4,14 @@
 \chapter{Enquadramento} \label{cap:enquadramento}
 O planeamento e a organização de horários configuram um desafio clássico de otimização em múltiplos contextos, tais como ambientes educativos, centros de formação e serviços partilhados. A compatibilização de matrizes horárias e restrições operacionais torna-se um processo complexo à medida que o número de participantes escala, exigindo soluções capazes de acomodar preferências individuais, respeitar limites temporais estritos e assegurar uma distribuição homogénea das sessões ao longo da semana.
 
-No âmbito deste projeto, o foco incide sobre a relação bilateral entre docente e discentes. O sistema proposto permite ao professor parametrizar as suas disponibilidades e regras de negócio, enquanto os alunos apenas submetem as suas disponibilidades. A partir destes dados, a plataforma cria de forma autónoma propostas de horário compatíveis.
+No âmbito deste projeto, o foco incide sobre a relação bilateral entre docente e discentes. O sistema proposto permite ao professor parametrizar as suas disponibilidades e regras de negócio, enquanto os alunos submetem as suas disponibilidades e definem a sua carga horária semanal pretendida. A partir destes dados, a plataforma cria de forma autónoma propostas de horário compatíveis.
 Este domínio combina aspetos de gestão de dados, interação utilizador-sistema e lógica de planeamento, tornando o problema simultaneamente prático e tecnicamente relevante.
 
 \section{Problema e Contexto de Aplicação}
 
 O método tradicional e manual de construção de horários assenta em sucessivas trocas de mensagens entre os intervenientes, registos informais e validação empírica de conflitos. Esta abordagem descentralizada perde eficiência quando o volume de alunos aumenta ou perante a volatilidade das agendas. Adicionalmente, a gestão puramente manual dificulta a aplicação rigorosa e sistemática de regras operacionais essenciais, tais como a duração fixa dos blocos, a lotação máxima por sessão e o teto máximo de carga horária diária permitida.
 
-A solução desenvolvida responde a estas limitações através de um ecossistema digital que centraliza a recolha e a estruturação dos dados de agendamento. Em vez de delegar no utilizador o esforço de encontrar combinações viáveis, o sistema processa a informação armazenada para calcular propostas otimizadas. Esta automatização reduz o erro humano por sobreposição, elimina a redundância na comunicação e maximiza a previsibilidade e aproveitamento do tempo útil do professor.
+A solução desenvolvida responde a estas limitações através de um ecossistema digital que centraliza a recolha e a estruturação dos dados de agendamento. Em vez de delegar no utilizador o esforço de encontrar combinações viáveis, o sistema processa a informação armazenada para calcular propostas de horário compatíveis com as restrições e disponibilidades registadas. Esta automatização reduz o erro humano por sobreposição, elimina a redundância na comunicação e maximiza a previsibilidade e aproveitamento do tempo útil do professor.
 
 Embora a implementação atual valide este modelo de dados através do fluxo relacional professor-aluno, o contexto de aplicação e a arquitetura desenvolvida são suficientemente abrangentes para permitir a sua extensão. A matriz lógica adotada serve de base para qualquer cenário de acompanhamento individual ou em grupo em que exista a necessidade de coordenar agendas entre um gestor de recursos e múltiplos participantes.
 
@@ -23,7 +23,7 @@ No mercado atual, o ecossistema de soluções digitais de agendamento pode ser d
 
 \begin{itemize}
     \item \textbf{Sistemas de Agendamento Linear e Individual (e.g., Calendly, Doodle):} Focam-se na marcação de eventos isolados ou fluxos um-para-um, permitindo a seleção de intervalos e o envio automático de confirmações. Contudo, carecem de lógica agregadora para matching, falhando na consolidação global de horários semanais recorrentes;
-    \item \textbf{Plataformas de Calendário e Agenda Eletrónica (e.g., Google Calendar, Microsoft Outlook):} Funcionam com eficácia como repositórios de eventos e ferramentas de partilha visual. Todavia, a sua arquitetura é essencialmente passiva, não integrando motores algorítmicos capazes de processar dados distribuídos e restrições paramétricas do domínio para inferir uma matriz horária otimizada.
+    \item \textbf{Plataformas de Calendário e Agenda Eletrónica (e.g., Google Calendar, Microsoft Outlook):} Funcionam com eficácia como repositórios de eventos e ferramentas de partilha visual. Todavia, a sua arquitetura é essencialmente passiva, não integrando motores algorítmicos capazes de processar dados distribuídos e restrições paramétricas do domínio para inferir uma matriz horária coerente com as disponibilidades e restrições do domínio.
 \end{itemize}
 
 A solução desenvolvida posiciona-se de forma intermédia e especializada face a estas alternativas. Em vez de atuar como um mero repositório estático de eventos, o sistema assume um papel ativo no processo de planeamento. A plataforma combina a gestão relacional de utilizadores, a ingestão descentralizada de disponibilidades e a orquestração de restrições parametrizáveis, estabelecendo uma infraestrutura robusta para a automatização progressiva e inteligente da criação de horários académicos.
@@ -39,12 +39,13 @@ genéricas de calendário ou por sistemas simples de marcação. O projeto prete
     \item associação entre alunos e professor,
     \item registo estruturado de disponibilidades,
     \item configuração de restrições,
-    \item criação automática de propostas de horário.
+    \item criação automática de propostas de horário,
+    \item persistência de aulas concretas com datas reais,
+    \item gestão de presenças, remarcações e cancelamentos,
+    \item integração com serviços externos, nomeadamente Google Calendar e notificações por email.
 \end{itemize}
 
 Além disso, o desenvolvimento do sistema permite explorar aspetos técnicos relevantes do ponto de vista da engenharia de software, nomeadamente a construção de uma
-aplicação Android, o desenvolvimento de uma API REST, a persistência local e remota de dados, e a implementação de lógica de planeamento baseada em restrições.
+aplicação Android, o desenvolvimento de uma API REST, a persistência remota centralizada de dados e utilização de mecanismos locais de suporte no frontend, e a implementação de lógica de planeamento baseada em restrições.
 Desta forma, o projeto não se limita a resolver um problema prático, mas constitui também uma oportunidade para consolidar competências técnicas adquiridas ao longo do curso e novas competências relacionadas com a utilização de LLM's e bibliotecas externas.
 
-A versão beta do projeto procura, assim, demonstrar a viabilidade desta abordagem, validando os fluxos principais da solução e preparando o caminho para funcionalidades
-futuras, como reforço da integração entre componentes, melhoria do algoritmo de planeamento e eventual suporte a novos tipos de entrada de dados.

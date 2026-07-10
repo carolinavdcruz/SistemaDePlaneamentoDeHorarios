@@ -13,45 +13,44 @@
 \contentsline {section}{\numberline {3.3}Arquitetura do Backend}{10}{section.3.3}%
 \contentsline {section}{\numberline {3.4}Persistência de Dados}{11}{section.3.4}%
 \contentsline {section}{\numberline {3.5}Comunicação entre Frontend e Backend}{12}{section.3.5}%
-\contentsline {section}{\numberline {3.6}Considerações sobre a Arquitetura Atual}{12}{section.3.6}%
-\contentsline {chapter}{\numberline {4}Implementação do Sistema}{13}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Organização Funcional da Aplicação}{13}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Gestão de Utilizadores e Perfis}{13}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Gestão de Disponibilidades}{14}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Gestão de Restrições}{15}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Associação entre Alunos e Professores}{15}{section.4.5}%
-\contentsline {section}{\numberline {4.6}Criação de Propostas de Horário}{16}{section.4.6}%
-\contentsline {section}{\numberline {4.7}Visualização do Horário Criado}{16}{section.4.7}%
-\contentsline {section}{\numberline {4.8}Integração Progressiva com o Backend}{17}{section.4.8}%
-\contentsline {chapter}{\numberline {5}Backend e API}{19}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Escolha Tecnológica}{19}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Estrutura do Backend}{19}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Modelo de Persistência no Backend}{20}{section.5.3}%
-\contentsline {section}{\numberline {5.4}API REST Implementada}{21}{section.5.4}%
-\contentsline {section}{\numberline {5.5}Criação de Horários no Backend}{21}{section.5.5}%
-\contentsline {section}{\numberline {5.6}Validação com Postman}{22}{section.5.6}%
-\contentsline {section}{\numberline {5.7}Integração com a Aplicação Android}{22}{section.5.7}%
-\contentsline {section}{\numberline {5.8}Síntese do Estado Atual do Backend}{23}{section.5.8}%
-\contentsline {chapter}{\numberline {6}Testes e Validação}{25}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Testes Unitários}{25}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Validação do Backend com Postman}{26}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Testes Funcionais da Aplicação Android}{27}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Validação da Criação de Horários}{27}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Integração e Validação Progressiva}{28}{section.6.5}%
-\contentsline {section}{\numberline {6.6}Síntese dos Resultados Obtidos}{28}{section.6.6}%
-\contentsline {chapter}{\numberline {7}Estudo Exploratório com Large Language Models (LLMs) para Interpretação de Disponibilidades}{29}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Modelos e Ferramentas Avaliados}{29}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Resultados Obtidos com OCR e Multimodalidade}{30}{section.7.2}%
-\contentsline {subsection}{\numberline {7.2.1}Avaliação do GLM-OCR (q8\_0)}{30}{subsection.7.2.1}%
-\contentsline {subsection}{\numberline {7.2.2}Avaliação do Qwen2.5-VL (3b)}{30}{subsection.7.2.2}%
-\contentsline {section}{\numberline {7.3}Estado Atual da Componente de Áudio}{31}{section.7.3}%
-\contentsline {section}{\numberline {7.4}Proposta de Integração no Projeto}{31}{section.7.4}%
-\contentsline {section}{\numberline {7.5}Síntese do Estudo}{32}{section.7.5}%
-\contentsline {chapter}{\numberline {8}Estado Atual da Beta e Próximos Passos}{33}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Funcionalidades Concluídas na Versão Beta}{33}{section.8.1}%
-\contentsline {section}{\numberline {8.2}Estado da Integração do Sistema}{34}{section.8.2}%
-\contentsline {section}{\numberline {8.3}Limitações Atuais}{34}{section.8.3}%
-\contentsline {section}{\numberline {8.4}Próximos Passos}{35}{section.8.4}%
-\contentsline {section}{\numberline {8.5}Balanço da Versão Beta}{35}{section.8.5}%
-\contentsline {chapter}{\numberline {9}Conclusões}{37}{chapter.9}%
-\contentsline {chapter}{Refer\^{e}ncias}{39}{chapter*.5}%
+\contentsline {section}{\numberline {3.6}Considerações sobre a Arquitetura Atual}{13}{section.3.6}%
+\contentsline {chapter}{\numberline {4}Implementação do Sistema}{15}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Organização Funcional da Aplicação}{15}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Gestão de Utilizadores e Perfis}{16}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Gestão de Disponibilidades}{16}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Gestão de Restrições}{17}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Associação entre Alunos e Professores}{17}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Criação de Propostas de Horário}{18}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Visualização do Horário Criado}{18}{section.4.7}%
+\contentsline {section}{\numberline {4.8}Gestão Dinâmica de Aulas e Presenças}{19}{section.4.8}%
+\contentsline {section}{\numberline {4.9}Integração Progressiva com o Backend}{19}{section.4.9}%
+\contentsline {chapter}{\numberline {5}Backend e API}{21}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Escolha Tecnológica}{21}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Estrutura do Backend}{21}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Modelo de Persistência no Backend}{22}{section.5.3}%
+\contentsline {section}{\numberline {5.4}API REST Implementada}{23}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Criação de Horários no Backend}{24}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Serviço de Notificações por Email}{25}{section.5.6}%
+\contentsline {section}{\numberline {5.7}Validação com Postman}{25}{section.5.7}%
+\contentsline {section}{\numberline {5.8}Integração com a Aplicação Android}{26}{section.5.8}%
+\contentsline {section}{\numberline {5.9}Síntese do Estado Atual do Backend}{26}{section.5.9}%
+\contentsline {chapter}{\numberline {6}Testes e Validação}{29}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Infraestrutura e Testes Automatizados no Backend}{29}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Validação do Backend com Postman}{30}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Testes Funcionais da Aplicação Android}{31}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Validação da Criação de Horários}{32}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Integração e Validação Progressiva}{33}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Síntese dos Resultados Obtidos}{33}{section.6.6}%
+\contentsline {chapter}{\numberline {7}Estudo Exploratório com Large Language Models (LLMs) para Interpretação de Disponibilidades}{35}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Modelos e Ferramentas Avaliados}{35}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Resultados Obtidos com OCR e Multimodalidade}{36}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}Avaliação do GLM-OCR (q8\_0)}{36}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Avaliação do Qwen2.5-VL (3b)}{36}{subsection.7.2.2}%
+\contentsline {section}{\numberline {7.3}Estado Atual da Componente de Áudio}{37}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Proposta de Integração no Projeto}{37}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Síntese do Estudo}{38}{section.7.5}%
+\contentsline {chapter}{\numberline {8}Estado Final do Sistema e Avaliação}{39}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Funcionalidades Concluídas e Avaliação de Progresso}{39}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Limitações Reais e Trabalho Futuro}{40}{section.8.2}%
+\contentsline {chapter}{\numberline {9}Conclusões}{41}{chapter.9}%
+\contentsline {chapter}{Refer\^{e}ncias}{43}{chapter*.5}%

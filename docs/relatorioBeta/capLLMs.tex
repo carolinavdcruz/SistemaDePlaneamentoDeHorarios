@@ -3,11 +3,13 @@
 %
 \chapter{Estudo Exploratório com Large Language Models (LLMs) para Interpretação de Disponibilidades} \label{cap:llms}
 
-No âmbito do projeto, foi desenvolvido um estudo com o objetivo de avaliar a viabilidade de utilização de modelos locais e multimodais para interpretar disponibilidades de professores e alunos a partir de diferentes tipos de input.
+Foi desenvolvido um estudo exploratório com o objetivo de avaliar a viabilidade de utilização de modelos locais e multimodais para interpretar disponibilidades de professores e alunos a partir de diferentes tipos de input.
 A motivação para este estudo surgiu da possibilidade de, no futuro, permitir à aplicação receber informação em formatos menos estruturados, como texto livre, imagens, \textit{screenshots}, fotografias manuscritas ou áudio, transformando esses dados em informação útil para o sistema.
 
 A ideia central consistiu em analisar se seria possível utilizar estes modelos como apoio ao registo de disponibilidades, reduzindo a necessidade de inserção exclusivamente manual e estruturada por parte do utilizador.
+
 Até ao momento, o estudo foi dividido em três frentes principais:
+
 \begin{itemize}
     \item extração de texto a partir de imagens;
     \item interpretação de disponibilidades em texto e imagem;
@@ -17,9 +19,9 @@ Até ao momento, o estudo foi dividido em três frentes principais:
 \section{Modelos e Ferramentas Avaliados}
 
 Durante esta fase foram considerados diferentes modelos e ferramentas, com papéis distintos no processamento dos dados:
+
 \begin{itemize}
-    \item \textit{llava}~\cite{llava}, utilizado numa fase inicial como modelo multimodal geral;
-    \item \textit{glm-ocr:q8\_0}, avaliado como solução local dedicada a OCR;
+    \item \textit{LLaVA}~\cite{llava}, utilizado numa fase inicial como modelo multimodal geral;    \item \textit{glm-ocr:q8\_0}, avaliado como solução local dedicada a OCR;
     \item \textit{qwen2.5vl:3b}~\cite{qwen25-vl}, utilizado como modelo multimodal para interpretação de imagem e texto;
     \item \textit{ffmpeg}, instalado como ferramenta de apoio à preparação de ficheiros áudio;
     \item \textit{Whisper}~\cite{whisper}, considerado para uma futura etapa de transcrição automática de áudio.
@@ -30,21 +32,27 @@ O \textit{glm-ocr:q8\_0} foi inicialmente escolhido por ser leve, local e vocaci
 Já o \textit{qwen2.5vl:3b} destacou-se como o candidato mais promissor para interpretação de inputs visuais e textuais.
 
 \section{Resultados Obtidos com OCR e Multimodalidade}
+
 Os testes experimentais focaram-se na capacidade de extração de dados e na robustez de estruturação de ambos os modelos perante diferentes níveis de ruído no input.
 
 \subsection{Avaliação do GLM-OCR (q8\_0)}
+
 O modelo demonstrou eficácia restrita a cenários controlados, exibindo as seguintes caraterísticas:
+
 \begin{itemize}
     \item \textbf{Pontos Fortes:} Desempenho positivo na leitura de texto digital limpo, tabelas estruturadas e \textit{screenshots}.
     \item \textbf{Limitações Sémanticas:} Incapacidade de estruturar dados em formatos estritos (como JSON válido) e tendência para traduzir os dias da semana para inglês.
     \item \textbf{Falhas em Manuscritos:} Elevada taxa de erro em fotografias de escrita manual, introduzindo linhas inexistentes e alterando horários originais.
 \end{itemize}
+
 Concluiu-se que o \textit{GLM-OCR} serve apenas como ferramenta de OCR simples, sendo inviável para a ingestão autónoma do sistema.
 
 \subsection{Avaliação do Qwen2.5-VL (3b)}
+
 O \textit{Qwen2.5-VL} apresentou um desempenho marcadamente superior, validando a abordagem \textit{vision-language} em cenários reais:
+
 \begin{itemize}
-    \item \textbf{Robustez Contextual:} Elevada estabilidade em registos manuscritas, preservando os intervalos temporais factuais sem inventar informação, apesar de pequenos erros ortográficos isolados.
+    \item \textbf{Robustez Contextual:} Elevada estabilidade em registos manuscritos, preservando os intervalos temporais factuais sem inventar informação, apesar de pequenos erros ortográficos isolados.
     \item \textbf{Versatilidade de Inputs:} Extração bem-sucedida a partir de texto livre, imagens e \textit{screenshots}.
     \item \textbf{Interpretação Semântica:} Capacidade de compreender disponibilidades descritas em linguagem natural, mapear preferências e isolar indisponibilidades.
 \end{itemize}
@@ -59,21 +67,24 @@ Foi preparado um ficheiro de teste e instalada a ferramenta \textit{ffmpeg} para
 No entanto, a etapa de transcrição automática ainda não foi concluída, mantendo-se o \textit{Whisper} como a solução mais provável para evolução futura.
 
 Dado que o \textit{qwen2.5vl:3b} não interpreta áudio diretamente, a arquitetura prevista e pensada para este caso passa por uma pipeline em duas etapas:
+
 \begin{itemize}
     \item transcrição do áudio para texto com um modelo de reconhecimento de fala;
     \item interpretação desse texto com o modelo multimodal selecionado.
 \end{itemize}
 
 Assim, a abordagem atualmente considerada para este tipo de input corresponde a:
+
 \begin{center}
     \textit{audio} $\rightarrow$ \textit{Whisper} $\rightarrow$ texto transcrito $\rightarrow$ \textit{qwen2.5vl:3b}
 \end{center}
 
 \section{Proposta de Integração no Projeto}
 
-Embora esta componente ainda não se encontre integrada na versão beta da aplicação, o estudo realizado já permite delinear uma proposta de arquitetura para evolução futura do sistema.
+Embora esta componente não tenha sido integrada na solução final, o estudo realizado permite já delinear uma proposta de arquitetura para evolução futura do sistema.
 
 A solução mais promissora identificada até ao momento assenta nos seguintes fluxos:
+
 \begin{itemize}
     \item texto direto $\rightarrow$ \textit{qwen2.5vl:3b};
     \item imagem simples $\rightarrow$ \textit{qwen2.5vl:3b};
@@ -82,13 +93,10 @@ A solução mais promissora identificada até ao momento assenta nos seguintes f
     \item áudio $\rightarrow$ \textit{Whisper} + \textit{qwen2.5vl:3b}.
 \end{itemize}
 
-Esta abordagem permitiria acrescentar à aplicação uma forma mais flexível de recolha de disponibilidades, especialmente útil em contextos que o utilizador dispõe da informação em formatos menos estruturados.
+Esta abordagem permitiria acrescentar à aplicação uma forma mais flexível de recolha de disponibilidades, especialmente útil em contextos em que o utilizador dispõe da informação em formatos menos estruturados.
 Ao mesmo tempo, os resultados obtidos mostram que esta integração deverá ser feita com cuidado, prevendo sempre mecanismos de validação e confirmação por parte do utilizador, sobretudo em casos de manuscrito ou áudio.
 
 \section{Síntese do Estudo}
 
 O estudo realizado permitiu concluir que, até ao momento, não foi identificado um único modelo capaz de tratar de forma totalmente fiável todos os tipos de input considerados.
 Ainda assim, foi possível identificar uma abordagem tecnicamente promissora para evolução futura da solução, com destaque para o \textit{qwen2.5vl:3b} como principal candidato para imagem e texto, e para o \textit{Whisper} como etapa complementar no caso do áudio.
-
-Desta forma, esta linha de trabalho não constitui ainda uma funcionalidade concluída da versão beta,
-mas representa uma direção de evolução concreta e fundamentada para o projeto, alinhada com o objetivo de tornar o registo de disponibilidades mais natural, acessível e adaptável a diferentes formatos de entrada.

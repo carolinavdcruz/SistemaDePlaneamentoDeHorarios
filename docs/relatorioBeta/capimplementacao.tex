@@ -8,9 +8,7 @@ Android e evoluindo depois para a integração com o backend e com a base de dad
 Esta abordagem permitiu validar gradualmente os principais casos de uso do projeto, garantindo que cada funcionalidade
 essencial ficava operacional antes da introdução de novos componentes ou maior complexidade.
 
-A solução resultante permite já concretizar um conjunto alargado de operações centrais ao domínio do problema, nomeadamente
-registo de utilizadores, definição de disponibilidades, gestão de restrições, associação entre alunos e professores e criação
-de propostas de horário.
+A solução resultante permite concretizar um conjunto alargado de operações centrais ao domínio do problema, nomeadamente registo e autenticação de utilizadores, definição de disponibilidades, gestão de restrições, associação entre alunos e professores, criação de propostas de horário, persistência de aulas concretas com datas reais, gestão de presenças, cancelamentos, remarcações e envio de notificações.
 
 \section{Organização Funcional da Aplicação}
 
@@ -18,6 +16,7 @@ A aplicação foi concebida em torno de dois perfis principais de utilizador: pr
 A interface e os fluxos disponíveis são ajustados a cada um destes perfis, permitindo apresentar apenas as operações relevantes para cada caso.
 
 A implementação do frontend procurou manter uma separação clara entre:
+
 \begin{itemize}
     \item apresentação visual da interface;
     \item estado da aplicação e lógica de interação;
@@ -33,12 +32,12 @@ Uma das primeiras preocupações da implementação foi distinguir corretamente 
 Esta separação é essencial porque professores e alunos desempenham papéis diferentes no problema do planeamento de horários.
 
 Na solução implementada:
-\begin{itemize}
-    \item o professor pode definir a sua disponibilidade, configurar restrições, consultar os alunos associados e criar propostas de horário;
-    \item o aluno pode escolher um professor, consultar o professor associado e registar a sua disponibilidade;
-    \item a navegação da aplicação adapta-se ao perfil autenticado, apresentando diferentes opções no \textit{dashboard}.
-\end{itemize}
 
+\begin{itemize}
+    \item o professor pode definir a sua disponibilidade, configurar restrições, consultar os alunos associados, criar propostas de horário, confirmar essas propostas e gerir as aulas persistidas;
+    \item o aluno pode escolher um professor, consultar o professor associado, registar a sua disponibilidade, definir a sua carga horária semanal pretendida e consultar as aulas que lhe estão atribuídas;
+    \item a navegação da aplicação adapta-se ao perfil autenticado, apresentando ecrãs e operações distintas para cada perfil.
+\item \end{itemize}
 
 A gestão de sessão local foi integrada no frontend, permitindo preservar informação sobre o utilizador autenticado e suportar a adaptação dos fluxos
 da aplicação ao papel desempenhado. Esta distinção entre perfis foi também refletida no modelo de dados e na lógica dos ecrãs principais.
@@ -54,6 +53,7 @@ Por esse motivo, a funcionalidade foi evoluída para suportar múltiplos interva
 disponibilidade durante a manhã e novamente durante a tarde no mesmo dia da semana.
 
 Esta evolução teve impacto direto na interface e na lógica da aplicação, permitindo:
+
 \begin{itemize}
     \item acrescentar vários intervalos no mesmo dia;
     \item definir horas de início e fim específicas para cada bloco;
@@ -62,8 +62,7 @@ Esta evolução teve impacto direto na interface e na lógica da aplicação, pe
 \end{itemize}
 
 
-A gestão de disponibilidades foi implementada de forma a suportar persistência local e, progressivamente, comunicação com o backend, permitindo que os dados
-fiquem disponíveis para posterior utilização na criação de horários.
+A gestão de disponibilidades foi implementada de forma a suportar registo estruturado no frontend e persistência remota no backend, mantendo no dispositivo apenas mecanismos auxiliares de suporte local.
 
 \section{Gestão de Restrições}
 
@@ -71,6 +70,7 @@ Para além das disponibilidades, o sistema implementa um conjunto de restriçõe
 Estas restrições representam regras de negócio relevantes para o problema e são definidas a partir do perfil do professor.
 
 Na implementação atual, o professor pode configurar:
+
 \begin{itemize}
     \item número máximo de horas diárias;
     \item duração de cada sessão;
@@ -80,6 +80,7 @@ Na implementação atual, o professor pode configurar:
 
 A introdução desta funcionalidade permitiu passar de uma simples compatibilização de horários para um problema de planeamento mais próximo do caso de uso real.
 As restrições são persistidas e utilizadas posteriormente pelo mecanismo de criação de horários, desempenhando um papel central na validação das sessões propostas.
+Para além das restrições configuradas pelo professor, o sistema passou também a permitir ao aluno definir a sua carga horária semanal pretendida. Esta informação é integrada no algoritmo de criação de horários, evitando atribuições semanais acima do limite definido para cada estudante.
 
 \section{Associação entre Alunos e Professores}
 
@@ -87,6 +88,7 @@ Outro aspeto relevante da implementação foi a definição do modelo de associa
 A solução adotada considera que cada aluno pode escolher um único professor, enquanto um professor pode ter vários alunos associados.
 
 Esta decisão foi refletida:
+
 \begin{itemize}
     \item no modelo de dados;
     \item na lógica do frontend;
@@ -99,6 +101,7 @@ Esta decisão foi refletida:
 A criação de horários constitui o núcleo funcional do projeto. Na versão final, este processo evoluiu de um modelo puramente abstrato para uma abordagem em dois níveis: a criação de uma proposta semanal baseada em \textit{templates} e a subsequente instanciação de aulas concretas e calendarizadas na base de dados com datas do ano civil.
 
 A lógica de criação parte de uma representação em blocos temporais, obtidos a partir dos intervalos de disponibilidade registados. Estes blocos são analisados pelo algoritmo para identificar combinações viáveis entre o professor e os seus alunos. O processo de construção das propostas considera, de forma combinada, os seguintes aspetos:
+
 \begin{itemize}
     \item compatibilidade de disponibilidade entre professor e alunos;
     \item limite máximo de alunos por sessão;
@@ -118,6 +121,7 @@ Em vez de mostrar apenas uma lista simples de resultados, foi construída uma vi
 onde cada sessão aparece com o respetivo intervalo horário e a lista de alunos atribuídos.
 
 Esta representação permite ao utilizador compreender facilmente:
+
 \begin{itemize}
     \item em que dias existem sessões;
     \item quais os intervalos temporais ocupados;
@@ -125,8 +129,9 @@ Esta representação permite ao utilizador compreender facilmente:
     \item em que dias não existem sessões previstas.
 \end{itemize}
 
-A implementação desta visualização constitui uma componente importante da versão beta, pois transforma o resultado do algoritmo
+A implementação desta visualização constitui uma componente importante, pois transforma o resultado do algoritmo
 numa representação diretamente compreensível e utilizável pelo utilizador final.
+Para além da proposta semanal abstrata, a aplicação passou também a suportar a visualização de aulas concretas já persistidas, organizadas por semana e por intervalo temporal. Esta distinção entre proposta e aulas reais tornou-se importante para separar a fase de planeamento da fase operacional do sistema.
 
 \section{Gestão Dinâmica de Aulas e Presenças}
 
@@ -134,7 +139,7 @@ Com o backend e as aplicações móveis totalmente integrados, foi possível exp
 
 No lado do docente, através do \textit{TeacherLessonsScreen}, passou a ser possível gerir o ciclo de vida das aulas. O professor dispõe de uma vista semanal organizada por datas concretas, onde pode criar novas aulas calendarizadas, editar o horário/data (com validação automática no backend para evitar sobreposição de horários do docente) e efetuar o cancelamento individual ou em série de aulas (o que cria os referidos emails automáticos). É também neste ecrã que se faz a marcação e alteração de presenças dos alunos, cujos dados agregados alimentam um resumo estatístico consultável pelo docente.
 
-Do lado do estudante, o ecrã \textit{StudentLessonsScreen} oferece uma visão clara e cronológica do seu horário pessoal para a semana corrente. O aluno consegue verificar o estado de cada aula (confirmada ou cancelada) e acompanhar o seu histórico de assiduidade e pontualidade ao longo do semestre.
+Do lado do estudante, o ecrã \textit{StudentLessonsScreen} oferece uma visão clara e cronológica do seu horário pessoal para a semana corrente. O aluno consegue verificar o estado de cada aula (confirmada ou cancelada) e acompanhar o estado das suas aulas e a informação de assiduidade registada no sistema.
 
 \section{Integração Progressiva com o Backend}
 
@@ -143,4 +148,4 @@ Algumas operações começaram por ser validadas localmente, recorrendo à persi
 a API REST e interagir com o PostgreSQL.
 
 Este processo de integração foi realizado de forma progressiva, permitindo validar cada funcionalidade antes da passagem completa para a componente remota.
-A implementação atual representa, uma base funcional robusta sobre a qual existiu uma redução gradual da dependência de mecanismos locais auxiliares e reforçando o papel do backend como componente central do sistema.
+A implementação atual representa uma base funcional robusta, marcada por uma redução gradual da dependência de mecanismos locais auxiliares e pelo reforço do papel do backend como componente central do sistema.

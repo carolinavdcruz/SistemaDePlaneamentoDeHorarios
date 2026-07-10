@@ -8,13 +8,13 @@ A level-1 auxiliary file: capimplementacao.aux
 A level-1 auxiliary file: capbackend.aux
 A level-1 auxiliary file: captestes.aux
 A level-1 auxiliary file: capLLMs.aux
-A level-1 auxiliary file: capestadobeta.aux
+A level-1 auxiliary file: capestado.aux
 A level-1 auxiliary file: capconclusoes.aux
 The style file: unsrt.bst
 Database file #1: referencias.bib
 You've used 12 entries,
             1791 wiz_defined-function locations,
-            499 strings with 4682 characters,
+            499 strings with 4678 characters,
 and the built_in function-call counts, 1732 in all, are:
 = -- 132
 > -- 78

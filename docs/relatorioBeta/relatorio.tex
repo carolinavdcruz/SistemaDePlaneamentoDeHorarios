@@ -88,26 +88,29 @@
 % Página de resumo em Português
     \cleardoublepage
     \chapter*{Resumo}
-    O presente relatório descreve o desenvolvimento da versão beta do projeto \textit{Sistema de Planeamento de Horários},
-    realizado no âmbito da unidade curricular de Projecto e Seminário da Licenciatura em Engenharia Informática e de Computadores.
+    O presente relatório descreve o desenvolvimento final do projeto \textit{Sistema de Planeamento de Horários}, realizado no âmbito da unidade curricular de Projeto e Seminário da Licenciatura em Engenharia Informática e de Computadores.
 
-    O projeto surgiu da necessidade de simplificar a organização de horários entre professores e alunos,
-    num contexto em que esta tarefa é frequentemente realizada de forma manual, demorada e sujeita a reajustes constantes.
-    A solução proposta tem como objetivo apoiar esse processo através do registo de utilizadores, da recolha de disponibilidades,
-    da definição de restrições e da construção de propostas de horário de forma mais estruturada.
+    O projeto surgiu da necessidade de simplificar a organização de horários entre professores e alunos, num contexto em que esta tarefa é frequentemente realizada de forma manual, demorada e sujeita a reajustes constantes. A solução proposta tem como objetivo apoiar esse processo através do registo de utilizadores, da recolha de disponibilidades, da definição de restrições e da construção de propostas de horário de forma estruturada.
 
-    Na versão beta foi desenvolvida uma aplicação móvel articulada com uma componente de backend e persistência remota,
-    permitindo suportar os principais fluxos do sistema.
-    Entre as funcionalidades já implementadas destacam-se a autenticação de utilizadores, a associação entre alunos e professores,
-    a definição de disponibilidades com múltiplos intervalos por dia, a configuração de restrições de agendamento,
-    a construção de propostas de horário e a integração do horário aceite com o Google Calendar do professor.
+    A solução desenvolvida integra uma aplicação móvel Android, um backend com API REST implementado em Ktor e persistência central em PostgreSQL. Entre as funcionalidades implementadas destacam-se a autenticação de utilizadores, a associação entre alunos e professores, a definição de disponibilidades com múltiplos intervalos por dia, a configuração de restrições do professor e do aluno, a criação automática de propostas de horário e a persistência de aulas concretas com datas reais.
 
-    Esta fase permitiu validar a arquitetura global da solução, a comunicação entre os seus componentes e o funcionamento dos fluxos principais da aplicação.
-    Foram realizados testes unitários, testes funcionais e validação dos principais serviços do sistema.
-    Os resultados obtidos demonstram a viabilidade da solução e estabelecem uma base consistente para a continuação do desenvolvimento até à versão final.
+    Para além da criação do horário semanal, o sistema suporta recorrência de aulas, consulta de histórico, marcação de presenças, cancelamento e remarcação de aulas, envio de notificações por email aos alunos e integração do horário aceite com o Google Calendar do professor. Foram ainda realizados testes unitários e de integração sobre componentes do frontend e do backend, permitindo validar os principais fluxos funcionais e regras de negócio.
 
-%{\bf Palavras-chave:} planeamento de horários; Android; Kotlin; Ktor; PostgreSQL; API REST.
+    Os resultados obtidos demonstram a viabilidade técnica e prática da solução, bem como a sua adequação a cenários reais de utilização. O sistema final constitui uma base consistente para evolução futura, nomeadamente ao nível da gestão de salas e da interpretação automática de disponibilidades a partir de texto, imagem ou áudio.
 
+
+    \cleardoublepage
+    \chapter*{Abstract}
+
+    This report presents the final development of the project \textit{Scheduling Planning System}, carried out within the Project and Seminar course of the Bachelor's Degree in Computer Science and Computer Engineering.
+
+    The project emerged from the need to simplify schedule management between teachers and students, in a context where this task is often performed manually, is time-consuming, and requires frequent adjustments. The proposed solution supports this process through user registration, availability collection, restriction management, and structured schedule generation.
+
+    The developed solution integrates an Android mobile application, a backend with a REST API implemented in Ktor, and central persistence in PostgreSQL. The implemented features include user authentication, teacher-student association, availability definition with multiple time blocks per day, teacher and student restriction management, automatic schedule proposal generation, and persistence of concrete lessons with real calendar dates.
+
+    In addition to weekly schedule generation, the system supports lesson recurrence, history consultation, attendance registration, lesson cancellation and rescheduling, email notifications to students, and integration of accepted schedules with the teacher's Google Calendar. Unit and integration tests were also carried out for both frontend and backend components, validating the main functional flows and business rules.
+
+    The obtained results demonstrate the technical and practical feasibility of the solution, as well as its suitability for real-world usage scenarios. The final system provides a consistent basis for future evolution, namely in classroom management and automatic availability interpretation from text, image, or audio.
 
 % Página sobre utilização de IA
     \cleardoublepage
@@ -125,7 +128,7 @@
     \end{itemize}
 
     Para além disso, no âmbito de uma linha exploratória do projeto, foram também analisadas possibilidades de utilização de modelos locais e multimodais para interpretação de disponibilidades a partir de texto, imagem e, futuramente, áudio.
-    Esta componente foi desenvolvida como estudo complementar e não como funcionalidade concluída da versão beta.
+    Esta componente foi desenvolvida como estudo complementar e não como funcionalidade concluída da versão final.
 
     A utilização destas ferramentas teve sempre um papel de apoio.
     As decisões de projeto, a implementação final, a validação do comportamento da aplicação e a redação final do relatório permaneceram sob responsabilidade das autoras, tendo sido sempre efetuada revisão humana sobre os conteúdos produzidos com o apoio de inteligência artificial.
@@ -160,14 +163,13 @@
     \include{capLLMs}
 
 % Capitulo 8
-    \include{capestadobeta}
+    \include{capestado}
 
 % Capitulo 9
     \include{capconclusoes}
 
 % Referências
-    \nocite{kotlin-docs,android-architecture,jetpack-compose,room-docs,ktor-docs,postgresql-docs,google-calendar-api,bcrypt-paper,qwen25-vl,whisper,llava,asimov-multimodal, jakarta-mail, h2-database, docker-ref}
-    \bibliographystyle{unsrt}
+    \nocite{kotlin-docs,android-architecture,jetpack-compose,room-docs,ktor-docs,postgresql-docs,google-calendar-api,bcrypt-paper,qwen25-vl,whisper,llava,asimov-multimodal}    \bibliographystyle{unsrt}
     \bibliography{referencias}
     \addcontentsline{toc}{chapter}{Refer\^{e}ncias}
 

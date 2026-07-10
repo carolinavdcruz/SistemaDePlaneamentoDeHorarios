@@ -1,0 +1,31 @@
+%
+% Capítulo 8
+%
+\chapter{Estado Final do Sistema e Avaliação} \label{cap:estado-final}
+
+A solução já não se encontra limitada a um protótipo exclusivamente local. Com a introdução do backend em \textit{Ktor}, a integração com \textit{PostgreSQL} e a utilização de uma API REST funcional, o sistema passou a suportar um cenário de utilização multiutilizador próximo de um contexto real.
+
+Este capítulo apresenta uma avaliação crítica do sistema edificado, confrontando os avanços alcançados face às limitações previamente identificadas e listando, de forma transparente, os requisitos que transitam como trabalho futuro.
+
+\section{Funcionalidades Concluídas e Avaliação de Progresso}
+
+O progresso e as metas atingidas são avaliados nos seguintes vetores:
+
+\begin{itemize}
+    \item \textbf{Consolidação da Persistência e Fim do Modelo Híbrido:} Uma das maiores limitações da fase anterior prendia-se com a dependência de fluxos híbridos e a falta de sincronização clara entre o \textit{Room} (local) e o \textit{PostgreSQL} (remoto). Na versão final, esta fragilidade foi significativamente reduzida. A persistência local passou a assumir um papel essencialmente auxiliar de \textit{cache} e suporte à interface, enquanto a centralização dos dados principais ficou cometida ao backend.
+    \item \textbf{Melhoria do Algoritmo de Horários:} O mecanismo de criação  de propostas, que antes operava em cenários muito simplificados, foi evoluído para lidar com condicionantes mais complexas do domínio, destacando-se a integração bem-sucedida do limite de carga horária semanal individualizada de cada aluno.
+    \item \textbf{Criação Concreta e Ciclo de Vida de Aulas:} O sistema passou a transpor com sucesso as propostas semanais abstratas para instâncias físicas de aulas agendadas no ano civil, permitindo ao corpo docente o controlo de aulas, faltas e presenças com datas reais persistidas na base de dados.
+    \item \textbf{Automatização de Notificações:} A integração do \textit{EmailService} colmatou a necessidade de comunicação dinâmica, garantindo que cancelamentos e remarcações disparados via aplicação móvel criam alertas SMTP automáticos para os visados.
+    \item \textbf{Alargamento Crítico da Cobertura de Testes:} A validação progrediu de um carácter essencialmente manual com Postman para uma automatização alargada, tirando partido de testes de integração de rotas e serviços baseados numa base de dados \textit{H2} em memória.
+\end{itemize}
+
+\section{Limitações Reais e Trabalho Futuro}
+
+Apesar de a solução cumprir com rigor o propósito focado na gestão e planeamento de horários entre explicadores e alunos, a gestão do tempo e a priorização da estabilidade da API ditaram o adiamento de algumas funcionalidades idealizadas. Assumem-se como limitações reais do projeto final:
+
+\begin{itemize}
+    \item \textbf{Gestão e Alocação de Salas:} O algoritmo e a base de dados detetam sobreposições horárias de utilizadores, mas o sistema não contempla a componente física de inventário e alocação de salas de aula ou espaços de tutorias.
+    \item \textbf{Múltiplas Formas de Input de Disponibilidades:} Embora o estudo exploratório com o modelo multimodal \textit{qwen2.5vl:3b} e com o \textit{Whisper} tenha delineado uma \textit{pipeline} tecnicamente promissora, a interpretação automatizada de disponibilidades a partir de texto livre, imagem ou áudio não foi integrada na aplicação final. A recolha de dados continua a depender exclusivamente da inserção manual e estruturada na interface móvel.
+\end{itemize}
+
+Estas limitações não comprometem o valor prático da solução obtida, mas demonstram um caminho claro e fundamentado para futuras versões do produto.
