@@ -52,14 +52,11 @@ fun Route.lessonRoutes() {
 
         val teacherId = request.teacherId
 
-        val startDate = LocalDate.parse(request.startDate)
-        if (startDate.dayOfWeek.value != 1) {
-            call.respond(
-                HttpStatusCode.BadRequest,
-                mapOf("error" to "A startDate tem de ser uma segunda-feira")
-            )
-            return@post
-        }
+        // O professor pode indicar qualquer dia; ajustamos automaticamente para a
+        // segunda-feira da semana em que esse dia cai, já que é a partir daí que
+        // o deslocamento de cada sessão (dayOfWeek - 1 dias) é calculado.
+        val requestedDate = LocalDate.parse(request.startDate)
+        val startDate = requestedDate.minusDays((requestedDate.dayOfWeek.value - 1).toLong())
 
         val occurrences =
             if (request.recurrence == RecurrenceType.NONE) 1 else request.occurrences.coerceAtLeast(1)
@@ -155,7 +152,8 @@ fun Route.lessonRoutes() {
             teacherId = teacherId,
             sessions = sessions,
             startDate = startDate,
-            occurrences = occurrences
+            occurrences = occurrences,
+            notBefore = requestedDate
         )
 
         call.respond(

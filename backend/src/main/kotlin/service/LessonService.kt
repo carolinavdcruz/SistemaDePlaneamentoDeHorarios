@@ -34,7 +34,12 @@ object LessonService {
         teacherId: Int,
         sessions: List<Session>,
         startDate: LocalDate,
-        occurrences: Int
+        occurrences: Int,
+        // Data mínima real escolhida pelo professor. Como `startDate` é sempre a
+        // segunda-feira da semana (para o cálculo do deslocamento por dia funcionar),
+        // sem isto uma sessão de segunda seria criada mesmo que o professor tivesse
+        // escolhido começar só a partir de terça, por exemplo.
+        notBefore: LocalDate? = null
     ): List<Lesson> {
 
         val seriesId = if (occurrences > 1) UUID.randomUUID().toString() else null
@@ -47,6 +52,10 @@ object LessonService {
                     val date = startDate
                         .plusWeeks(week.toLong())
                         .plusDays((session.slot.dayOfWeek - 1).toLong())
+
+                    if (notBefore != null && date.isBefore(notBefore)) {
+                        continue
+                    }
 
                     val alreadyExists = LessonTable.select {
                         (LessonTable.teacherId eq teacherId) and
