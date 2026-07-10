@@ -36,6 +36,7 @@ object LessonService {
         startDate: LocalDate,
         occurrences: Int
     ): List<Lesson> {
+
         val seriesId = if (occurrences > 1) UUID.randomUUID().toString() else null
         val created = mutableListOf<Lesson>()
 
@@ -46,6 +47,18 @@ object LessonService {
                     val date = startDate
                         .plusWeeks(week.toLong())
                         .plusDays((session.slot.dayOfWeek - 1).toLong())
+
+                    val alreadyExists = LessonTable.select {
+                        (LessonTable.teacherId eq teacherId) and
+                                (LessonTable.date eq date) and
+                                (LessonTable.startTime eq session.slot.startTime) and
+                                (LessonTable.endTime eq session.slot.endTime) and
+                                (LessonTable.status eq LessonStatus.SCHEDULED)
+                    }.singleOrNull()
+
+                    if (alreadyExists != null) {
+                        continue
+                    }
 
                     val lessonId = LessonTable.insert {
                         it[LessonTable.teacherId] = teacherId

@@ -56,7 +56,7 @@ class GoogleCalendarManager(private val context: Context) {
 
             var count = 0
             lessons.forEach { lesson ->
-                if (lesson.status != "CANCELLED") {
+                if (lesson.status != "CANCELLED" && !lessonAlreadyExists(service, lesson)) {
                     val event = buildLessonEvent(lesson, studentNames)
                     service.events().insert("primary", event).execute()
                     count++
@@ -92,6 +92,8 @@ class GoogleCalendarManager(private val context: Context) {
             .mapNotNull { student -> studentNames[student.studentId] }
             .joinToString(", ")
 
+        val lessonKey = "lesson-${lesson.id}"
+
         return Event().apply {
             summary = if (names.isNotBlank()) {
                 "Sessão: $names"
@@ -101,12 +103,17 @@ class GoogleCalendarManager(private val context: Context) {
 
             description = buildString {
                 append("Aula gravada no Sistema de Planeamento de Horários.")
+                append("\nLessonId: ${lesson.id}")
                 append("\nData: ${lesson.date}")
                 append("\nHora: ${lesson.startTime} - ${lesson.endTime}")
                 if (lesson.seriesId != null) {
                     append("\nSérie: ${lesson.seriesId}")
                 }
             }
+
+            extendedProperties = Event.ExtendedProperties().setPrivate(
+                mapOf("sphLessonId" to lessonKey)
+            )
 
             start = EventDateTime()
                 .setDateTime(DateTime(startDateTimeMillis))
@@ -117,4 +124,39 @@ class GoogleCalendarManager(private val context: Context) {
                 .setTimeZone(zone.id)
         }
     }
+
+    private fun lessonAlreadyExists(
+        service: Calendar,
+        lesson: LessonResponse
+    ): Boolean {
+        val zone = java.util.TimeZone.getDefault()
+
+        val lessonDate = java.time.LocalDate.parse(lesson.date)
+        val lessonStartTime = java.time.LocalTime.parse(lesson.startTime)
+        val lessonEndTime = java.time.LocalTime.parse(lesson.endTime)
+
+        val startMillis = lessonDate.atTime(lessonStartTime)
+            .atZone(zone.toZoneId())
+            .toInstant()
+            .toEpochMilli()
+
+        val endMillis = lessonDate.atTime(lessonEndTime)
+            .atZone(zone.toZoneId())
+            .toInstant()
+            .toEpochMilli()
+
+        val expectedKey = "lesson-${lesson.id}"
+
+        val events = service.events().list("primary")
+            .setTimeMin(DateTime(startMillis))
+            .setTimeMax(DateTime(endMillis))
+            .setSingleEvents(true)
+            .execute()
+
+        return events.items.orEmpty().any { event ->
+            val privateProps = event.extendedProperties?.getPrivate()
+            privateProps?.get("sphLessonId") == expectedKey
+        }
+    }
+
 }

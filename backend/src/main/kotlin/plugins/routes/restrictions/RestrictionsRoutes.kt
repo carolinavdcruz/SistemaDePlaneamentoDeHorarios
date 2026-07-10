@@ -1,6 +1,5 @@
 package plugins.routes.restrictions
 
-import plugins.intParam
 import database.tables.RestrictionsTable
 import database.tables.StudentRestrictionsTable
 import io.ktor.http.HttpStatusCode

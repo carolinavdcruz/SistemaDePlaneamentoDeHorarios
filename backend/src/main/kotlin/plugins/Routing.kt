@@ -20,12 +20,12 @@ fun Application.configureRouting() {
         // GET /health  →  confirma que o servidor está vivo
         get("/health") { call.respond(HttpStatusCode.OK, mapOf("status" to "ok")) }
 
+        lessonRoutes()
         teacherRoutes()
         studentRoutes()
         availabilityRoutes()
         restrictionsRoutes()
         scheduleRoutes()
-        lessonRoutes()
         authRoutes()
     }
 }

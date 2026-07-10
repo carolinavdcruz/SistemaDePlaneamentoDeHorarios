@@ -1,6 +1,7 @@
-package com.example.frontend.ui.screens
+package com.example.frontend.ui.screens.schedule
 
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -42,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.AppModule
 import com.example.frontend.data.remote.api.GoogleCalendarManager
-import com.example.frontend.ui.screens.schedule.ProposedScheduleCard
 import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
@@ -106,7 +106,13 @@ fun GenerateScheduleButton(teacherId: Int) {
                     )
 
                     if (result.isSuccess) {
-                        viewModel.markAccepted()
+                        val addedCount = result.getOrNull() ?: 0
+
+                        if (addedCount > 0) {
+                            viewModel.markAccepted()
+                        } else {
+                            viewModel.setUiError("O horário foi gravado, mas não foram adicionados novos eventos ao Google Calendar.")
+                        }
                     } else {
                         viewModel.setUiError(
                             "As aulas foram gravadas, mas houve erro ao adicionar ao Google Calendar: ${result.exceptionOrNull()?.message}"
@@ -120,7 +126,7 @@ fun GenerateScheduleButton(teacherId: Int) {
     val signInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        android.util.Log.d(
+        Log.d(
             "ScheduleScreen",
             "Google Sign-In resultCode=${result.resultCode}, data=${result.data}"
         )
@@ -129,7 +135,7 @@ fun GenerateScheduleButton(teacherId: Int) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             val account = task.getResult(ApiException::class.java)
 
-            android.util.Log.d(
+            Log.d(
                 "ScheduleScreen",
                 "Google Sign-In OK, account=${account.email}"
             )
@@ -140,14 +146,14 @@ fun GenerateScheduleButton(teacherId: Int) {
                 viewModel.setUiError("Permissão Google Calendar não concedida.")
             }
         } catch (e: ApiException) {
-            android.util.Log.e(
+            Log.e(
                 "ScheduleScreen",
                 "Google Sign-In ApiException: code=${e.statusCode}, message=${e.message}",
                 e
             )
             viewModel.setUiError("Google Sign-In falhou. Código=${e.statusCode}")
         } catch (e: Exception) {
-            android.util.Log.e(
+            Log.e(
                 "ScheduleScreen",
                 "Google Sign-In erro inesperado: ${e.message}",
                 e

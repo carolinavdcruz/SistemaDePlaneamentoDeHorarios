@@ -6,21 +6,18 @@ import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import model.AssignTeacherRequest
 import model.StudentRequest
 import model.StudentResponse
 import org.jetbrains.exposed.exceptions.ExposedSQLException
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.mindrot.jbcrypt.BCrypt
-import plugins.intParam
 
 fun Route.studentRoutes() {
     // POST /students
@@ -68,6 +65,7 @@ fun Route.studentRoutes() {
         }
         if (updateRowStudent == 0) {
             call.respond(HttpStatusCode.NotFound, mapOf("error" to "Aluno não encontrado"))
+            return@post
         }
         call.respond(HttpStatusCode.OK, mapOf("message" to "Professor associado com sucesso"))
     }

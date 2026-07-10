@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.frontend.data.model.OwnerType
+import com.example.frontend.ui.screens.schedule.GenerateScheduleButton
 import com.example.frontend.ui.screens.students.ChooseTeacherScreen
 import com.example.frontend.ui.screens.students.StudentAvailabilityScreen
 import com.example.frontend.ui.screens.students.StudentLessonsScreen

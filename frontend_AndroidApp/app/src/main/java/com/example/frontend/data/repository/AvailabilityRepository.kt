@@ -15,27 +15,23 @@ class AvailabilityRepository(
 
 
     suspend fun insert(availability: AvailabilityEntity) {
-        // guarda sempre localmente
-        dao.insert(availability)
-
-        println("ROOM INSERT: $availability")
-        println(">>> A enviar para API: ownerId=${availability.ownerId} ownerType=${availability.ownerType} day=${availability.dayOfWeek}")
-
         try {
-            // envia para API
-            api.createAvailability(
+            val remote = api.createAvailability(
                 AvailabilityRequest(
-                    ownerId   = availability.ownerId,
+                    ownerId = availability.ownerId,
                     ownerType = availability.ownerType.name,
                     dayOfWeek = availability.dayOfWeek,
                     startTime = availability.startTime,
-                    endTime   = availability.endTime
+                    endTime = availability.endTime
                 )
             )
+
+            dao.insert(
+                availability.copy(id = remote.id)
+            )
         } catch (e: Exception) {
-            println(">>> ERRO ao enviar: ${e::class.simpleName} - ${e.message}")
-            e.printStackTrace()
             Log.e(tag, "Error sending availability to API: ${e.message}")
+            throw e
         }
     }
 
@@ -78,11 +74,12 @@ class AvailabilityRepository(
     }
 
     suspend fun deleteByOwner(ownerId: Int, ownerType: OwnerType) {
-        dao.deleteByOwner(ownerId, ownerType)
         try {
             api.deleteAvailability(ownerId, ownerType.name)
+            dao.deleteByOwner(ownerId, ownerType)
         } catch (e: Exception) {
             Log.e(tag, "Erro ao apagar disponibilidade na API: ${e.message}")
+            throw e
         }
     }
 
