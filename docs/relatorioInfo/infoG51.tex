@@ -208,59 +208,6 @@
         \item persistência remota em PostgreSQL.
     \end{itemize}
 
-    \section{Casos de Teste Recomendados ao Arguente}
-
-    \subsection*{Caso 1 -- Registo e Login}
-
-    \begin{enumerate}
-        \item registar um professor e um ou mais alunos;
-        \item efetuar autenticação com credenciais válidas;
-        \item confirmar o acesso ao fluxo correspondente ao perfil autenticado.
-    \end{enumerate}
-
-    \subsection*{Caso 2 -- Associação entre Aluno e Professor}
-
-    \begin{enumerate}
-        \item autenticar um aluno;
-        \item selecionar um professor da lista disponível;
-        \item confirmar que a associação fica visível no perfil do aluno e na lista de alunos do professor.
-    \end{enumerate}
-
-    \subsection*{Caso 3 -- Disponibilidades e Restrições}
-
-    \begin{enumerate}
-        \item inserir disponibilidades para professor e alunos;
-        \item definir restrições do professor;
-        \item definir a carga horária semanal pretendida por um aluno;
-        \item confirmar a persistência dos dados.
-    \end{enumerate}
-
-    \subsection*{Caso 4 -- Geração e Aceitação do Horário}
-
-    \begin{enumerate}
-        \item gerar uma proposta de horário semanal;
-        \item validar a distribuição das sessões;
-        \item aceitar o horário;
-        \item confirmar a gravação de aulas com datas reais.
-    \end{enumerate}
-
-    \subsection*{Caso 5 -- Histórico e Gestão de Aulas}
-
-    \begin{enumerate}
-        \item consultar aulas gravadas de uma determinada semana;
-        \item consultar histórico num intervalo de datas;
-        \item marcar presenças;
-        \item cancelar ou remarcar uma aula.
-    \end{enumerate}
-
-    \subsection*{Caso 6 -- Integrações Externas}
-
-    \begin{enumerate}
-        \item adicionar aulas ao Google Calendar do professor;
-        \item enviar um aviso por email aos alunos;
-        \item confirmar que as integrações executam corretamente.
-    \end{enumerate}
-
     \section{Observações Finais}
 
     A documentação complementar do projeto encontra-se disponível na pasta \texttt{docs/}, incluindo o relatório final e restante documentação de apoio.
