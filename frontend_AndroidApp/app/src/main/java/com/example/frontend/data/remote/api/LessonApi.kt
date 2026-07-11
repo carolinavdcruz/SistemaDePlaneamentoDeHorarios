@@ -3,7 +3,7 @@ package com.example.frontend.data.remote.api
 import com.example.frontend.data.remote.client
 import com.example.frontend.data.remote.dto.AttendanceSummaryResponse
 import com.example.frontend.data.remote.dto.CancelSeriesResponse
-import com.example.frontend.data.remote.dto.GenerateLessonsRequest
+import com.example.frontend.data.remote.dto.CreateLessonsRequest
 import com.example.frontend.data.remote.dto.LessonResponse
 import com.example.frontend.data.remote.dto.MarkAttendanceRequest
 import com.example.frontend.data.remote.dto.UpdateLessonRequest
@@ -19,10 +19,10 @@ class LessonApi {
 
     private val baseUrl = "http://10.0.2.2:8080"
 
-    // Gera (e persiste) aulas concretas a partir das disponibilidades/restrições do
+    // Cria (e persiste) aulas concretas a partir das disponibilidades/restrições do
     // professor, opcionalmente repetidas por várias semanas (recorrência).
-    suspend fun generate(request: GenerateLessonsRequest): List<LessonResponse> {
-        return client.post("$baseUrl/lessons/generate") {
+    suspend fun create(request: CreateLessonsRequest): List<LessonResponse> {
+        return client.post("$baseUrl/lessons/create") {
             setBody(request)
         }.body()
     }

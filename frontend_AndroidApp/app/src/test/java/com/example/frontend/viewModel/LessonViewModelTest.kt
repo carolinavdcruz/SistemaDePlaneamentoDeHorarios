@@ -40,7 +40,7 @@ class LessonViewModelTest {
 
     @Test
     fun `generate atualiza lessons e successMessage`() = runTest {
-        coEvery { lessonApi.generate(any()) } returns listOf(lesson(1), lesson(2))
+        coEvery { lessonApi.create(any()) } returns listOf(lesson(1), lesson(2))
 
         val viewModel = LessonViewModel(lessonApi)
         var callbackCalled = false
