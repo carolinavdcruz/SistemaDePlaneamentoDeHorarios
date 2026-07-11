@@ -151,11 +151,11 @@ INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 OUTPUT infoG51.pdf
-INPUT ../relatorioBeta/figures/logoISELnew2.png
-INPUT ../relatorioBeta/figures/logoISELnew2.png
-INPUT ../relatorioBeta/figures/logoISELnew2.png
-INPUT ../relatorioBeta/figures/logoISELnew2.png
-INPUT ../relatorioBeta/figures/logoISELnew2.png
+INPUT ../relatorio/figures/logoISELnew2.png
+INPUT ../relatorio/figures/logoISELnew2.png
+INPUT ../relatorio/figures/logoISELnew2.png
+INPUT ../relatorio/figures/logoISELnew2.png
+INPUT ../relatorio/figures/logoISELnew2.png
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr17.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmbx12.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr12.tfm

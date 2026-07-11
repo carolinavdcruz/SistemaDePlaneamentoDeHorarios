@@ -48,7 +48,7 @@
     \begin{titlepage}
         \centering
 
-        \includegraphics[width=0.8\textwidth]{../relatorioBeta/figures/logoISELnew2.png}
+        \includegraphics[width=0.8\textwidth]{../relatorio/figures/logoISELnew2.png}
 
         \vspace{1.5cm}
 
@@ -78,7 +78,7 @@
 
     \section{Objetivo do Documento}
 
-    O presente documento tem como objetivo descrever a forma de instalação, configuração, execução e verificação do projeto \textit{Sistema de Planeamento de Horários}, permitindo ao arguente testar os principais fluxos funcionais da aplicação.
+    O presente documento descreve os procedimentos necessários para instalação, configuração, execução e validação do projeto \textit{Sistema de Planeamento de Horários}, permitindo ao arguente instalar, executar e validar os principais fluxos funcionais da solução final.
 
     \section{Repositório do Projeto}
 
@@ -91,9 +91,8 @@
     Para obter uma cópia local do projeto, poderá ser utilizado o comando:
 
     \begin{verbatim}
-git clone https://github.com/carolinavdcruz/SistemaDePlaneamentoDeHorarios.git
+        git clone https://github.com/carolinavdcruz/SistemaDePlaneamentoDeHorarios.git
     \end{verbatim}
-
     \section{Requisitos de Software}
 
     Para executar corretamente o projeto, é necessário garantir a instalação dos seguintes componentes:
@@ -102,14 +101,16 @@ git clone https://github.com/carolinavdcruz/SistemaDePlaneamentoDeHorarios.git
         \item Java Development Kit (JDK), versão 21 ou superior;
         \item Android Studio, com Android SDK, Emulator e Platform Tools;
         \item PostgreSQL, com uma base de dados local acessível;
-        \item Gradle Wrapper incluído no projeto, não sendo necessária instalação manual de Gradle.
+        \item Gradle Wrapper incluído no projeto;
+        \item acesso a uma conta Google válida para validação da integração com Google Calendar;
+        \item acesso a uma conta de email configurada no backend, caso se pretendam validar notificações por correio eletrónico.
     \end{itemize}
 
     A verificação das versões instaladas pode ser feita, por exemplo, com os seguintes comandos:
 
     \begin{verbatim}
-java --version
-psql --version
+        java --version
+        psql --version
     \end{verbatim}
 
     Para a execução da aplicação Android, recomenda-se a utilização de um emulador com configuração semelhante a:
@@ -121,7 +122,9 @@ psql --version
 
     \section{Configuração da Base de Dados}
 
-    O backend encontra-se configurado para utilizar uma base de dados PostgreSQL local com os seguintes parâmetros:
+    O backend encontra-se configurado para utilizar uma base de dados PostgreSQL local. Antes de iniciar a aplicação, deverá existir uma base de dados com o nome \texttt{sph}.
+
+    Os parâmetros utilizados são os seguintes:
 
     \begin{itemize}
         \item base de dados: \texttt{sph}
@@ -132,14 +135,14 @@ psql --version
 
     Assim, antes de arrancar o backend, deverá ser criada uma base de dados com o nome \texttt{sph} no PostgreSQL local.
 
-    A estrutura de tabelas necessária ao funcionamento do sistema é criada automaticamente pelo backend no arranque através da camada de persistência da aplicação, pelo que não é necessária a execução manual de \textit{scripts SQL} para utilização da versão beta.
+    A estrutura de tabelas necessária ao funcionamento do sistema é criada automaticamente pelo backend no arranque através da camada de persistência da aplicação.
 
     \section{Execução do Backend}
 
-    Após a criação da base de dados, o backend pode ser iniciado a partir da pasta \texttt{backend} com o comando:
+    Após a configuração da base de dados, o backend pode ser iniciado a partir da pasta \texttt{backend} com o comando:
 
     \begin{verbatim}
-./gradlew run
+        ./gradlew run
     \end{verbatim}
 
     O servidor ficará disponível localmente no porto \texttt{8080}.
@@ -149,30 +152,30 @@ psql --version
     A aplicação Android deve ser aberta no Android Studio a partir da pasta:
 
     \begin{verbatim}
-frontend_AndroidApp
+        frontend_AndroidApp
     \end{verbatim}
 
     Depois disso, deverá ser iniciado um emulador Android ou ligado um dispositivo físico compatível, seguindo-se a execução normal da aplicação a partir do Android Studio.
 
-    Durante o desenvolvimento, a aplicação encontra-se configurada para comunicar com o backend local através do endereço apropriado ao emulador Android.
+    Durante a execução, a aplicação comunica com o backend local através da API REST.
 
     Para que a aplicação funcione corretamente, o backend deverá já encontrar-se em execução no momento em que a app é iniciada.
 
     \section{Integração com Google Calendar}
 
-    A versão beta inclui integração com o Google Calendar no contexto do professor. Após a aceitação de uma proposta de horário, a aplicação permite autenticar o utilizador com uma conta Google e registar automaticamente as sessões no respetivo calendário.
+    O sistema suporta integração com o Google Calendar no contexto do professor. Após a aceitação e persistência de um horário, os eventos correspondentes podem ser registados no calendário Google autenticado do professor.
 
-    Para esta funcionalidade, deverá estar presente no projeto Android o ficheiro de configuração Google incluído na aplicação, bem como uma conta Google válida para autenticação no dispositivo ou emulador. A inserção das sessões no calendário é efetuada apenas após a aceitação da proposta de horário pelo professor.
+    Para esta funcionalidade, deverá estar configurada uma conta Google válida e devidamente autenticada no dispositivo ou emulador utilizado na demonstração.
 
-    A integração com o Google Calendar é opcional para a navegação geral da aplicação, mas faz parte dos fluxos principais que podem ser demonstrados na apresentação.
-
-    \section{Fluxo Geral do Sistema}
+    \section{Arquitetura Geral da Solução}
 
     A arquitetura geral da solução pode ser resumida da seguinte forma:
 
     \begin{center}
         Android App $\rightarrow$ API REST (Ktor) $\rightarrow$ PostgreSQL
     \end{center}
+
+    O frontend Android é responsável pela interação com o utilizador, enquanto o backend centraliza a lógica de negócio, a persistência remota de dados, a gestão das aulas, o histórico, o controlo de presenças, o envio de notificações e a integração com serviços externos.
 
     O funcionamento principal do sistema segue estes passos:
 
@@ -186,18 +189,21 @@ frontend_AndroidApp
 
     \section{Funcionalidades a Verificar}
 
-    Durante a avaliação da versão beta, recomenda-se a verificação das seguintes funcionalidades:
+    Durante a avaliação do projeto, recomenda-se a verificação das seguintes funcionalidades:
 
     \begin{itemize}
-        \item registo de professores e alunos;
-        \item autenticação de utilizadores;
-        \item gestão de sessão e adaptação da interface ao perfil autenticado;
-        \item associação de aluno a professor e respetiva troca;
-        \item definição de disponibilidades, incluindo múltiplos intervalos por dia;
+        \item registo e autenticação de professores e alunos;
+        \item associação de alunos a professores;
+        \item definição de disponibilidades semanais;
         \item definição de restrições do professor;
-        \item construção de propostas de horário;
-        \item visualização do horário semanal;
-        \item aceitação do horário;
+        \item definição da carga horária semanal pretendida pelo aluno;
+        \item geração de propostas de horário semanal;
+        \item aceitação e gravação de aulas com datas reais;
+        \item recorrência semanal de aulas;
+        \item consulta de aulas gravadas e histórico;
+        \item marcação de presenças;
+        \item cancelamento e remarcação de aulas;
+        \item envio de notificações por email;
         \item integração com Google Calendar;
         \item persistência remota em PostgreSQL.
     \end{itemize}
@@ -207,8 +213,8 @@ frontend_AndroidApp
     \subsection*{Caso 1 -- Registo e Login}
 
     \begin{enumerate}
-        \item registar um professor ou aluno na aplicação;
-        \item efetuar login com credenciais válidas;
+        \item registar um professor e um ou mais alunos;
+        \item efetuar autenticação com credenciais válidas;
         \item confirmar o acesso ao fluxo correspondente ao perfil autenticado.
     \end{enumerate}
 
@@ -217,38 +223,48 @@ frontend_AndroidApp
     \begin{enumerate}
         \item autenticar um aluno;
         \item selecionar um professor da lista disponível;
-        \item confirmar que o professor associado passa a estar visível no perfil do aluno.
+        \item confirmar que a associação fica visível no perfil do aluno e na lista de alunos do professor.
     \end{enumerate}
 
-    \subsection*{Caso 3 -- Definição de Disponibilidades}
+    \subsection*{Caso 3 -- Disponibilidades e Restrições}
 
     \begin{enumerate}
-        \item inserir disponibilidade para professor ou aluno;
-        \item adicionar mais do que um intervalo no mesmo dia;
-        \item guardar e confirmar a persistência dos dados.
+        \item inserir disponibilidades para professor e alunos;
+        \item definir restrições do professor;
+        \item definir a carga horária semanal pretendida por um aluno;
+        \item confirmar a persistência dos dados.
     \end{enumerate}
 
-    \subsection*{Caso 4 -- Definição de Restrições e Construção de Horário}
+    \subsection*{Caso 4 -- Geração e Aceitação do Horário}
 
     \begin{enumerate}
-        \item autenticar um professor;
-        \item definir restrições de agendamento;
-        \item construir uma proposta de horário;
-        \item confirmar a apresentação organizada das sessões criadas.
+        \item gerar uma proposta de horário semanal;
+        \item validar a distribuição das sessões;
+        \item aceitar o horário;
+        \item confirmar a gravação de aulas com datas reais.
     \end{enumerate}
 
-    \subsection*{Caso 5 -- Aceitação do Horário e Google Calendar}
+    \subsection*{Caso 5 -- Histórico e Gestão de Aulas}
 
     \begin{enumerate}
-        \item aceitar uma proposta de horário criada;
-        \item autenticar uma conta Google, se necessário;
-        \item confirmar que as sessões são adicionadas ao Google Calendar do professor.
+        \item consultar aulas gravadas de uma determinada semana;
+        \item consultar histórico num intervalo de datas;
+        \item marcar presenças;
+        \item cancelar ou remarcar uma aula.
+    \end{enumerate}
+
+    \subsection*{Caso 6 -- Integrações Externas}
+
+    \begin{enumerate}
+        \item adicionar aulas ao Google Calendar do professor;
+        \item enviar um aviso por email aos alunos;
+        \item confirmar que as integrações executam corretamente.
     \end{enumerate}
 
     \section{Observações Finais}
 
-    A documentação complementar do projeto encontra-se disponível na pasta \texttt{docs/}, incluindo o relatório beta, notas técnicas, apontamentos de arquitetura e material de apoio ao desenvolvimento.
+    A documentação complementar do projeto encontra-se disponível na pasta \texttt{docs/}, incluindo o relatório final e restante documentação de apoio.
 
-    Caso seja necessário testar a aplicação a partir de um estado limpo, recomenda-se remover ou recriar a base de dados \texttt{sph} antes de iniciar novamente o backend, permitindo que as tabelas sejam criadas de novo automaticamente.
+    Caso seja necessário repetir demonstrações a partir de um estado controlado, recomenda-se validar previamente a base de dados e os dados persistidos de utilizadores, disponibilidades, restrições e aulas.
 
 \end{document}
