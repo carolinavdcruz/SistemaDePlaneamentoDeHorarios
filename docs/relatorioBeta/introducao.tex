@@ -43,14 +43,14 @@ O objetivo central do projeto consiste, assim, em disponibilizar um sistema que 
     \item apresentar o horário resultante de forma legível, organizada e acessível.
 \end{itemize}
 
-Numa perspetiva mais ampla, o projeto pretende também servir como base para a evolução de funcionalidades futuras, nomeadamente ao nível da gestão de salas e do suporte à interpretação automática de disponibilidades a partir de texto, imagem ou áudio.
+Numa perspetiva mais ampla, o projeto pretende também servir como base para a evolução de funcionalidades futuras, nomeadamente, ao nível da gestão de salas e do suporte à interpretação automática de disponibilidades a partir de texto, imagem ou áudio.
 
 %
 % Secção 1.2
 %
 \section{Visão Geral da Solução} \label{sec12}
 
-A solução desenvolvida assenta numa arquitetura composta por uma aplicação Android, responsável pela interação com o utilizador, e por um backend com API REST, responsável pela persistência central de dados, pela execução da lógica principal do sistema e pela exposição dos serviços necessários ao frontend. No frontend foi utilizada a linguagem Kotlin com Jetpack Compose para a construção da interface, enquanto no backend foi adotado Ktor para a implementação da API, em conjunto com PostgreSQL para persistência remota.
+A solução desenvolvida assenta numa arquitetura composta por uma aplicação Android, responsável pela interação com o utilizador e por um backend com API REST, responsável pela persistência central de dados, pela execução da lógica principal do sistema e pela exposição dos serviços necessários ao frontend. No frontend foi utilizada a linguagem Kotlin com Jetpack Compose para a construção da interface, enquanto no backend foi adotado Ktor para a implementação da API, em conjunto com PostgreSQL para persistência remota.
 
 A aplicação distingue dois perfis principais de utilizador: professor e aluno. Cada um destes perfis dispõe de um conjunto próprio de funcionalidades e ecrãs adaptados ao seu papel no sistema. O professor pode definir a sua disponibilidade semanal, configurar restrições de agendamento, consultar os alunos associados, criar propostas de horário, confirmar essas propostas, persistir aulas concretas com datas reais e gerir o ciclo de vida das aulas já criadas. O aluno pode escolher o professor com quem pretende trabalhar, definir a sua disponibilidade, indicar a sua carga horária semanal pretendida e consultar as aulas que lhe estão atribuídas.
 

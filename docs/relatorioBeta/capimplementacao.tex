@@ -8,7 +8,7 @@ Android e evoluindo depois para a integração com o backend e com a base de dad
 Esta abordagem permitiu validar gradualmente os principais casos de uso do projeto, garantindo que cada funcionalidade
 essencial ficava operacional antes da introdução de novos componentes ou maior complexidade.
 
-A solução resultante permite concretizar um conjunto alargado de operações centrais ao domínio do problema, nomeadamente registo e autenticação de utilizadores, definição de disponibilidades, gestão de restrições, associação entre alunos e professores, criação de propostas de horário, persistência de aulas concretas com datas reais, gestão de presenças, cancelamentos, remarcações e envio de notificações.
+A solução resultante permite concretizar um conjunto alargado de operações centrais ao domínio do problema, nomeadamente, registo e autenticação de utilizadores, definição de disponibilidades, gestão de restrições, associação entre alunos e professores, criação de propostas de horário, persistência de aulas concretas com datas reais, gestão de presenças, cancelamentos, remarcações e envio de notificações.
 
 \section{Organização Funcional da Aplicação}
 
@@ -37,7 +37,7 @@ Na solução implementada:
     \item o professor pode definir a sua disponibilidade, configurar restrições, consultar os alunos associados, criar propostas de horário, confirmar essas propostas e gerir as aulas persistidas;
     \item o aluno pode escolher um professor, consultar o professor associado, registar a sua disponibilidade, definir a sua carga horária semanal pretendida e consultar as aulas que lhe estão atribuídas;
     \item a navegação da aplicação adapta-se ao perfil autenticado, apresentando ecrãs e operações distintas para cada perfil.
-\item \end{itemize}
+\end{itemize}
 
 A gestão de sessão local foi integrada no frontend, permitindo preservar informação sobre o utilizador autenticado e suportar a adaptação dos fluxos
 da aplicação ao papel desempenhado. Esta distinção entre perfis foi também refletida no modelo de dados e na lógica dos ecrãs principais.
@@ -110,7 +110,7 @@ A lógica de criação parte de uma representação em blocos temporais, obtidos
     \item restrições semanais de carga horária do aluno.
 \end{itemize}
 
-Após a proposta ser validada e aceite, o sistema procede à criação em lote das aulas reais. Para gerir o vínculo e a consistência destas sessões ao longo do tempo, introduziu-se o conceito de identificador de série (\textit{seriesId}) e regras de recorrência (\textit{RecurrenceType}). Uma aula pode ser criada como um evento isolado ou fazer parte de uma sequência repetitiva (tipicamente semanalmente), sendo replicada na base de dados com datas concretas de acordo com o número estipulado de ocorrências.
+Após a proposta ser validada e aceite, o sistema procede à criação em lote das aulas reais. Para gerir o vínculo e a consistência destas sessões ao longo do tempo, introduziu-se o conceito de identificador de série (\textit{seriesId}) e regras de recorrência (\textit{RecurrenceType}). Uma aula pode ser criada como um evento isolado ou fazer parte de uma sequência repetitiva (tipicamente semanal), sendo replicada na base de dados com datas concretas de acordo com o número estipulado de ocorrências.
 
 Esta distinção veio conferir ao sistema a flexibilidade necessária para o quotidiano letivo, permitindo que alterações pontuais ou cancelamentos de sessões individuais coexistam com a manutenção e integridade da série de horários planeada originalmente.
 
@@ -137,7 +137,7 @@ Para além da proposta semanal abstrata, a aplicação passou também a suportar
 
 Com o backend e as aplicações móveis totalmente integrados, foi possível expandir o sistema com um conjunto de ecrãs e fluxos operacionais destinados ao dia a dia do corpo docente e discente.
 
-No lado do docente, através do \textit{TeacherLessonsScreen}, passou a ser possível gerir o ciclo de vida das aulas. O professor dispõe de uma vista semanal organizada por datas concretas, onde pode criar novas aulas calendarizadas, editar o horário/data (com validação automática no backend para evitar sobreposição de horários do docente) e efetuar o cancelamento individual ou em série de aulas (o que cria os referidos emails automáticos). É também neste ecrã que se faz a marcação e alteração de presenças dos alunos, cujos dados agregados alimentam um resumo estatístico consultável pelo docente.
+No lado do docente, através do \textit{TeacherLessonsScreen}, passou a ser possível gerir o ciclo de vida das aulas. O professor dispõe de uma vista semanal organizada por datas concretas, onde pode criar novas aulas calendarizadas, editar o horário/data (com validação automática no backend para evitar sobreposição de horários do docente) e efetuar o cancelamento individual ou em série de aulas (o que cria os emails automáticos). É também neste ecrã que se faz a marcação e alteração de presenças dos alunos, cujos dados agregados alimentam um resumo estatístico consultável pelo docente.
 
 Do lado do estudante, o ecrã \textit{StudentLessonsScreen} oferece uma visão clara e cronológica do seu horário pessoal para a semana corrente. O aluno consegue verificar o estado de cada aula (confirmada ou cancelada) e acompanhar o estado das suas aulas e a informação de assiduidade registada no sistema.
 
