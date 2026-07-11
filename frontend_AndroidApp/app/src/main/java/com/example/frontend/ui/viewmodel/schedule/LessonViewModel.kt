@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.remote.api.LessonApi
 import com.example.frontend.data.remote.dto.AttendanceSummaryResponse
-import com.example.frontend.data.remote.dto.GenerateLessonsRequest
+import com.example.frontend.data.remote.dto.CreateLessonsRequest
 import com.example.frontend.data.remote.dto.LessonResponse
 import com.example.frontend.data.remote.dto.UpdateLessonRequest
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,8 +46,8 @@ class LessonViewModel(
             _successMessage.value = null
 
             try {
-                val result = lessonApi.generate(
-                    GenerateLessonsRequest(
+                val result = lessonApi.create(
+                    CreateLessonsRequest(
                         teacherId = teacherId,
                         startDate = startDate,
                         recurrence = recurrence,

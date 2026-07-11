@@ -50,10 +50,12 @@ import com.example.frontend.ui.theme.Red
 import com.example.frontend.ui.theme.StatusActive
 import com.example.frontend.ui.theme.TextSecondary
 import com.example.frontend.ui.theme.White
+import com.example.frontend.ui.viewmodel.student.StudentViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun TeacherLessonsScreen(teacherId: Int) {
+    val studentViewModel = remember { AppModule.provideStudentViewModel() }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,17 +63,15 @@ fun TeacherLessonsScreen(teacherId: Int) {
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        SavedLessonsSection(teacherId = teacherId)
-        NotifyStudentsCard(teacherId = teacherId)
+        SavedLessonsSection(teacherId = teacherId, studentViewModel = studentViewModel)
+        NotifyStudentsCard(teacherId = teacherId, studentViewModel = studentViewModel)
     }
 }
 
 @Composable
-fun SavedLessonsSection(teacherId: Int) {
+fun SavedLessonsSection(teacherId: Int, studentViewModel: StudentViewModel) {
 
     val lessonViewModel = remember { AppModule.provideLessonViewModel() }
-    val studentViewModel = remember { AppModule.provideStudentViewModel() }
-
     val lessons by lessonViewModel.lessons.collectAsState()
     val isLoading by lessonViewModel.isLoading.collectAsState()
     val errorMessage by lessonViewModel.errorMessage.collectAsState()
@@ -307,9 +307,8 @@ fun SavedLessonsSection(teacherId: Int) {
  * (todos, ou apenas os selecionados). Usa POST /teachers/{teacherId}/notify.
  */
 @Composable
-fun NotifyStudentsCard(teacherId: Int) {
+fun NotifyStudentsCard(teacherId: Int, studentViewModel: StudentViewModel) {
     val teacherApi = remember { TeacherApi() }
-    val studentViewModel = remember { AppModule.provideStudentViewModel() }
     val students by studentViewModel.students.collectAsState()
     val scope = rememberCoroutineScope()
 

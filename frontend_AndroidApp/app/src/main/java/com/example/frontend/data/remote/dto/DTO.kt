@@ -119,7 +119,7 @@ data class LoginResponse(
 // ---- Lessons / histórico / recorrência / presenças ----
 
 @Serializable
-data class GenerateLessonsRequest(
+data class CreateLessonsRequest(
     val teacherId: Int,
     val startDate: String,
     val recurrence: String = "WEEKLY", // "NONE" ou "WEEKLY"
