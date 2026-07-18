@@ -21,6 +21,13 @@ data class DayAvailabilityInput(
     val ranges: List<TimeRangeInput> = emptyList()
 )
 
+sealed class AvailabilitySaveState {
+    object Idle : AvailabilitySaveState()
+    object Saving : AvailabilitySaveState()
+    object Saved : AvailabilitySaveState()
+    data class Error(val message: String) : AvailabilitySaveState()
+}
+
 class AvailabilityViewModel(
     private val availabilityRepository: AvailabilityRepository,
 ) : ViewModel() {
@@ -31,6 +38,9 @@ class AvailabilityViewModel(
         defaultDays.map { day -> DayAvailabilityInput(day) }
     )
     val dayAvailabilities: StateFlow<List<DayAvailabilityInput>> = _dayAvailabilities
+
+    private val _saveState = MutableStateFlow<AvailabilitySaveState>(AvailabilitySaveState.Idle)
+    val saveState: StateFlow<AvailabilitySaveState> = _saveState
 
     private val daysMap = mapOf(
         "Mon" to 1,
@@ -122,33 +132,52 @@ class AvailabilityViewModel(
 
     fun saveAvailability(ownerId: Int, ownerType: OwnerType) {
         viewModelScope.launch {
-            availabilityRepository.deleteByOwner(ownerId, ownerType)
+            _saveState.value = AvailabilitySaveState.Saving
+            try {
+                availabilityRepository.deleteByOwner(ownerId, ownerType)
 
-            val selectedAvailabilities = _dayAvailabilities.value.flatMap { dayInput ->
-                dayInput.ranges.map { range ->
-                    AvailabilityEntity(
-                        ownerId = ownerId,
-                        ownerType = ownerType,
-                        dayOfWeek = daysMap[dayInput.day] ?: 1,
-                        startTime = range.startTime,
-                        endTime = range.endTime
-                    )
+                val selectedAvailabilities = _dayAvailabilities.value.flatMap { dayInput ->
+                    dayInput.ranges.map { range ->
+                        AvailabilityEntity(
+                            ownerId = ownerId,
+                            ownerType = ownerType,
+                            dayOfWeek = daysMap[dayInput.day] ?: 1,
+                            startTime = range.startTime,
+                            endTime = range.endTime
+                        )
+                    }
                 }
-            }
 
-            selectedAvailabilities.forEach { availability ->
-                availabilityRepository.insert(availability)
-            }
+                selectedAvailabilities.forEach { availability ->
+                    availabilityRepository.insert(availability)
+                }
 
-            load(ownerId, ownerType)
+                load(ownerId, ownerType)
+                _saveState.value = AvailabilitySaveState.Saved
+            } catch (e: Exception) {
+                _saveState.value = AvailabilitySaveState.Error(
+                    e.localizedMessage ?: "Erro ao guardar disponibilidade."
+                )
+            }
         }
+    }
+
+    fun consumeSaveState() {
+        _saveState.value = AvailabilitySaveState.Idle
     }
 
     fun clear(ownerId: Int, ownerType: OwnerType) {
         viewModelScope.launch {
-            availabilityRepository.deleteByOwner(ownerId, ownerType)
-            _dayAvailabilities.value = defaultDays.map { day ->
-                DayAvailabilityInput(day)
+            try {
+                availabilityRepository.deleteByOwner(ownerId, ownerType)
+                _dayAvailabilities.value = defaultDays.map { day ->
+                    DayAvailabilityInput(day)
+                }
+                _saveState.value = AvailabilitySaveState.Saved
+            } catch (e: Exception) {
+                _saveState.value = AvailabilitySaveState.Error(
+                    e.localizedMessage ?: "Erro ao limpar disponibilidade."
+                )
             }
         }
     }

@@ -141,7 +141,7 @@ fun TeacherScheduleScreen(teacherId: Int, onSignOutClick: () -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
         GenerateScheduleButton(teacherId = teacherId)
         Spacer(modifier = Modifier.height(30.dp))
-        SignOutButton(onSignOutClick)
+        //SignOutButton(onSignOutClick)
     }
 }
 
@@ -171,6 +171,7 @@ fun ScheduleHeader() {
     }
 }
 
+/*
 @Composable
 fun SignOutButton(onSignOutClick: () -> Unit) {
     OutlinedButton(
@@ -185,6 +186,7 @@ fun SignOutButton(onSignOutClick: () -> Unit) {
         Text("Terminar Sessão", fontSize = 14.sp, fontWeight = FontWeight.Medium)
     }
 }
+*/
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)

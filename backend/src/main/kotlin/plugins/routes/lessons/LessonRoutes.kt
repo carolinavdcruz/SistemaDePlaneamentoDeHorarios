@@ -46,7 +46,7 @@ import java.time.LocalTime
 @Suppress("NewApi")
 fun Route.lessonRoutes() {
 
-    post("/lessons/generate") {
+    post("/lessons/create") {
 
         val request = call.receive<GenerateLessonsRequest>()
 

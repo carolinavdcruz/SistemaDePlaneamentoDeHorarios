@@ -6,7 +6,7 @@ import com.example.frontend.data.remote.dto.AttendanceSummaryResponse
 import com.example.frontend.data.remote.dto.CancelSeriesResponse
 import com.example.frontend.data.remote.dto.LessonResponse
 import com.example.frontend.data.remote.dto.LessonStudentResponse
-import com.example.frontend.ui.viewmodel.schedule.LessonViewModel
+import com.example.frontend.ui.viewmodel.lesson.LessonViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

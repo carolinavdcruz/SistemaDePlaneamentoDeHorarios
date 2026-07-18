@@ -68,6 +68,17 @@ fun GenerateScheduleButton(teacherId: Int) {
 
     val lessonViewModel = remember { AppModule.provideLessonViewModel() }
     val lessonIsLoading by lessonViewModel.isLoading.collectAsState()
+    val lessonError by lessonViewModel.errorMessage.collectAsState()
+
+    // Sem isto, um erro ao gerar as aulas (ex.: falha de rede ou do backend)
+    // ficava só guardado no LessonViewModel e nunca era mostrado ao utilizador,
+    // porque o onSuccess() de acceptWithRealLessons() nunca chegava a correr.
+    LaunchedEffect(lessonError) {
+        lessonError?.let { message ->
+            viewModel.setUiError(message)
+            lessonViewModel.clearMessages()
+        }
+    }
 
     val studentViewModel = remember { AppModule.provideStudentViewModel() }
 
@@ -95,28 +106,44 @@ fun GenerateScheduleButton(teacherId: Int) {
                 startDate = startDate,
                 recurrence = if (repeatEnabled) "WEEKLY" else "NONE",
                 occurrences = if (repeatEnabled) occurrences else 1
-            ) { generatedLessons ->
+            ) {
+                // Não usamos a lista devolvida por generate() diretamente: ela só
+                // contém aulas criadas NESTA chamada. Se já existirem aulas para
+                // este professor/data (ex.: de uma tentativa anterior em que o
+                // Calendar não chegou a ser sincronizado), essas ficariam de fora
+                // e nunca mais seriam adicionadas ao Calendar. Por isso vamos
+                // buscar sempre o conjunto completo de aulas no período pedido.
+                val start = java.time.LocalDate.parse(startDate)
+                val weeks = if (repeatEnabled) occurrences else 1
+                val end = start.plusWeeks(weeks.toLong()).minusDays(1)
 
-                val studentNames = studentsById.mapValues { it.value.name }
+                lessonViewModel.fetchRange(
+                    teacherId = teacherId,
+                    from = start.toString(),
+                    to = end.toString()
+                ) { allLessonsInRange ->
 
-                scope.launch {
-                    val result = calendarManager.addLessonsToCalendar(
-                        lessons = generatedLessons,
-                        studentNames = studentNames
-                    )
+                    val studentNames = studentsById.mapValues { it.value.name }
 
-                    if (result.isSuccess) {
-                        val addedCount = result.getOrNull() ?: 0
-
-                        if (addedCount > 0) {
-                            viewModel.markAccepted()
-                        } else {
-                            viewModel.setUiError("O horário foi gravado, mas não foram adicionados novos eventos ao Google Calendar.")
-                        }
-                    } else {
-                        viewModel.setUiError(
-                            "As aulas foram gravadas, mas houve erro ao adicionar ao Google Calendar: ${result.exceptionOrNull()?.message}"
+                    scope.launch {
+                        val result = calendarManager.addLessonsToCalendar(
+                            lessons = allLessonsInRange,
+                            studentNames = studentNames
                         )
+
+                        if (result.isSuccess) {
+                            val addedCount = result.getOrNull() ?: 0
+
+                            if (addedCount > 0) {
+                                viewModel.markAccepted()
+                            } else {
+                                viewModel.setUiError("As aulas já estavam gravadas e já constavam no Google Calendar — nenhum evento novo foi necessário.")
+                            }
+                        } else {
+                            viewModel.setUiError(
+                                "As aulas foram gravadas, mas houve erro ao adicionar ao Google Calendar: ${result.exceptionOrNull()?.message}"
+                            )
+                        }
                     }
                 }
             }

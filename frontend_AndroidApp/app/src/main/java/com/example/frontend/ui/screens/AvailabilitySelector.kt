@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -39,11 +40,15 @@ import com.example.frontend.ui.theme.AccentPurple
 import com.example.frontend.ui.theme.Background
 import com.example.frontend.ui.theme.CardBackground
 import com.example.frontend.ui.theme.InputBorder
+import com.example.frontend.ui.theme.Red
+import com.example.frontend.ui.theme.StatusActive
 import com.example.frontend.ui.theme.TextSecondary
 import com.example.frontend.ui.theme.White
 import com.example.frontend.ui.theme.lightOrange
+import com.example.frontend.ui.viewmodel.availability.AvailabilitySaveState
 import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
 import com.example.frontend.ui.viewmodel.availability.TimeRangeInput
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun AvailabilitySelector(
@@ -59,6 +64,14 @@ fun AvailabilitySelector(
     }
 
     val dayAvailabilities by viewModel.dayAvailabilities.collectAsState()
+    val saveState by viewModel.saveState.collectAsState()
+
+    LaunchedEffect(saveState) {
+        if (saveState is AvailabilitySaveState.Saved || saveState is AvailabilitySaveState.Error) {
+            kotlinx.coroutines.delay(3000.milliseconds)
+            viewModel.consumeSaveState()
+        }
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -103,19 +116,64 @@ fun AvailabilitySelector(
 
         Spacer(modifier = Modifier.height(22.dp))
 
+        when (val state = saveState) {
+            is AvailabilitySaveState.Saved -> {
+                Surface(
+                    color = StatusActive.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "Disponibilidade guardada com sucesso.",
+                        color = StatusActive,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+            is AvailabilitySaveState.Error -> {
+                Surface(
+                    color = Red.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        state.message,
+                        color = Red,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+            else -> Unit
+        }
+
         Button(
             onClick = { viewModel.saveAvailability(ownerId, ownerType) },
+            enabled = saveState !is AvailabilitySaveState.Saving,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
         ) {
-            Text(
-                "Guardar Disponibilidade",
-                color = White,
-                fontWeight = FontWeight.Bold
-            )
+            if (saveState is AvailabilitySaveState.Saving) {
+                CircularProgressIndicator(
+                    color = White,
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(
+                    "Guardar Disponibilidade",
+                    color = White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))

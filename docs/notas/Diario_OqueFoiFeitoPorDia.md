@@ -143,10 +143,12 @@ Para o aluno, foi organizada uma experiência centrada em:
     test@example.com
 td@example.com
 
+
 ### Pass
 
     Testprof0
 Testedemonst0 - Aluno
+TestCosta0
 
 
 ## Notificações por email
@@ -167,3 +169,8 @@ SMTP_FROM_NAME=Sistema de Planeamento de Horários   # opcional
 
 Sem estas variáveis definidas, o sistema fica em **modo simulação**: em vez de enviar, regista no log o email que seria enviado (útil para testar sem credenciais reais na demonstração).
 !!! não coloquei as últimas duas !!!
+
+
+Bugs:
+     aparece uma hora na descrição que é a da app mas no calendario em si ta marcado para as 14h em vez das 13h
+    aluno nao recebe o email de aviso

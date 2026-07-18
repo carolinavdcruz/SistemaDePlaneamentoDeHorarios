@@ -24,7 +24,7 @@ import com.example.frontend.data.remote.api.StudentRestrictionsApi
 import com.example.frontend.data.remote.api.TeacherApi
 import com.example.frontend.data.repository.StudentRestrictionsRepository
 import com.example.frontend.ui.viewmodel.availability.AvailabilityViewModel
-import com.example.frontend.ui.viewmodel.schedule.LessonViewModel
+import com.example.frontend.ui.viewmodel.lesson.LessonViewModel
 import com.example.frontend.ui.viewmodel.student.StudentRestrictionsViewModel
 
 
