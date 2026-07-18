@@ -14,11 +14,13 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class GoogleCalendarManager(private val context: Context) {
 
     companion object {
-        // Scope necessário para criar eventos no Calendar
         val SCOPES = listOf(CalendarScopes.CALENDAR)
     }
 
@@ -30,7 +32,6 @@ class GoogleCalendarManager(private val context: Context) {
         )
     }
 
-    // Cria as credenciais OAuth com a conta Google já autenticada via Google Sign-In
     private fun buildCalendarService(): Calendar? {
         val account = GoogleSignIn.getLastSignedInAccount(context) ?: return null
 
@@ -74,19 +75,19 @@ class GoogleCalendarManager(private val context: Context) {
     ): Event {
         val zone = java.util.TimeZone.getDefault()
 
-        val lessonDate = java.time.LocalDate.parse(lesson.date)
-        val lessonStartTime = java.time.LocalTime.parse(lesson.startTime)
-        val lessonEndTime = java.time.LocalTime.parse(lesson.endTime)
+        val lessonDate = LocalDate.parse(lesson.date)
+        val lessonStartTime = LocalTime.parse(lesson.startTime)
+        val lessonEndTime = LocalTime.parse(lesson.endTime)
 
-        val startDateTimeMillis = lessonDate.atTime(lessonStartTime)
+        // Converter para string RFC 3339 com offset explícito.
+        // Assim o DateTime não é tratado como UTC e não há double-offset.
+        val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+        val startRfc = lessonDate.atTime(lessonStartTime)
             .atZone(zone.toZoneId())
-            .toInstant()
-            .toEpochMilli()
-
-        val endDateTimeMillis = lessonDate.atTime(lessonEndTime)
+            .format(formatter)
+        val endRfc = lessonDate.atTime(lessonEndTime)
             .atZone(zone.toZoneId())
-            .toInstant()
-            .toEpochMilli()
+            .format(formatter)
 
         val names = lesson.students
             .mapNotNull { student -> studentNames[student.studentId] }
@@ -95,11 +96,7 @@ class GoogleCalendarManager(private val context: Context) {
         val lessonKey = "lesson-${lesson.id}"
 
         return Event().apply {
-            summary = if (names.isNotBlank()) {
-                "Sessão: $names"
-            } else {
-                "Sessão"
-            }
+            summary = if (names.isNotBlank()) "Sessão: $names" else "Sessão"
 
             description = buildString {
                 append("Aula gravada no Sistema de Planeamento de Horários.")
@@ -115,13 +112,10 @@ class GoogleCalendarManager(private val context: Context) {
                 mapOf("sphLessonId" to lessonKey)
             )
 
-            start = EventDateTime()
-                .setDateTime(DateTime(startDateTimeMillis))
-                .setTimeZone(zone.id)
-
-            end = EventDateTime()
-                .setDateTime(DateTime(endDateTimeMillis))
-                .setTimeZone(zone.id)
+            // Sem setTimeZone: o offset já está embutido na string RFC 3339,
+            // por isso o Google Calendar não aplica nenhuma conversão extra.
+            start = EventDateTime().setDateTime(DateTime(startRfc))
+            end = EventDateTime().setDateTime(DateTime(endRfc))
         }
     }
 
@@ -131,9 +125,9 @@ class GoogleCalendarManager(private val context: Context) {
     ): Boolean {
         val zone = java.util.TimeZone.getDefault()
 
-        val lessonDate = java.time.LocalDate.parse(lesson.date)
-        val lessonStartTime = java.time.LocalTime.parse(lesson.startTime)
-        val lessonEndTime = java.time.LocalTime.parse(lesson.endTime)
+        val lessonDate = LocalDate.parse(lesson.date)
+        val lessonStartTime = LocalTime.parse(lesson.startTime)
+        val lessonEndTime = LocalTime.parse(lesson.endTime)
 
         val startMillis = lessonDate.atTime(lessonStartTime)
             .atZone(zone.toZoneId())
@@ -158,5 +152,4 @@ class GoogleCalendarManager(private val context: Context) {
             privateProps?.get("sphLessonId") == expectedKey
         }
     }
-
 }
