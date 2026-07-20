@@ -20,13 +20,17 @@ object ScheduleService {
         val teacherMinutesPerDay = mutableMapOf<Int, Int>()
         val studentWeeklyMinutes = mutableMapOf<Int, Int>()
 
-
-        // aluno com menos disponibilidade é atribuído primeiro
-        val sortedStudents = students.sortedBy { student ->
+        // aluno com menos disponibilidade é atribuído primeiro; entre alunos com
+        // a mesma disponibilidade a ordem é baralhada, para que criar de novo
+        // possa produzir uma combinação diferente sem violar as restrições
+        val sortedStudents = students.shuffled().sortedBy { student ->
             studentAvailabilities[student.id]?.size ?: 0
         }
 
-        for (slot in teacherSlots) {
+        // baralha também a ordem dos slots do professor, pela mesma razão
+        val shuffledTeacherSlots = teacherSlots.shuffled()
+
+        for (slot in shuffledTeacherSlots) {
             // verifica se o professor ainda tem horas disponíveis no dia
             val minutesUsedToday = teacherMinutesPerDay.getOrDefault(slot.dayOfWeek, 0)
             if (minutesUsedToday + restrictions.sessionDurationMinutes > restrictions.maxDailyHours * 60) {
@@ -71,6 +75,8 @@ object ScheduleService {
                 teacherMinutesPerDay[slot.dayOfWeek] = minutesUsedToday + restrictions.sessionDurationMinutes
             }
         }
-        return sessions
+        // a atribuição foi feita por ordem baralhada, mas o resultado é devolvido
+        // ordenado por dia/hora para ser apresentado de forma legível
+        return sessions.sortedWith(compareBy({ it.slot.dayOfWeek }, { it.slot.startTime }))
     }
 }

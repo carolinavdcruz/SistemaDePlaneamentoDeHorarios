@@ -162,8 +162,8 @@ Para enviar emails a sério, define estas variáveis de ambiente antes de correr
 ```
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USERNAME=oteuemail@gmail.com
-SMTP_PASSWORD=<app password gerada em myaccount.google.com/apppasswords>
+SMTP_USERNAME=pfc.sph@gmail.com
+SMTP_PASSWORD=tmay slbv pgsl fkwh
 SMTP_FROM_NAME=Sistema de Planeamento de Horários   # opcional
 ```
 
@@ -172,5 +172,4 @@ Sem estas variáveis definidas, o sistema fica em **modo simulação**: em vez d
 
 
 Bugs:
-     aparece uma hora na descrição que é a da app mas no calendario em si ta marcado para as 14h em vez das 13h
-    aluno nao recebe o email de aviso
+      aluno nao recebe o email de aviso

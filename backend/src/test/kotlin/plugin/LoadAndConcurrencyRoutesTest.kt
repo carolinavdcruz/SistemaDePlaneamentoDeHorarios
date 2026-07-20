@@ -40,11 +40,12 @@ import kotlin.test.assertTrue
 /**
  * Testes de CARGA e CONCORRÊNCIA ao nível da API HTTP.
  *
- * Diferença face aos restantes testes de rotas (ex: LessonRoutesTest): aqueles validam
- * comportamento funcional com pedidos sequenciais; estes disparam MUITOS pedidos em
- * SIMULTÂNEO (via coroutines) contra o mesmo servidor de teste, para verificar:
+ * Diferença face aos restantes testes de rotas (ex: LessonRoutesTest):
+ * aqueles validam comportamento funcional com pedidos sequenciais;
+ * estes disparam MUITOS pedidos em SIMULTÂNEO (via coroutines) contra o mesmo servidor de teste,
+ * para verificar:
  *   1) Throughput/latência sob um volume de pedidos concorrentes (teste de carga).
- *   2) Se dados concorrentes a escrever a mesma coisa geram condições de corrida —
+ *   2) Se dados concorrentes a escrever o mesmo criam condições de corrida —
  *      nomeadamente, se é possível criar aulas sobrepostas quando dois pedidos
  *      "colidem" no tempo (teste de concorrência/race condition).
  *

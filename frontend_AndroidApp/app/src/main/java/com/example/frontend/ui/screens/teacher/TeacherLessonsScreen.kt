@@ -21,6 +21,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -323,6 +324,18 @@ fun NotifyStudentsCard(teacherId: Int, studentViewModel: StudentViewModel) {
     var isSending by remember { mutableStateOf(false) }
     var feedback by remember { mutableStateOf<String?>(null) }
 
+    // Cores fixas para os campos de texto do aviso: o texto escrito e o cursor
+    // ficam sempre bem visíveis sobre o fundo escuro do cartão
+    val avisoFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = White,
+        unfocusedTextColor = White,
+        cursorColor = AccentPurple,
+        focusedBorderColor = AccentPurple,
+        unfocusedBorderColor = InputBorder,
+        focusedLabelColor = AccentPurple,
+        unfocusedLabelColor = TextSecondary
+    )
+
     Surface(
         color = CardBackground.copy(alpha = 0.5f),
         shape = RoundedCornerShape(16.dp),
@@ -350,6 +363,7 @@ fun NotifyStudentsCard(teacherId: Int, studentViewModel: StudentViewModel) {
                 onValueChange = { subject = it },
                 label = { Text("Assunto") },
                 singleLine = true,
+                colors = avisoFieldColors,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -359,6 +373,7 @@ fun NotifyStudentsCard(teacherId: Int, studentViewModel: StudentViewModel) {
                 value = message,
                 onValueChange = { message = it },
                 label = { Text("Mensagem") },
+                colors = avisoFieldColors,
                 modifier = Modifier.fillMaxWidth()
             )
 
