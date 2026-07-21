@@ -49,6 +49,7 @@ import com.example.frontend.ui.theme.InputBorder
 import com.example.frontend.ui.theme.StatusActive
 import com.example.frontend.ui.theme.TextSecondary
 import com.example.frontend.ui.theme.White
+import com.example.frontend.ui.theme.appTextFieldColors
 import com.example.frontend.ui.viewmodel.schedule.ScheduleUiState
 import com.example.frontend.ui.viewmodel.schedule.ScheduleViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -230,6 +231,7 @@ fun GenerateScheduleButton(teacherId: Int) {
                     onValueChange = { startDate = it },
                     label = { Text("Data de início (AAAA-MM-DD)") },
                     placeholder = { Text("2026-07-13") },
+                    colors = appTextFieldColors(),
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )

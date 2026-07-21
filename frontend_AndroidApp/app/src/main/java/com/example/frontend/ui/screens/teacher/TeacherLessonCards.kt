@@ -32,6 +32,7 @@ import com.example.frontend.ui.theme.Red
 import com.example.frontend.ui.theme.StatusActive
 import com.example.frontend.ui.theme.TextSecondary
 import com.example.frontend.ui.theme.White
+import com.example.frontend.ui.theme.appTextFieldColors
 
 @Composable
 fun SavedLessonCard(
@@ -286,6 +287,9 @@ private fun RescheduleDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = CardBackground,
+        titleContentColor = White,
+        textContentColor = White,
         title = { Text("Remarcar aula") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -299,6 +303,7 @@ private fun RescheduleDialog(
                     onValueChange = { date = it },
                     label = { Text("Data (AAAA-MM-DD)") },
                     singleLine = true,
+                    colors = appTextFieldColors(),
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
@@ -306,6 +311,7 @@ private fun RescheduleDialog(
                     onValueChange = { startTime = it },
                     label = { Text("Início (HH:MM)") },
                     singleLine = true,
+                    colors = appTextFieldColors(),
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
@@ -313,6 +319,7 @@ private fun RescheduleDialog(
                     onValueChange = { endTime = it },
                     label = { Text("Fim (HH:MM)") },
                     singleLine = true,
+                    colors = appTextFieldColors(),
                     modifier = Modifier.fillMaxWidth()
                 )
             }

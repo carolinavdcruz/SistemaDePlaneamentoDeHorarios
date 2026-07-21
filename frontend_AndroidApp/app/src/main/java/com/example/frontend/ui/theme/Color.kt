@@ -1,8 +1,10 @@
 package com.example.frontend.ui.theme
 
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val Purple80 = Color(0xFFD0BCFF)
@@ -61,4 +63,25 @@ val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40
+)
+
+/**
+ * Cores fixas para os campos de texto (OutlinedTextField) usados em toda a app.
+ *
+ * Os cartões e ecrãs usam um fundo escuro fixo (Background/CardBackground), mas o
+ * Material3 por omissão tira as cores do texto/cursor/contorno do color scheme do
+ * sistema (inclui "cor dinâmica" no Android 12+). Se esse scheme calhar a ser claro,
+ * o texto escrito fica escuro sobre fundo escuro e quase invisível.
+ */
+@Composable
+fun appTextFieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = White,
+    unfocusedTextColor = White,
+    cursorColor = AccentPurple,
+    focusedBorderColor = AccentPurple,
+    unfocusedBorderColor = InputBorder,
+    focusedLabelColor = AccentPurple,
+    unfocusedLabelColor = TextSecondary,
+    focusedPlaceholderColor = TextSecondary,
+    unfocusedPlaceholderColor = TextSecondary.copy(alpha = 0.6f)
 )

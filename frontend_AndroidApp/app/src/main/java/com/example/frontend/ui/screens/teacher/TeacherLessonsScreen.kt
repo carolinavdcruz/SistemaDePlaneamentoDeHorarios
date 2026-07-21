@@ -21,7 +21,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -51,6 +50,7 @@ import com.example.frontend.ui.theme.Red
 import com.example.frontend.ui.theme.StatusActive
 import com.example.frontend.ui.theme.TextSecondary
 import com.example.frontend.ui.theme.White
+import com.example.frontend.ui.theme.appTextFieldColors
 import com.example.frontend.ui.viewmodel.student.StudentViewModel
 import kotlinx.coroutines.launch
 
@@ -120,6 +120,7 @@ fun SavedLessonsSection(teacherId: Int, studentViewModel: StudentViewModel) {
                 onValueChange = { selectedDate = it },
                 label = { Text("Data da semana (AAAA-MM-DD)") },
                 placeholder = { Text("2026-07-07") },
+                colors = appTextFieldColors(),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -150,6 +151,7 @@ fun SavedLessonsSection(teacherId: Int, studentViewModel: StudentViewModel) {
                 onValueChange = { fromDate = it },
                 label = { Text("Histórico: de (AAAA-MM-DD)") },
                 placeholder = { Text("2026-07-01") },
+                colors = appTextFieldColors(),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -161,6 +163,7 @@ fun SavedLessonsSection(teacherId: Int, studentViewModel: StudentViewModel) {
                 onValueChange = { toDate = it },
                 label = { Text("Histórico: até (AAAA-MM-DD)") },
                 placeholder = { Text("2026-07-31") },
+                colors = appTextFieldColors(),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -324,18 +327,6 @@ fun NotifyStudentsCard(teacherId: Int, studentViewModel: StudentViewModel) {
     var isSending by remember { mutableStateOf(false) }
     var feedback by remember { mutableStateOf<String?>(null) }
 
-    // Cores fixas para os campos de texto do aviso: o texto escrito e o cursor
-    // ficam sempre bem visíveis sobre o fundo escuro do cartão
-    val avisoFieldColors = OutlinedTextFieldDefaults.colors(
-        focusedTextColor = White,
-        unfocusedTextColor = White,
-        cursorColor = AccentPurple,
-        focusedBorderColor = AccentPurple,
-        unfocusedBorderColor = InputBorder,
-        focusedLabelColor = AccentPurple,
-        unfocusedLabelColor = TextSecondary
-    )
-
     Surface(
         color = CardBackground.copy(alpha = 0.5f),
         shape = RoundedCornerShape(16.dp),
@@ -363,7 +354,7 @@ fun NotifyStudentsCard(teacherId: Int, studentViewModel: StudentViewModel) {
                 onValueChange = { subject = it },
                 label = { Text("Assunto") },
                 singleLine = true,
-                colors = avisoFieldColors,
+                colors = appTextFieldColors(),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -373,7 +364,7 @@ fun NotifyStudentsCard(teacherId: Int, studentViewModel: StudentViewModel) {
                 value = message,
                 onValueChange = { message = it },
                 label = { Text("Mensagem") },
-                colors = avisoFieldColors,
+                colors = appTextFieldColors(),
                 modifier = Modifier.fillMaxWidth()
             )
 
