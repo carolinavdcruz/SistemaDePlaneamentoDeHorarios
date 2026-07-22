@@ -23,7 +23,8 @@ sealed class ScheduleUiState {
 
     data class Success(
         val sessions: List<ScheduledSession>,
-        val studentName: Map<Int, String>
+        val studentName: Map<Int, String>,
+        val unassignedStudents: List<String> = emptyList()
     ) : ScheduleUiState()
 
     data class Empty(val reason: String)  : ScheduleUiState()
@@ -79,9 +80,15 @@ class ScheduleViewModel(
                 if (sessions.isEmpty()) {
                     _uiState.value = ScheduleUiState.Empty("Sem sobreposições de disponibilidade encontradas.")
                 } else {
+                    val scheduledStudentIds = sessions.flatMap { it.studentIds }.toSet()
+                    val unassignedStudents = students
+                        .filter { it.id !in scheduledStudentIds }
+                        .map { it.name }
+
                     _uiState.value = ScheduleUiState.Success(
                         sessions = sessions,
-                        studentName = studentNames
+                        studentName = studentNames,
+                        unassignedStudents = unassignedStudents
                     )
                 }
             } catch (e: Exception) {
@@ -99,6 +106,4 @@ class ScheduleViewModel(
     fun setUiError(message: String) {
         _uiState.value = ScheduleUiState.Error(message)
     }
-
-
 }

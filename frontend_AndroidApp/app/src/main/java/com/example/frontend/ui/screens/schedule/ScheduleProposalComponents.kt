@@ -37,6 +37,7 @@ import com.example.frontend.ui.theme.StatusActive
 import com.example.frontend.ui.theme.TextMain
 import com.example.frontend.ui.theme.TextSecondary
 import com.example.frontend.ui.theme.White
+import com.example.frontend.ui.theme.lightOrange
 import com.example.frontend.ui.viewmodel.schedule.ScheduleUiState
 
 private val DAY_NAMES = mapOf(
@@ -100,6 +101,34 @@ fun ProposedScheduleCard(uiState: ScheduleUiState) {
                         fontSize = 12.sp,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
+
+                    if (uiState.unassignedStudents.isNotEmpty()) {
+                        Surface(
+                            color = lightOrange.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 12.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(
+                                    "Atenção: ${uiState.unassignedStudents.size} aluno(s) não " +
+                                            "ficaram atribuídos a nenhuma sessão (sem disponibilidade " +
+                                            "compatível ou limites de horas já atingidos):",
+                                    color = lightOrange,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    uiState.unassignedStudents.joinToString(", "),
+                                    color = lightOrange,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+                    }
+
                     WeeklyScheduleView(
                         sessions = uiState.sessions,
                         studentNames = uiState.studentName
